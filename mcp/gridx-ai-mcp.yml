@@ -1,0 +1,208 @@
+name: gridX MCP Server (candidate)
+type: MCPServer
+generated: '2026-10-09'
+method: derived
+source: openapi/gridx-ai-openapi.yml
+status: candidate
+description: 'No official gridX MCP server was found (web search 2026-10-09; pre-flight contract discovery verdict
+  mcp: absent on api.gridx.ai, api.gridx.de, community.developer.gridx.de, support.gridx.ai, www.gridx.ai). This
+  is a CANDIDATE tool list derived from the gridX API OpenAPI 3.0.1 contract; nobody ships this server.'
+deployment:
+  mode: none
+  auth: api-key
+  verified: derived
+auth:
+  scheme: HeaderAuth
+  in: header
+  name: Authorization
+  note: 'Per the spec: JWT with prefix "Bearer " or API token with prefix "Token ".'
+api:
+  baseURL: https://api.gridx.de
+  openapi: openapi/gridx-ai-openapi.yml
+tools:
+- name: get_authenticated_account
+  description: Retrieve the authenticated Account
+  operationId: getAuthenticatedAccount
+  method: GET
+  path: /account
+  readOnly: true
+- name: list_accounts
+  description: List all Accounts
+  operationId: listAccounts
+  method: GET
+  path: /accounts
+  readOnly: true
+- name: get_account
+  description: Retrieve an Account
+  operationId: getAccount
+  method: GET
+  path: /accounts/{accountID}
+  readOnly: true
+- name: list_account_systems
+  description: List Account's Systems
+  operationId: listAccountSystems
+  method: GET
+  path: /accounts/{accountID}/systems
+  readOnly: true
+- name: list_systems
+  description: List all Systems
+  operationId: listSystems
+  method: GET
+  path: /systems
+  readOnly: true
+- name: get_system
+  description: Retrieve a System
+  operationId: getSystem
+  method: GET
+  path: /systems/{systemID}
+  readOnly: true
+- name: get_system_live_measurements
+  description: Retrieve System's Live Measurement.
+  operationId: getSystemLiveMeasurements
+  method: GET
+  path: /systems/{systemID}/live
+  readOnly: true
+- name: get_system_historical_measurements
+  description: Historical Measurements for Systems
+  operationId: getSystemHistoricalMeasurements
+  method: GET
+  path: /systems/{systemID}/historical
+  readOnly: true
+- name: list_system_asset
+  description: List System's Assets
+  operationId: listSystemAsset
+  method: GET
+  path: /systems/{systemID}/assets
+  readOnly: true
+- name: get_system_asset
+  description: Retrieve an Asset
+  operationId: getSystemAsset
+  method: GET
+  path: /systems/{systemID}/assets/{assetID}
+  readOnly: true
+- name: get_asset_measurements
+  description: List Asset Measurements
+  operationId: getAssetMeasurements
+  method: GET
+  path: /systems/{systemID}/assets/{assetID}/measurements
+  readOnly: true
+- name: list_gateways
+  description: List all Gateways
+  operationId: listGateways
+  method: GET
+  path: /gateways
+  readOnly: true
+- name: get_gateway
+  description: Retrieve a Gateway
+  operationId: getGateway
+  method: GET
+  path: /gateways/{gatewayID}
+  readOnly: true
+- name: list_gateway_appliances
+  description: List Gateway's Appliances
+  operationId: listGatewayAppliances
+  method: GET
+  path: /gateways/{gatewayID}/appliances
+  readOnly: true
+- name: get_system_tariff
+  description: Retrieve the tariff v2 of a system
+  operationId: getSystemTariff
+  method: GET
+  path: /systems/{systemID}/tariff
+  readOnly: true
+- name: set_system_tariff
+  description: Set the tariff v2 of a system
+  operationId: setSystemTariff
+  method: POST
+  path: /systems/{systemID}/tariff
+  readOnly: false
+- name: list_system_tariff_prices
+  description: Retrieve the tariff end prices of a system
+  operationId: listSystemTariffPrices
+  method: GET
+  path: /systems/{systemID}/tariff/prices
+  readOnly: true
+- name: get_system_time_of_use_settings
+  description: Get time of use optimization settings of a system.
+  operationId: getSystemTimeOfUseSettings
+  method: GET
+  path: /systems/{systemID}/timeofuse/settings
+  readOnly: true
+- name: set_system_time_of_use_settings
+  description: Set time of use optimization settings for a system.
+  operationId: setSystemTimeOfUseSettings
+  method: PUT
+  path: /systems/{systemID}/timeofuse/settings
+  readOnly: false
+- name: get_system_time_of_use_decisions
+  description: Get time of use optimization decisions of a system.
+  operationId: getSystemTimeOfUseDecisions
+  method: GET
+  path: /systems/{systemID}/timeofuse/decisions
+  readOnly: true
+- name: list_system_e_v_profiles
+  description: List available EV profiles
+  operationId: listSystemEVProfiles
+  method: GET
+  path: /systems/{systemID}/ev-profiles
+  readOnly: true
+- name: create_system_e_v_profile
+  description: Create a new EV profile
+  operationId: createSystemEVProfile
+  method: POST
+  path: /systems/{systemID}/ev-profiles
+  readOnly: false
+- name: list_system_e_v_charging_schedules
+  description: List a System's EV charging schedules.
+  operationId: listSystemEVChargingSchedules
+  method: GET
+  path: /systems/{systemID}/evcharging-schedules
+  readOnly: true
+- name: create_system_e_v_charging_schedule
+  description: Create an EV charging schedule
+  operationId: createSystemEVChargingSchedule
+  method: POST
+  path: /systems/{systemID}/evcharging-schedules
+  readOnly: false
+- name: set_system_gateway_import_power_limit
+  description: Set gateway's import power limit.
+  operationId: setSystemGatewayImportPowerLimit
+  method: PUT
+  path: /systems/{systemID}/gateways/{gatewayID}/import-power-limit
+  readOnly: false
+- name: list_market_prices
+  description: Retrieve energy market prices for the authenticated account
+  operationId: listMarketPrices
+  method: GET
+  path: /account/market-prices/{platform}
+  readOnly: true
+- name: list_webhook_subscriptions
+  description: List all Webhook Subscriptions
+  operationId: listWebhookSubscriptions
+  method: GET
+  path: /accounts/{accountID}/webhooks
+  readOnly: true
+- name: create_webhook_subscription
+  description: Create a Webhook Subscription
+  operationId: createWebhookSubscription
+  method: POST
+  path: /accounts/{accountID}/webhooks
+  readOnly: false
+- name: ping_webhook_subscription
+  description: Ping a Webhook Subscription
+  operationId: pingWebhookSubscription
+  method: POST
+  path: /accounts/{accountID}/webhooks/{webhookID}/ping
+  readOnly: false
+- name: list_health_checks
+  description: ''
+  operationId: listHealthChecks
+  method: GET
+  path: /health-checks
+  readOnly: true
+- name: run_health_checks
+  description: Post a configuration of Health Checks and run them.
+  operationId: runHealthChecks
+  method: POST
+  path: /health-checks
+  readOnly: false

@@ -1,0 +1,3621 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai User API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged User across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: User
+  x-displayName: User
+paths:
+  /user:
+    get:
+      operationId: getAuthenticatedUser
+      summary: Retrieve the authenticated User
+      description: Retrieves the details of the authenticated user.
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - ReadUser
+      responses:
+        '200':
+          description: The currently authenticated user representation.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateAuthenticatedUser
+      summary: Update the authenticated User
+      description: 'Updates the authenticated user by setting the values of the body parameters.
+
+        Any parameters not provided will be left unchanged.'
+      tags:
+      - User
+      requestBody:
+        description: Set of fields that the authenticated user can update on their own profile.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Fields that the authenticated user can update on their own profile.
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john@doe.com
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled. Once it is set to true, subsequently setting it to false is not allowed.
+                  type: boolean
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                newPassword:
+                  description: Used to set a new password for the user.
+                  type: string
+                  format: password
+              x-readme-ref-name: UserSelfUpdateRequest
+          application/vnd.gridx.v2+json:
+            schema:
+              type: object
+              description: Fields that the authenticated user can update on their own profile.
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john@doe.com
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled. Once it is set to true, subsequently setting it to false is not allowed.
+                  type: boolean
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                newPassword:
+                  description: Used to set a new password for the user.
+                  type: string
+                  format: password
+              x-readme-ref-name: UserSelfUpdateRequest
+      security:
+      - HeaderAuth:
+        - WriteUser
+      responses:
+        '200':
+          description: The updated user.
+          content:
+            application/json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+            application/vnd.gridx.v2+json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        default:
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/user\"\n\npayload = \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":true,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"newPassword\\\":\\\"string\\\"}\"\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/vnd.gridx.v2+json\"\n}\n\nresponse = requests.patch(url, data=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/user \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/vnd.gridx.v2+json' \\\n     --data '\n{\n  \"email\": \"john@doe.com\",\n  \"fullName\": \"John Doe\",\n  \"mfaEnabled\": true,\n  \"language\": {\n    \"tag\": \"de_DE\"\n  },\n  \"newPassword\": \"string\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user\"\n\n\tpayload := strings.NewReader(\"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":true,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"newPassword\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"PATCH\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/json', 'content-type': 'application/vnd.gridx.v2+json'},\n  body: '{\"email\":\"john@doe.com\",\"fullName\":\"John Doe\",\"mfaEnabled\":true,\"language\":{\"tag\":\"de_DE\"},\"newPassword\":\"string\"}'\n};\n\nfetch('https://api.gridx.de/user', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":true,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"newPassword\\\":\\\"string\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\")\nval body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":true,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"newPassword\\\":\\\"string\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet postData = Data(\"{\"email\":\"john@doe.com\",\"fullName\":\"John Doe\",\"mfaEnabled\":true,\"language\":{\"tag\":\"de_DE\"},\"newPassword\":\"string\"}\".utf8)\n\nlet url = URL(string: \"https://api.gridx.de/user\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/vnd.gridx.v2+json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddStringBody("{"email":"john@doe.com","fullName":"John Doe","mfaEnabled":true,"language":{"tag":"de_DE"},"newPassword":"string"}", "application/vnd.gridx.v2+json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/logins:
+    get:
+      operationId: listAuthenticatedUserLogins
+      summary: Retrieve the authenticated user's login history
+      description: Retrieves the history of the last user logins.
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - ListLogins
+      responses:
+        '200':
+          description: Login history of the currently authenticated user.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  description: Represents a user login event that can occur either on login success or failure.
+                  type: object
+                  properties:
+                    createdAt:
+                      description: Time when the event occurred in UTC.
+                      type: string
+                      format: date-time
+                      example: '2020-11-10T13:13:00Z'
+                      readOnly: true
+                    type:
+                      description: The type of the login event.
+                      type: string
+                      example: LOGIN_SUCCESS
+                      readOnly: true
+                    ip:
+                      description: The IP address that caused the login event.
+                      type: string
+                      format: ipv4
+                      example: 8.8.8.8
+                      readOnly: true
+                  x-readme-ref-name: LoginEvent
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/logins"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user/logins \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/logins\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user/logins', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/logins\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/logins\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/logins")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/logins");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/users:
+    get:
+      operationId: listUsersForAccount
+      summary: List Account's users
+      description: Get a list of all users that belong to this account.
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - ReadUser
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: sort
+        description: Sort results based on a key.
+        in: query
+        schema:
+          type: string
+        example: created_at
+      - name: order
+        description: Order direction of the results, to be used in combination with `sort` parameter.
+        in: query
+        schema:
+          type: string
+        example: desc
+      - name: include
+        description: 'This query param allows requesting optional pagination metadata.
+
+
+          If `totalCount` is included, the response will contain an `X-Total-Count` header with
+
+          the total number of elements matching the query, regardless of pagination.
+
+          '
+        in: query
+        example:
+        - totalCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - totalCount
+      responses:
+        '200':
+          description: Users returned
+          headers:
+            Link:
+              description: 'Pagination links following RFC 5988. Contains `rel="first"`, `rel="next"`, and `rel="prev"`
+
+                relations as applicable based on the current page.
+
+
+                Example: `</accounts?page=1&per_page=20>; rel="first", </accounts?page=3&per_page=20>; rel="next"`
+
+                '
+              schema:
+                type: string
+            X-Total-Count:
+              description: 'Total number of elements matching the query, regardless of pagination.
+
+
+                Only present when `totalCount` is included in the `include` query parameter.
+
+                '
+              schema:
+                type: integer
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  title: User
+                  description: Represents a user of the Xenon platform.
+                  type: object
+                  properties:
+                    id:
+                      description: Unique identifier of the user.
+                      type: string
+                      format: uuid
+                      example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                      readOnly: true
+                    accountID:
+                      description: Unique identifier of the account that the user belongs to.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                      readOnly: true
+                    newPassword:
+                      description: Used to set a new password for the user.
+                      type: string
+                      writeOnly: true
+                    loginsCount:
+                      description: Number of user logins.
+                      type: integer
+                      readOnly: true
+                    mfaEnabled:
+                      description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                      type: boolean
+                      readOnly: true
+                    mfaReset:
+                      description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                      type: boolean
+                      writeOnly: true
+                    createdAt:
+                      description: Time at which the user was created in UTC using the RFC3339 format.
+                      type: string
+                      format: date-time
+                      example: '2009-11-10T23:20:50Z'
+                      readOnly: true
+                    updatedAt:
+                      description: Time at which the user was last updated in UTC using the RFC3339 format.
+                      type: string
+                      format: date-time
+                      example: '2009-11-10T23:20:50Z'
+                      readOnly: true
+                    fullName:
+                      description: Full name of the user typically consisting of first name and last name.
+                      type: string
+                      example: John Doe
+                    email:
+                      description: The email address of the user that is used for login.
+                      type: string
+                      format: email
+                      example: john@doe.com
+                    groups:
+                      description: Policy groups attached to this user which determine the effective permissions through policies.
+                      type: array
+                      items:
+                        title: Policy Group
+                        type: object
+                        allOf:
+                        - title: Policy Group
+                          description: 'A policy group describes the permissions of a group.
+
+
+                            This is the base type for the more concrete usages and not used directly within operations.
+
+                            '
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: Name of the policy group.
+                              example: group name
+                            description:
+                              type: string
+                              description: Description of the group, omitted if empty
+                              example: Group provides read-access to accounts
+                          x-readme-ref-name: AbstractPolicyGroup
+                        - properties:
+                            id:
+                              type: string
+                              format: uuid
+                              description: Unique identifier of the policy group.
+                              example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                              readOnly: true
+                            accountID:
+                              type: string
+                              format: uuid
+                              description: Unique identifier of the creator account.
+                              example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                              readOnly: true
+                            createdAt:
+                              description: Time at which the policy group was created in UTC (RFC 3339 format).
+                              type: string
+                              format: date-time
+                              example: '2019-11-06T15:33:00Z'
+                              readOnly: true
+                            updatedAt:
+                              description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                              type: string
+                              format: date-time
+                              example: '2019-11-08T23:20:50Z'
+                              readOnly: true
+                            userCount:
+                              type: integer
+                              description: Amount of users that are in this group.
+                              example: 10
+                              readOnly: true
+                          required:
+                          - id
+                          - name
+                          - accountID
+                          - createdAt
+                          - updatedAt
+                        x-readme-ref-name: PolicyGroup
+                    mainAddress:
+                      title: Address
+                      description: Represents a physical address of a customer.
+                      allOf:
+                      - type: object
+                        properties:
+                          city:
+                            description: The city of the location.
+                            type: string
+                            example: Aachen
+                          country:
+                            description: The country of the location.
+                            type: string
+                            example: Germany
+                          addressLine1:
+                            description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                            type: string
+                            example: Oppenhoffallee 143
+                          addressLine2:
+                            description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine3:
+                            description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine4:
+                            description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          timeZone:
+                            description: The TZ Identifier of the location's timezone.
+                            type: string
+                            example: Europe/Berlin
+                            readOnly: true
+                        x-readme-ref-name: AbstractLocation
+                      - type: object
+                        properties:
+                          postalcode:
+                            description: The postal code of the location.
+                            type: string
+                            example: '52062'
+                          region:
+                            description: The region of the address.
+                            type: string
+                          telephone:
+                            description: The telephone number of the customer.
+                            type: string
+                      x-readme-ref-name: Address
+                    language:
+                      title: Language
+                      description: The language information of the user.
+                      type: object
+                      required:
+                      - tag
+                      - name
+                      - nameNative
+                      properties:
+                        tag:
+                          type: string
+                          description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                            See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                            '
+                          example: de_DE
+                        name:
+                          type: string
+                          description: The name of the language in English.
+                          example: German
+                          readOnly: true
+                        nameNative:
+                          type: string
+                          description: The name of the language in the language itself.
+                          example: Deutsch
+                          readOnly: true
+                      x-readme-ref-name: Language
+                  required:
+                  - auth
+                  - id
+                  - email
+                  - createdAt
+                  - updatedAt
+                  x-readme-ref-name: User
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/users"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/users \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/users")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/users");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createUserForAccount
+      summary: Creates a new User in the specified account
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - WriteUser
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      requestBody:
+        description: Request to create a new user.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - fullName
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                  minLength: 5
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                  minLength: 3
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                  type: boolean
+                  default: false
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                groups:
+                  description: UUIDs of the policy groups that the user should be part of.
+                  type: array
+                  minItems: 0
+                  items:
+                    type: string
+                    format: uuid
+              x-readme-ref-name: UserCreationRequest
+          application/vnd.gridx.v2+json:
+            schema:
+              type: object
+              required:
+              - email
+              - fullName
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                  minLength: 5
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                  minLength: 3
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                  type: boolean
+                  default: false
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                groups:
+                  description: UUIDs of the policy groups that the user should be part of.
+                  type: array
+                  minItems: 0
+                  items:
+                    type: string
+                    format: uuid
+              x-readme-ref-name: UserCreationRequest
+      responses:
+        '201':
+          description: The created user.
+          content:
+            application/json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+            application/vnd.gridx.v2+json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        default:
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/users\"\n\npayload = \"{\\\"email\\\":\\\"john.doe@example.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":false,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"groups\\\":[\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\"]}\"\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/vnd.gridx.v2+json\"\n}\n\nresponse = requests.post(url, data=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/accounts/accountID/users \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/vnd.gridx.v2+json' \\\n     --data '\n{\n  \"email\": \"john.doe@example.com\",\n  \"fullName\": \"John Doe\",\n  \"mfaEnabled\": false,\n  \"language\": {\n    \"tag\": \"de_DE\"\n  },\n  \"groups\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  ]\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/users\"\n\n\tpayload := strings.NewReader(\"{\\\"email\\\":\\\"john.doe@example.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":false,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"groups\\\":[\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\"]}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/vnd.gridx.v2+json'},\n  body: '{\"email\":\"john.doe@example.com\",\"fullName\":\"John Doe\",\"mfaEnabled\":false,\"language\":{\"tag\":\"de_DE\"},\"groups\":[\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"]}'\n};\n\nfetch('https://api.gridx.de/accounts/accountID/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john.doe@example.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":false,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"groups\\\":[\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\"]}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\")\nval body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john.doe@example.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"mfaEnabled\\\":false,\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"groups\\\":[\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\"]}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet postData = Data(\"{\"email\":\"john.doe@example.com\",\"fullName\":\"John Doe\",\"mfaEnabled\":false,\"language\":{\"tag\":\"de_DE\"},\"groups\":[\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"]}\".utf8)\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/users\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/vnd.gridx.v2+json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/users");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddStringBody("{"email":"john.doe@example.com","fullName":"John Doe","mfaEnabled":false,"language":{"tag":"de_DE"},"groups":["3fa85f64-5717-4562-b3fc-2c963f66afa6"]}", "application/vnd.gridx.v2+json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/users/{userID}:
+    get:
+      operationId: getUserForAccount
+      summary: Retrieve a User by ID
+      description: Retrieves a user by the ID of the account he belongs to and his user ID.
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - ReadUser
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: userID
+        description: 'Unique identifier used to access a user.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+      responses:
+        '200':
+          description: The requested user.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/users/userID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/users/userID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/users/userID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/users/userID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/users/userID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/users/userID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteUser
+      summary: Delete User
+      description: Delete a user given its ID.
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - AccountsUsersWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: userID
+        description: 'Unique identifier used to access a user.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+      - name: delete-auth0
+        description: 'If set to `false`, it does not delete the user from Auth0.
+
+          '
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+        example: false
+      responses:
+        '204':
+          description: User deleted.
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/users/userID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/accounts/accountID/users/userID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/users/userID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/users/userID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/users/userID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/users/userID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateAccountUser
+      summary: Partially update the user account for the given account and user ID
+      description: 'Clients may set any of the specified fields below. They will be updated, while unset fields will be left
+
+        untouched. Setting fields to a null value, will not unset them. Nested fields follow the same logic. Slices will
+
+        be overwritten.'
+      tags:
+      - User
+      security:
+      - HeaderAuth:
+        - WriteUser
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: userID
+        description: 'Unique identifier used to access a user.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+      requestBody:
+        description: Set of fields that can be updated for the given user.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john@doe.com
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled. Once it is set to true, subsequently setting it to false is not allowed.
+                  type: boolean
+                newPassword:
+                  description: Used to set a new password for the user.
+                  type: string
+                  format: password
+              x-readme-ref-name: UserPartialUpdateRequest
+          application/vnd.gridx.v2+json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email address of the user that is used for login.
+                  type: string
+                  format: email
+                  example: john@doe.com
+                fullName:
+                  description: Full name of the user typically consisting of first name and last name.
+                  type: string
+                  example: John Doe
+                language:
+                  type: object
+                  required:
+                  - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: "Tag is the IETF language tag's primary identifier for this language.\n\nSee [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more \ninformation.\n"
+                      example: de_DE
+                  x-readme-ref-name: LanguageUpdateRequest
+                mfaEnabled:
+                  description: Indicates whether MFA (Multi-Factor Authentication) is enabled. Once it is set to true, subsequently setting it to false is not allowed.
+                  type: boolean
+                newPassword:
+                  description: Used to set a new password for the user.
+                  type: string
+                  format: password
+              x-readme-ref-name: UserPartialUpdateRequest
+      responses:
+        '200':
+          description: The updated user.
+          content:
+            application/json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+            application/vnd.gridx.v2+json:
+              schema:
+                title: User
+                description: Represents a user of the Xenon platform.
+                type: object
+                properties:
+                  id:
+                    description: Unique identifier of the user.
+                    type: string
+                    format: uuid
+                    example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                    readOnly: true
+                  accountID:
+                    description: Unique identifier of the account that the user belongs to.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    readOnly: true
+                  newPassword:
+                    description: Used to set a new password for the user.
+                    type: string
+                    writeOnly: true
+                  loginsCount:
+                    description: Number of user logins.
+                    type: integer
+                    readOnly: true
+                  mfaEnabled:
+                    description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                    type: boolean
+                    readOnly: true
+                  mfaReset:
+                    description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                    type: boolean
+                    writeOnly: true
+                  createdAt:
+                    description: Time at which the user was created in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  updatedAt:
+                    description: Time at which the user was last updated in UTC using the RFC3339 format.
+                    type: string
+                    format: date-time
+                    example: '2009-11-10T23:20:50Z'
+                    readOnly: true
+                  fullName:
+                    description: Full name of the user typically consisting of first name and last name.
+                    type: string
+                    example: John Doe
+                  email:
+                    description: The email address of the user that is used for login.
+                    type: string
+                    format: email
+                    example: john@doe.com
+                  groups:
+                    description: Policy groups attached to this user which determine the effective permissions through policies.
+                    type: array
+                    items:
+                      title: Policy Group
+                      type: object
+                      allOf:
+                      - title: Policy Group
+                        description: 'A policy group describes the permissions of a group.
+
+
+                          This is the base type for the more concrete usages and not used directly within operations.
+
+                          '
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the policy group.
+                            example: group name
+                          description:
+                            type: string
+                            description: Description of the group, omitted if empty
+                            example: Group provides read-access to accounts
+                        x-readme-ref-name: AbstractPolicyGroup
+                      - properties:
+                          id:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the policy group.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            description: Unique identifier of the creator account.
+                            example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                            readOnly: true
+                          createdAt:
+                            description: Time at which the policy group was created in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-06T15:33:00Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                            type: string
+                            format: date-time
+                            example: '2019-11-08T23:20:50Z'
+                            readOnly: true
+                          userCount:
+                            type: integer
+                            description: Amount of users that are in this group.
+                            example: 10
+                            readOnly: true
+                        required:
+                        - id
+                        - name
+                        - accountID
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: PolicyGroup
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  language:
+                    title: Language
+                    description: The language information of the user.
+                    type: object
+                    required:
+                    - tag
+                    - name
+                    - nameNative
+                    properties:
+                      tag:
+                        type: string
+                        description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                          See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                          '
+                        example: de_DE
+                      name:
+                        type: string
+                        description: The name of the language in English.
+                        example: German
+                        readOnly: true
+                      nameNative:
+                        type: string
+                        description: The name of the language in the language itself.
+                        example: Deutsch
+                        readOnly: true
+                    x-readme-ref-name: Language
+                required:
+                - auth
+                - id
+                - email
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: User
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        default:
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/users/userID\"\n\npayload = \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"mfaEnabled\\\":true,\\\"newPassword\\\":\\\"string\\\"}\"\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/vnd.gridx.v2+json\"\n}\n\nresponse = requests.patch(url, data=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/accounts/accountID/users/userID \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/vnd.gridx.v2+json' \\\n     --data '\n{\n  \"email\": \"john@doe.com\",\n  \"fullName\": \"John Doe\",\n  \"language\": {\n    \"tag\": \"de_DE\"\n  },\n  \"mfaEnabled\": true,\n  \"newPassword\": \"string\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/users/userID\"\n\n\tpayload := strings.NewReader(\"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"mfaEnabled\\\":true,\\\"newPassword\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"PATCH\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/json', 'content-type': 'application/vnd.gridx.v2+json'},\n  body: '{\"email\":\"john@doe.com\",\"fullName\":\"John Doe\",\"language\":{\"tag\":\"de_DE\"},\"mfaEnabled\":true,\"newPassword\":\"string\"}'\n};\n\nfetch('https://api.gridx.de/accounts/accountID/users/userID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"mfaEnabled\\\":true,\\\"newPassword\\\":\\\"string\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/vnd.gridx.v2+json\")\nval body = RequestBody.create(mediaType, \"{\\\"email\\\":\\\"john@doe.com\\\",\\\"fullName\\\":\\\"John Doe\\\",\\\"language\\\":{\\\"tag\\\":\\\"de_DE\\\"},\\\"mfaEnabled\\\":true,\\\"newPassword\\\":\\\"string\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/users/userID\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet postData = Data(\"{\"email\":\"john@doe.com\",\"fullName\":\"John Doe\",\"language\":{\"tag\":\"de_DE\"},\"mfaEnabled\":true,\"newPassword\":\"string\"}\".utf8)\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/users/userID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/vnd.gridx.v2+json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/users/userID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddStringBody("{"email":"john@doe.com","fullName":"John Doe","language":{"tag":"de_DE"},"mfaEnabled":true,"newPassword":"string"}", "application/vnd.gridx.v2+json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

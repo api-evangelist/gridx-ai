@@ -1,0 +1,420 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Evcs User Prioritization API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged evcs-user-prioritization across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: evcs-user-prioritization
+  description: Manages temporary priority per EV supply equipment / charging station.
+  x-displayName: evcs-user-prioritization
+paths:
+  /systems/{systemID}/evcs-user-priorities:
+    get:
+      operationId: getPriorities
+      summary: Return all EV charging session priorities for the specified system
+      description: Returns the priority per EV charging session.
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      x-badges:
+      - label: draft
+        color: red
+      tags:
+      - evcs-user-prioritization
+      responses:
+        '200':
+          description: 'Response body listing all EVSE and their assigned priorities.
+
+            Excludes default priorities.
+
+            '
+          content:
+            application/json:
+              schema:
+                description: 'A list of EV charging sessions and their assigned priority values.
+
+                  Larger values of the priority value indicate a higher importance.
+
+                  '
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assetID:
+                      type: string
+                      format: uuid
+                      example: 6d8ea8d2-a7df-4417-8347-5f5082bbb6bc
+                    priority:
+                      description: 'Describes a priority value. A larger value represents a higher priority.
+
+                        '
+                      type: integer
+                      example: 100
+                      minimum: 0
+                      x-readme-ref-name: Priority
+                x-readme-ref-name: ChargingPriorityList
+              example:
+              - assetID: 6d8ea8d2-a7df-4417-8347-5f5082bbb6bc
+                priority: 1
+              - assetID: b0bcdb72-6bf1-47e0-aa3b-4c64e3dfc33a
+                priority: 100
+        '400':
+          description: Bad request.
+        '403':
+          description: Bad credentials.
+        '404':
+          description: System not found.
+        '500':
+          description: Internal Server Error.
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/evcs-user-priorities"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/evcs-user-priorities \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/evcs-user-priorities\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/evcs-user-priorities', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/evcs-user-priorities")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/evcs-user-priorities");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: resetAllUserPriorities
+      summary: Reset all priorities for this system
+      description: Reset all priorities for assets connected to this system.
+      x-badges:
+      - label: draft
+        color: red
+      tags:
+      - evcs-user-prioritization
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '204':
+          description: No Content (All priorities are reset)
+        '400':
+          description: Bad request.
+        '403':
+          description: Bad credentials.
+        '404':
+          description: System not found.
+        '500':
+          description: Internal Server Error.
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/evcs-user-priorities"
+
+
+          response = requests.delete(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/evcs-user-priorities"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/evcs-user-priorities\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE'};\n\nfetch('https://api.gridx.de/systems/systemID/evcs-user-priorities', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities\")\n  .delete(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities\")\n  .delete(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/evcs-user-priorities")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/evcs-user-priorities");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/evcs-user-priorities/{assetID}:
+    put:
+      operationId: putUserPriority
+      summary: Assign a temporary priority for the specified asset
+      description: 'Assign a temporary prioritization for the asset / EVSE.
+
+        Larger values of the priority value indicate a higher importance.
+
+        Values are relative to each other.
+
+        Maximum charging power is subject to any other limitation,
+
+        e.g. shared fuses or charging equipment at any point.
+
+        The priority is reset on the next unplug event.'
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: assetID
+        description: 'Unique identifier used to access an asset.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      requestBody:
+        description: 'A request to update the charging priority.
+
+          '
+        content:
+          application/json:
+            schema:
+              description: 'Describes the priority of an EV charging session.
+
+                Larger values of the priority value indicate a higher importance.
+
+                The default priority value is 0.
+
+                '
+              type: object
+              required:
+              - priority
+              properties:
+                priority:
+                  description: 'Describes a priority value. A larger value represents a higher priority.
+
+                    '
+                  type: integer
+                  example: 100
+                  minimum: 0
+                  x-readme-ref-name: Priority
+              x-readme-ref-name: ChargingPriority
+            example:
+              priority: 100
+      x-badges:
+      - label: draft
+        color: red
+      tags:
+      - evcs-user-prioritization
+      responses:
+        '200':
+          description: 'Response body listing a single charging session and the assigned priority.
+
+            '
+          content:
+            application/json:
+              schema:
+                description: 'Describes the priority of an EV charging session.
+
+                  Larger values of the priority value indicate a higher importance.
+
+                  The default priority value is 0.
+
+                  '
+                type: object
+                required:
+                - priority
+                properties:
+                  priority:
+                    description: 'Describes a priority value. A larger value represents a higher priority.
+
+                      '
+                    type: integer
+                    example: 100
+                    minimum: 0
+                    x-readme-ref-name: Priority
+                x-readme-ref-name: ChargingPriority
+              example:
+                priority: 100
+        '400':
+          description: Bad request.
+        '403':
+          description: Bad credentials.
+        '404':
+          description: Asset not found.
+        '500':
+          description: Internal Server Error.
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID\"\n\npayload = { \"priority\": 100 }\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '{\"priority\":100}'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID\"\n\n\tpayload := strings.NewReader(\"{\\\"priority\\\":100}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({priority: 100})\n};\n\nfetch('https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"priority\\\":100}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"priority\\\":100}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\"priority\": 100] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/evcs-user-priorities/assetID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"priority\":100}", false);
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

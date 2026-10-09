@@ -1,0 +1,1137 @@
+generated: '2026-10-09'
+method: derived
+generator: derive-data-model.py
+source:
+- openapi/gridx-ai-openapi.yml
+notation: has_one = property $ref; has_many = array of $ref; belongs_to = <entity>_id field
+summary:
+  entities: 362
+  entities_in_spec: 362
+  relationships: 41
+entities:
+- name: APIToken
+  fields: 0
+- name: APITokenCreation
+  fields: 0
+- name: APITokenCreationStrict
+  fields: 0
+- name: APITokenUpdate
+  fields: 0
+- name: APITokenUpdateStrict
+  fields: 0
+- name: AUXMeterMeasurement
+  fields: 48
+- name: AbstractAPIToken
+  fields: 2
+  description: API Tokens can be used as an alternative to Bearer Authentication for making requests.
+- name: AbstractBatteryInformation
+  fields: 6
+  description: The battery specific information for inverters of BATTERY and HYBRID kind.
+- name: AbstractBiddingZone
+  fields: 1
+  description: The bidding zone determines from which electricity market bidding
+- name: AbstractCryptoSetting
+  fields: 1
+- name: AbstractDynamicSettings
+  fields: 1
+  description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+- name: AbstractEV
+  fields: 4
+- name: AbstractEVChargingSchedule
+  fields: 3
+  description: An Electric Vehicle charging schedule represents an interval in which
+- name: AbstractEVChargingStationConfiguration
+  fields: 15
+  description: Configure the charge mode and other settings considered by the EMS and applied to the EV charging
+    station.
+- name: AbstractEVChargingStationInformation
+  fields: 1
+  description: The EV Charging Station specific information.
+- name: AbstractEVStation
+  fields: 7
+- name: AbstractElectricVehicleProfile
+  fields: 14
+  description: Represents data related to an EV Profile.
+- name: AbstractEndpriceTariffV2
+  fields: 2
+  description: Represent a TariffV2 with end price periods.
+- name: AbstractEndpriceTariffV2Period
+  fields: 5
+  description: Represents a period of a TariffV2 with end prices.
+- name: AbstractEnergyManagementSettings
+  fields: 12
+  description: Contains energy management information
+- name: AbstractExportPowerLimit
+  fields: 4
+- name: AbstractExternalController
+  fields: 6
+- name: AbstractGateway
+  fields: 2
+  description: A gateway used to monitor and control appliances.
+- name: AbstractHeatPump
+  fields: 5
+- name: AbstractHeatPumpInformation
+  fields: 5
+  description: The heat pump specific information.
+- name: AbstractHeater
+  fields: 3
+- name: AbstractIODevice
+  fields: 5
+- name: AbstractIODeviceInformation
+  fields: 3
+  description: The io device specific information.
+- name: AbstractImportPowerLimit
+  fields: 14
+- name: AbstractInverter
+  fields: 10
+- name: AbstractJob
+  fields: 3
+  description: Represents an application-based job on the gridBox.
+- name: AbstractLocation
+  fields: 7
+- name: AbstractMarketDataSettings
+  fields: 4
+  description: Settings specific to market-data-based tariffs.
+- name: AbstractMeter
+  fields: 4
+- name: AbstractPolicyGroup
+  fields: 2
+  description: A policy group describes the permissions of a group.
+- name: AbstractPowerLimitSchedule
+  fields: 6
+  description: 'A Power Limit Schedule is a schedule that defines recurring import power limits, '
+- name: AbstractProductFunctionality
+  fields: 3
+  description: A product functionality describes a feature.
+- name: AbstractProductOption
+  fields: 2
+  description: A product option describes a set of features whose access should be restricted from or granted to
+    users of a system.
+- name: AbstractSensorSettings
+  fields: 3
+  description: '**DEPRECATED:** This is being phased out. It is historically only applicable to `METER` asset types
+    and is deprecated/ignored for all other asset types.'
+- name: AbstractState
+  fields: 2
+  description: Contains information about the appliance's state.
+- name: AbstractSystem
+  fields: 9
+  description: A System represents the logical view of one gateway and its appliances.
+- name: AbstractTag
+  fields: 2
+  description: A Tag represents a key-value pair that can be associated with a specific system.
+- name: AbstractTagStrict
+  fields: 0
+- name: AbstractTariffV2
+  fields: 9
+  description: Represents an energy tariff.
+- name: Account
+  fields: 12
+  description: An account describes an organizational unit to manage access to systems for one or multiple users.
+- name: AccountCreate
+  fields: 9
+- name: AccountCreateStrict
+  fields: 0
+- name: AccountTreeNode
+  fields: 10
+  description: Account tree node.
+- name: AccountUpdate
+  fields: 7
+- name: AccountUpdateStrict
+  fields: 0
+- name: AdditionalIdentifier
+  fields: 3
+  description: Additional identifiers used by the gridBox.
+- name: Address
+  fields: 0
+  description: Represents a physical address of a customer.
+- name: AggregatedTimeMetadata
+  fields: 2
+  description: A time interval for an aggregated measurement.
+- name: ApplianceAuthenticatedCheckRequest
+  fields: 1
+  description: Configuration for Appliance Authenticated Production Check.
+- name: ApplianceConnectionStatus
+  fields: 3
+- name: ApplianceEvent
+  fields: 0
+- name: ApplianceEventData
+  fields: 13
+  description: Payload for `appliance/*` events.
+- name: ApplianceMeasurement
+  fields: 0
+  description: Raw measurement of an appliance.
+- name: ApplianceUpdate
+  fields: 15
+  description: ApplianceUpdate contains fields of an appliance that can be updated.
+- name: ApplianceUpdateStrict
+  fields: 0
+- name: ArbitraryErrorResponse
+  fields: 0
+  description: Optional arbitrary JSON data.
+- name: AssetBatteryMeasurements
+  fields: 2
+  description: Measurements of a battery asset.
+- name: AssetBySerialNumber
+  fields: 2
+  description: Find an asset by serial number and, if the charging station has multiple EVSE, connector number.
+- name: AssetConnectionStatus
+  fields: 1
+- name: AssetCreateStrict
+  fields: 0
+- name: AssetEVChargingStationMeasurements
+  fields: 2
+  description: Measurements of an EV charging station asset.
+- name: AssetHardwareStatus
+  fields: 5
+  description: 'HardwareStatus provides information about the condition of the inverter and in case of issues, '
+- name: AssetHeatPumpMeasurements
+  fields: 2
+  description: Measurements of a heat pump asset.
+- name: AssetHeaterMeasurements
+  fields: 2
+  description: Measurements of a heater asset.
+- name: AssetIntentCurrent
+  fields: 4
+- name: AssetIntentHistory
+  fields: 5
+- name: AssetInverterMeasurements
+  fields: 2
+  description: Measurements of an inverter asset.
+- name: AssetMeasurements
+  fields: 0
+  description: Measurements of an asset.
+- name: AssetMeterMeasurements
+  fields: 2
+  description: Measurements of a meter asset.
+- name: AssetUpdateStrict
+  fields: 0
+- name: AssetsList
+  fields: 1
+  description: A list of assets.
+- name: BadGateway
+  fields: 0
+- name: BadRequestException
+  fields: 0
+- name: BaseAppliance
+  fields: 25
+  description: BaseAppliance contains fields that all appliances have in common.
+- name: BaseAsset
+  fields: 12
+  description: BaseAsset contains fields that all assets have in common.
+- name: BaseAssetCreate
+  fields: 7
+  description: BaseAssetCreate contains fields of an asset that can be set upon creation, regardless of asset type.
+- name: BaseEVAsset
+  fields: 3
+- name: BaseEVStationAsset
+  fields: 4
+- name: BatteryAsset
+  fields: 6
+  description: The battery-specific information for inverters of BATTERY and HYBRID kind.
+- name: BatteryChargedCheckRequest
+  fields: 1
+  description: Configuration for Battery Charged Check.
+- name: BatteryDischargedCheckRequest
+  fields: 1
+  description: Configuration for Battery DisCharged Check.
+- name: BatteryInformation
+  fields: 0
+  description: The battery specific information for inverters of BATTERY and HYBRID kind.
+- name: BatteryMeasurement
+  fields: 8
+  description: MeasurementBattery represents the aggregated power or energy the gateway
+- name: BatteryMeasurementRaw
+  fields: 8
+- name: BiddingZone
+  fields: 0
+  description: The bidding zone determines from which electricity market bidding
+- name: BiddingZoneSet
+  fields: 0
+  description: Set of bidding zones.
+- name: BiddingZoneSetStrict
+  fields: 0
+  description: Set of bidding zones.
+- name: ChargingPriority
+  fields: 1
+  description: Describes the priority of an EV charging session.
+- name: CheckResult
+  fields: 3
+  description: Result of an individual Health Check.
+- name: ClusterMeasurement
+  fields: 47
+- name: CombinedMeasurement
+  fields: 0
+  description: Combined appliance and energy management measurement.
+- name: ConflictException
+  fields: 0
+- name: ConnectionIssueCheckRequest
+  fields: 3
+  description: Configuration for Connection Issue Check.
+- name: ConnectionStatus
+  fields: 3
+- name: ConsumptionProductionCorrelationCheckRequest
+  fields: 1
+  description: Configuration for Consumption Production Correlation Check.
+- name: CosPhiCheckRequest
+  fields: 2
+  description: Configuration for Cosine Phi Check.
+- name: CryptoSetting
+  fields: 0
+- name: CustomerAccount
+  fields: 11
+  description: Represents an end-customer account.
+- name: CustomerAccountUpdate
+  fields: 5
+- name: CustomerAccountUpdateStrict
+  fields: 0
+- name: Decision
+  fields: 5
+  description: ToU decision entry.
+- name: DecisionInsight
+  fields: 9
+  description: ToU decision insight entry.
+- name: DecisionMetrics
+  fields: 1
+  description: ToU decision metrics.
+- name: Decisions
+  fields: 2
+  description: Collection of ToU decisions and decision metrics.
+- name: DerAPISettings
+  fields: 3
+  description: DerAPISettings represents the metadata related to DER API configuration.
+- name: EMobilityTimeOfUseSettings
+  fields: 3
+  description: All options available to set the eMobility ToU settings.
+- name: EMobilityTimeOfUseSettingsUpdate
+  fields: 3
+  description: Update options for the eMobility ToU settings.
+- name: EV
+  fields: 0
+  description: Electric Vehicle represents a monitor-/controllable electric vehicle.
+- name: EVAsset
+  fields: 0
+  description: Electric Vehicle represents a monitor-/controllable electric vehicle.
+- name: EVAssetCreate
+  fields: 0
+  description: EV represents a monitor-/controllable electric vehicle.
+- name: EVAssetUpdate
+  fields: 5
+  description: Contains the fields of an EV asset that can be updated.
+- name: EVChargeSessionFailedEvent
+  fields: 0
+  description: Event fired when an EV fails to accept a start or a stop command.
+- name: EVChargeSessionFailedEventData
+  fields: 10
+  description: Generic EVEvent with fail reason.
+- name: EVChargeStartedEvent
+  fields: 0
+  description: Event fired when an EV starts charging.
+- name: EVChargeStoppedEvent
+  fields: 0
+  description: Event fired when an EV stops charging.
+- name: EVChargingSchedule
+  fields: 0
+- name: EVChargingScheduleCreation
+  fields: 0
+- name: EVChargingScheduleCreationStrict
+  fields: 0
+- name: EVChargingStartEventData
+  fields: 10
+  description: Charge State change event (issued by the EV).
+- name: EVChargingStationConfiguration
+  fields: 0
+- name: EVChargingStationConfigurationCreation
+  fields: 0
+- name: EVChargingStationConfigurationCreationStrict
+  fields: 0
+- name: EVChargingStationConfigurationUpdate
+  fields: 0
+- name: EVChargingStationConfigurationUpdateStrict
+  fields: 0
+- name: EVChargingStationInformation
+  fields: 0
+  description: The ev charging specific information.
+- name: EVChargingStationMeasurement
+  fields: 22
+- name: EVChargingStopEventData
+  fields: 10
+  description: Charge State change event (issued by the EV).
+- name: EVInfeasibleChargingGoalsEvent
+  fields: 0
+  description: Event fired when the configured EV charging goals cannot be met before the departure time.
+- name: EVInfeasibleChargingGoalsEventData
+  fields: 10
+  description: Payload for `ev/infeasible-charging-goals` events.
+- name: EVLoadManagementParameters
+  fields: 2
+  description: Load management configuration for EV charging stations.
+- name: EVMeasurementEvent
+  fields: 0
+- name: EVMeasurementEventData
+  fields: 14
+  description: Measurement event (issued by the EV).
+- name: EVPluggedEvent
+  fields: 0
+  description: Event fired when an EV plugs to a charger.
+- name: EVPluggedEventData
+  fields: 7
+  description: Plug State change event (issued by the EV).
+- name: EVStation
+  fields: 0
+  description: EV Charging Station represents a monitor-/controllable electric vehicle charging station.
+- name: EVStationAsset
+  fields: 0
+  description: EV Charging Station represents a monitor-/controllable electric vehicle charging station.
+- name: EVStationAssetCreate
+  fields: 0
+  description: EV Station represents a monitor-/controllable electric vehicle charging station.
+- name: EVStationAssetUpdate
+  fields: 4
+  description: Contains the fields of an EV charging station asset that can be updated.
+- name: EVStationMeasurement
+  fields: 13
+- name: EVUnpluggedEvent
+  fields: 0
+  description: Event fired when an EV unplugs from a charger.
+- name: EVUnpluggedEventData
+  fields: 7
+  description: Plug State change event (issued by the EV).
+- name: ElectricVehicleProfile
+  fields: 0
+- name: ElectricVehicleProfileCreate
+  fields: 0
+- name: ElectricVehicleProfileCreateStrict
+  fields: 0
+- name: ElectricVehicleProfileUpdate
+  fields: 0
+- name: EmbeddedAccounts
+  fields: 1
+  description: Hierarchy of accounts the system belongs to, from the authenticated account down to the end customer's.
+- name: EndPriceTariffV2Set
+  fields: 0
+  description: Represent a TariffV2 with price periods.
+- name: EndPriceTariffV2SetStrict
+  fields: 0
+  description: Represent a TariffV2 with price periods.
+- name: EndpriceTariffV2
+  fields: 0
+  description: Represent a TariffV2 with price periods.
+- name: EndpriceTariffV2Period
+  fields: 0
+  description: Represents a period of a TariffV2 prices.
+- name: EnergyGuarantee
+  fields: 2
+  description: Minimum amount of energy that should be transferred per charging session
+- name: EnergyManagementMeasurement
+  fields: 12
+- name: EnergyManagementSettings
+  fields: 0
+  description: Contains energy management information
+- name: EnergyMarketData
+  fields: 5
+  description: Contains the energy market data for a specific time interval.
+- name: Error
+  fields: 0
+- name: ExportPowerLimit
+  fields: 0
+- name: ExportPowerLimitSetStrict
+  fields: 0
+- name: ExternalController
+  fields: 0
+  description: Represent an external controller, used for DSO signaling and generally supervisory control.
+- name: ExternalControllerAsset
+  fields: 0
+  description: Represent an external controller, used for DSO signaling and generally supervisory control.
+- name: Firmware
+  fields: 1
+  description: Represents information about a gateway's firmware.
+- name: FirmwareComponent
+  fields: 2
+  description: Represents a firmware component running on a gateway.
+- name: ForbiddenException
+  fields: 0
+- name: FullAssetIdenfication
+  fields: 4
+  description: Representation of an asset with both system and asset IDs.
+- name: GSP14aSignalEvent
+  fields: 0
+- name: GSP14aSignalEventData
+  fields: 3
+  description: Payload for `grid-signal-processor/limitation-of-power-consumption/*` events.
+- name: Gateway
+  fields: 0
+- name: GatewayCreate
+  fields: 5
+- name: GatewayCreateStrict
+  fields: 0
+- name: GatewayEvent
+  fields: 0
+- name: GatewayEventData
+  fields: 9
+  description: Payload for `gateway/*` events.
+- name: GatewayWithSystem
+  fields: 0
+- name: GeneralException
+  fields: 2
+  description: Represents a general error structure returned by our REST API.
+- name: GetCostsKPI
+  fields: 16
+  description: Represents the cost KPIs for a single time period.
+- name: GetCostsKPIResponse
+  fields: 4
+  description: Represents the response containing a list of cost KPI periods and their aggregation.
+- name: GridConnectionPointForecasts
+  fields: 4
+  description: Grid connection point forecast.
+- name: GridConnectionPointPeriod
+  fields: 6
+  description: Grid connection point forecast period.
+- name: GridFeeTariffV2
+  fields: 5
+  description: Represents TariffV2 grid fees.
+- name: GridFeeTariffV2Period
+  fields: 3
+  description: Represents a TariffV2 grid fee entry.
+- name: GridFeedInMissingCheckRequest
+  fields: 2
+  description: Configuration for Grid FeedIn Missing Check.
+- name: HardwareStatus
+  fields: 5
+  description: 'HardwareStatus provides information about the condition of the inverter and in case of issues, '
+- name: HealthCheckError
+  fields: 5
+  description: Error object.
+- name: HealthCheckMetaData
+  fields: 4
+  description: Information about an individual Health Check.
+- name: HealthCheckMetaDataResult
+  fields: 1
+  description: List of available Health Checks.
+- name: HealthCheckRequest
+  fields: 3
+  description: Request to run the configured checks on all Systems.
+- name: HealthCheckResult
+  fields: 1
+  description: Result of all Health Checks for all Systems.
+- name: HeatPump
+  fields: 0
+  description: Heat Pump represents a monitor-/controllable heat pump.
+- name: HeatPumpAsset
+  fields: 0
+  description: Heat Pump represents a monitor-/controllable heat pump.
+- name: HeatPumpInformation
+  fields: 0
+  description: The heat pump specific information.
+- name: HeatPumpMeasurement
+  fields: 3
+- name: HeatPumpMeasurementRaw
+  fields: 16
+- name: Heater
+  fields: 0
+  description: Heater represents a monitor-/controllable heater.
+- name: HeaterAsset
+  fields: 0
+  description: Heater represents a monitor-/controllable heater.
+- name: IODevice
+  fields: 0
+  description: IO devices represent configuration options that can be applied for appliances of the fieldbus coupler
+    type
+- name: IODeviceAsset
+  fields: 0
+  description: IO devices represent configuration options that can be applied for appliances of the fieldbus coupler
+    type
+- name: IODeviceAssetInputAction
+  fields: 2
+  description: One individual input action, that can be registered to a channel of a fieldbus coppler appliance.
+- name: IODeviceAssetInputChannel
+  fields: 3
+- name: IODeviceAssetOutputAction
+  fields: 2
+  description: An individual output action, that can be registered to an output channel of an IODevice.
+- name: IODeviceAssetOutputActionSGReady
+  fields: 4
+  description: Used to specify a connection to a heat pump supporting the SGReady standard.
+- name: IODeviceAssetOutputChannel
+  fields: 2
+  description: Represents one output channel of the IODevice.
+- name: IODeviceInformation
+  fields: 0
+  description: The io device specific information.
+- name: IODeviceInputAction
+  fields: 2
+  description: One individual input action, that can be registered to a channel of a fieldbus coppler appliance.
+- name: IODeviceInputChannel
+  fields: 3
+- name: IODeviceOutputAction
+  fields: 2
+  description: An individual output action, that can be registered to an output channel of an IODevice.
+- name: IODeviceOutputActionSGReady
+  fields: 4
+  description: Used to specify a connection to a heat pump supporting the SGReady standard.
+- name: IODeviceOutputChannel
+  fields: 2
+  description: Represents one output channel of the IODevice.
+- name: ImportPowerLimit
+  fields: 0
+- name: ImportPowerLimitSchedule
+  fields: 3
+  description: An import power limit schedule defines recurring import power limits which are be applied to the
+    grid connection point.
+- name: ImportPowerLimitSetStrict
+  fields: 0
+- name: IndividualCheckRequest
+  fields: 2
+  description: Request to run an individual check of the given type with the given parameters. Note that some checks
+    don't have a
+- name: IntentSegment
+  fields: 3
+  description: A closed interval during which the asset held a specific intent.
+- name: InternalException
+  fields: 0
+- name: InvalidException
+  fields: 0
+- name: InventoryAbstractAccount
+  fields: 3
+  description: An account describes an organizational unit to manage access to systems for one or multiple users.
+- name: InventoryAbstractLocation
+  fields: 7
+- name: InventoryAccount
+  fields: 0
+  description: An account describes an organizational unit to manage access to systems for one or multiple users.
+- name: InventoryAddress
+  fields: 0
+  description: Represents a physical address of a customer.
+- name: Inverter
+  fields: 0
+  description: 'Inverter represents a monitor-/controllable inverter. It can be of kind:'
+- name: InverterAsset
+  fields: 0
+  description: 'Inverter represents a monitor-/controllable inverter. It can be of kind:'
+- name: InverterAssetCreate
+  fields: 0
+  description: 'Inverter represents a monitor-/controllable inverter. It can be of kind:'
+- name: InverterAssetUpdate
+  fields: 6
+  description: Contains the fields of an inverter asset that can be updated.
+- name: InverterEvent
+  fields: 0
+- name: InverterEventData
+  fields: 0
+- name: InverterMeasurement
+  fields: 16
+- name: JobCreate
+  fields: 1
+- name: JobCreateStrict
+  fields: 0
+- name: JobCreation
+  fields: 0
+- name: JobExecution
+  fields: 6
+  description: Represents an execution of a job.
+- name: JobWithExecutions
+  fields: 0
+- name: KPI
+  fields: 7
+  description: Time-of-Use KPI record.
+- name: KPIHistory
+  fields: 1
+  description: Time-of-Use KPI history for the system for which the request is
+- name: Language
+  fields: 3
+  description: The language information of the user.
+- name: LanguageUpdateRequest
+  fields: 1
+- name: LoadSettings
+  fields: 1
+  description: Configure load of appliance.
+- name: Location
+  fields: 0
+  description: Represents a GPS location with longitude and latitude.
+- name: LoginEvent
+  fields: 3
+  description: Represents a user login event that can occur either on login success or failure.
+- name: MarketDataSettings
+  fields: 0
+  description: Market data settings specific to market-data-based tariffs.
+- name: Measurement
+  fields: 47
+- name: MeasurementAppliance
+  fields: 3
+  description: 'Used in installations that have multiple grid meters, e.g. for '
+- name: MeasurementBatteryExtended
+  fields: 5
+- name: MeasurementEVStationExtended
+  fields: 6
+- name: MeasurementExtended
+  fields: 46
+- name: MeasurementGrid
+  fields: 5
+- name: MeasurementGridMeterReading
+  fields: 2
+- name: MeasurementHeating
+  fields: 9
+- name: Measurements
+  fields: 2
+- name: MetadataEMS
+  fields: 23
+  description: MetadataEMS represents the energy management allowances.
+- name: MetadataEnergy
+  fields: 8
+  description: represents the metadata related to the energy use case.
+- name: MetadataEnergySupplier
+  fields: 6
+  description: MetadataEnergySupplier represents the metadata related to energy supplier.
+- name: MetadataSmartMeter
+  fields: 2
+  description: Represents the metadata to report if a smart meter has been installed.
+- name: MetadataWizard
+  fields: 3
+  description: Represents the metadata to keep track of the current wizard step.
+- name: Meter
+  fields: 0
+  description: Meter represents a monitor-/controllable meter.
+- name: MeterAsset
+  fields: 0
+  description: Meter represents a monitor-/controllable meter.
+- name: MeterAssetCreate
+  fields: 0
+  description: Meter represents a monitor-/controllable meter.
+- name: Network
+  fields: 4
+  description: Represents a network connection.
+- name: NighttimePVProductionCheckRequest
+  fields: 2
+  description: Configuration for Nighttime PV Production Check.
+- name: NotFoundException
+  fields: 0
+- name: OptimizationParameters
+  fields: 3
+  description: Describes the time-window during the day to consider for tariff optimization
+- name: OrganizationalAPIToken
+  fields: 0
+- name: OrganizationalAPITokenCreation
+  fields: 0
+- name: OrganizationalAPITokenCreationStrict
+  fields: 0
+- name: OrganizationalAPITokenStrict
+  fields: 0
+- name: OrganizationalAPITokenWithSecret
+  fields: 0
+- name: PVArray
+  fields: 3
+  description: Specification of a single PV array connected to the inverter.
+- name: PVInformation
+  fields: 1
+  description: PV-specific configuration for inverters of kind 'PV', 'PV_EXTERNAL' and 'HYBRID'; for all other kinds,
+    these fields are ignored.
+- name: PVInformationCreate
+  fields: 0
+  description: PV-specific configuration for inverters of kind 'PV', 'PV_EXTERNAL' and 'HYBRID'; for all other kinds,
+    these fields are ignored.
+- name: PVInformationUpdate
+  fields: 1
+  description: PV-specific configuration for inverters of kind 'PV', 'PV_EXTERNAL' and 'HYBRID'; for all other kinds,
+    these fields are ignored.
+- name: PaginationMetadata
+  fields: 3
+  description: Provides information about the returned object, such as length of the list and distinct values.
+- name: PeakProductionExceededCheckRequest
+  fields: 1
+  description: Configuration for Peak Production Exceeded Check.
+- name: PersonalAPITokenWithSecret
+  fields: 0
+- name: PingEvent
+  fields: 0
+- name: PingEventData
+  fields: 1
+  description: Payload for `ping` events.
+- name: PolicyGroup
+  fields: 0
+- name: PowerLimitIntervals
+  fields: 3
+  description: Ascending ordered list of intervals in which a scheduled power limit was applied.
+- name: PowerLimitSchedule
+  fields: 0
+- name: PowerLimitScheduleCreate
+  fields: 0
+- name: PowerLimitScheduleCreateStrict
+  fields: 0
+- name: PowerLimitScheduleUpdate
+  fields: 0
+- name: PowerLimitScheduleUpdateStrict
+  fields: 0
+- name: ProductFunctionality
+  fields: 0
+- name: ProductOption
+  fields: 0
+- name: RunStatus
+  fields: 5
+  description: ToU status entry.
+- name: SampledTimeMetadata
+  fields: 1
+  description: A single timestamp for a measurement.
+- name: Scan
+  fields: 5
+  description: Represents a group of scanners than have to run on a specific gridbox.
+- name: ScanConfiguration
+  fields: 4
+  description: ScanConfiguration determines the behavior of a scan.
+- name: ScanConfigurationSet
+  fields: 1
+  description: ScanConfiguration determines the behavior of a scan.
+- name: ScanConfigurationSetStrict
+  fields: 0
+- name: Scanner
+  fields: 4
+  description: Represents a scanner within a scan.
+- name: SensorSettings
+  fields: 0
+- name: Source
+  fields: 2
+- name: StarredAccount
+  fields: 0
+  description: Represents a starred account which holds an additional starredAt timestamp.
+- name: StarredSystem
+  fields: 4
+  description: Represents a starred system which holds minimal system and gateway information and a
+- name: StarredSystemGateway
+  fields: 4
+  description: Represents minimal gateway information used for the starred system feature.
+- name: State
+  fields: 0
+  description: Contains information about the appliance's state.
+- name: StateTransition
+  fields: 2
+  description: Defines the properties of a transition an appliance can go through.
+- name: StatusHistory
+  fields: 3
+  description: ToU status history.
+- name: SyncEntitySettings
+  fields: 3
+  description: SyncEntitySettings configures entity synchronisation parameters.
+- name: System
+  fields: 0
+  description: A System represents the logical view of one gateway and its appliances.
+- name: SystemAccountAssignment
+  fields: 3
+- name: SystemAccountAssignmentStrict
+  fields: 0
+- name: SystemAccountUnAssignment
+  fields: 3
+- name: SystemActionEvent
+  fields: 0
+- name: SystemCheckResult
+  fields: 2
+  description: Results of all Health Checks for one System.
+- name: SystemCreate
+  fields: 0
+- name: SystemCreateStrict
+  fields: 0
+- name: SystemID
+  fields: 3
+  description: Identifier of the System to run the Health Checks for.
+- name: SystemMetadata
+  fields: 4
+  description: Represents system's metadata.
+- name: SystemUpdate
+  fields: 0
+- name: SystemUpdateStrict
+  fields: 0
+- name: SystemUser
+  fields: 13
+- name: SystemUserLanguage
+  fields: 3
+  description: The language information of the user.
+- name: SystemWithUsers
+  fields: 0
+- name: SystemWithoutProductOption
+  fields: 0
+  description: A System represents the logical view of one gateway and its appliances.
+- name: SystemsList
+  fields: 2
+  description: A list of systems and metadata about the list
+- name: Tag
+  fields: 0
+- name: TagValue
+  fields: 1
+  description: A TagValue represents a value for a key-value tag pair that can be associated with a specific system.
+- name: TagValueStrict
+  fields: 0
+- name: TariffV2
+  fields: 0
+  description: The tariff contains settings which specify where to take prices from and how
+- name: TariffV2Creation
+  fields: 0
+  description: The tariff contains settings which specify where to take prices from and how
+- name: TariffV2CreationStrict
+  fields: 0
+  description: The tariff contains settings which specify where to take prices from and how
+- name: TariffV2StaticPeriod
+  fields: 4
+  description: Contains the tariff periods for a tariff with either OfftakeType
+- name: TariffV2StaticPeriodTime
+  fields: 2
+  description: Contains the information when a static period of a TariffV2 starts
+- name: TariffV2Update
+  fields: 0
+  description: The tariff contains settings which specify where to take prices from and how
+- name: TariffV2UpdateStrict
+  fields: 0
+  description: The tariff contains settings which specify where to take prices from and how
+- name: TimeInterval
+  fields: 2
+  description: A closed [from, to) interval.
+- name: TimeMetadata
+  fields: 0
+  description: Measurement metadata of an asset.
+- name: TimeOfUseSettings
+  fields: 6
+  description: Settings for the Time-of-Use (ToU) optimization feature.
+- name: TimeOfUseSettingsPatchStrict
+  fields: 0
+  description: Settings for the Time-of-Use (ToU) optimization feature.
+- name: TimeOfUseSettingsPut
+  fields: 0
+  description: Settings for the Time-of-Use (ToU) optimization feature.
+- name: TimeOfUseSettingsPutStrict
+  fields: 0
+  description: Settings for the Time-of-Use (ToU) optimization feature.
+- name: ToUReadiness
+  fields: 2
+  description: Readiness for Time-of-Use based on the given system setup.
+- name: UnauthorizedException
+  fields: 0
+- name: User
+  fields: 13
+  description: Represents a user of the Xenon platform.
+- name: UserActionEventPayload
+  fields: 11
+- name: UserActionResolution
+  fields: 5
+- name: UserCreationRequest
+  fields: 5
+- name: UserPartialUpdateRequest
+  fields: 5
+- name: UserSelfUpdateRequest
+  fields: 5
+  description: Fields that the authenticated user can update on their own profile.
+- name: WebhookEventBase
+  fields: 8
+  description: Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+- name: WebhookSubscriptionBase
+  fields: 3
+- name: WebhookSubscriptionCreationRequest
+  fields: 0
+- name: WebhookSubscriptionCreationResponse
+  fields: 0
+- name: WebhookSubscriptionListResponse
+  fields: 1
+  description: Returns a list of webhook subscriptions.
+- name: WebhookSubscriptionResponse
+  fields: 0
+- name: WebhookSubscriptionSecretResponse
+  fields: 1
+  description: Returns a new webhook subscription secret.
+- name: WebhookSubscriptionSecretUpdateRequest
+  fields: 1
+  description: Request body for setting a new HMAC SHA512 secret for a webhook subscription.
+- name: WebhookSubscriptionUpdateRequest
+  fields: 0
+- name: WriteIODeviceInformation
+  fields: 0
+  description: The io device specific information.
+- name: WriteIODeviceInputChannel
+  fields: 3
+- name: WriteIODeviceOutputAction
+  fields: 2
+  description: An individual output action, that can be registered to an output channel of an IODevice.
+- name: WriteIODeviceOutputChannel
+  fields: 2
+  description: Represents one output channel of the IODevice.
+- name: WriteLocation
+  fields: 0
+  description: Represents a GPS location with longitude and latitude.
+- name: measurements.BatteryMeasurement
+  fields: 0
+  description: A measurement produced by a battery (inverter).
+- name: measurements.EVChargingStationMeasurement
+  fields: 0
+  description: A measurement produced by an EV charging station.
+- name: measurements.HeatPumpMeasurement
+  fields: 0
+  description: A measurement produced by a heat pump.
+- name: measurements.HeaterMeasurement
+  fields: 0
+  description: A measurement produced by a heater.
+- name: measurements.InverterMeasurement
+  fields: 0
+  description: A measurement produced by an inverter.
+- name: measurements.MeterMeasurement
+  fields: 0
+  description: A measurement produced by a meter.
+relationships:
+- from: PolicyGroup
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: User
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: OrganizationalAPIToken
+  to: User
+  type: belongs_to
+  via: userID
+- from: ElectricVehicleProfile
+  to: System
+  type: belongs_to
+  via: systemID
+- from: ProductOption
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: FullAssetIdenfication
+  to: System
+  type: belongs_to
+  via: systemID
+- from: ScanConfiguration
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: SystemUser
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: BaseAppliance
+  to: System
+  type: belongs_to
+  via: systemID
+- from: Inverter
+  to: System
+  type: belongs_to
+  via: systemID
+- from: Meter
+  to: System
+  type: belongs_to
+  via: systemID
+- from: HeatPump
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVStation
+  to: System
+  type: belongs_to
+  via: systemID
+- from: IODevice
+  to: System
+  type: belongs_to
+  via: systemID
+- from: Heater
+  to: System
+  type: belongs_to
+  via: systemID
+- from: ExternalController
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EV
+  to: System
+  type: belongs_to
+  via: systemID
+- from: TariffV2
+  to: System
+  type: belongs_to
+  via: systemID
+- from: WebhookSubscriptionResponse
+  to: Account
+  type: belongs_to
+  via: accountID
+- from: ApplianceEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: ApplianceEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVChargeSessionFailedEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVChargeSessionFailedEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVChargingStartEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVChargingStartEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVChargingStopEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVChargingStopEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVMeasurementEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVMeasurementEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVPluggedEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVPluggedEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVUnpluggedEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: EVUnpluggedEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: EVInfeasibleChargingGoalsEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: GatewayEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: GatewayEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: GatewayEventData
+  to: User
+  type: belongs_to
+  via: userID
+- from: InverterEventData
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: InverterEventData
+  to: System
+  type: belongs_to
+  via: systemID
+- from: UserActionEventPayload
+  to: Gateway
+  type: belongs_to
+  via: gatewayID
+- from: UserActionEventPayload
+  to: System
+  type: belongs_to
+  via: systemID

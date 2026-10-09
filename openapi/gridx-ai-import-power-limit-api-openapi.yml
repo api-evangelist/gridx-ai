@@ -1,0 +1,2386 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Import Power Limit API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Import Power Limit across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Import Power Limit
+  x-displayName: Import Power Limit
+paths:
+  /systems/{systemID}/gateways/{gatewayID}/import-power-limit:
+    get:
+      summary: Retrieve gateway's current import power limit
+      operationId: getSystemGatewayImportPowerLimit
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      responses:
+        '200':
+          description: Import power limit returned.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Import power limit
+                  type: object
+                  properties:
+                    numberOfPhases:
+                      type: integer
+                      description: Number of phases the import power limit is set for. 1 or 3. Default is 3.
+                      enum:
+                      - 1
+                      - 3
+                      example: 3
+                      default: 3
+                      format: int32
+                    maxImportTotal:
+                      type: integer
+                      description: Maximum total import power in W.
+                      default: 0
+                      format: int64
+                    maxImportL1:
+                      type: integer
+                      description: Maximum total import power in the first phase in W.
+                      default: 0
+                      format: int64
+                    maxImportL2:
+                      type: integer
+                      description: Maximum total import power in the second phase in W.
+                      default: 0
+                      format: int64
+                    maxImportL3:
+                      type: integer
+                      description: Maximum total import power in the third phase in W.
+                      default: 0
+                      format: int64
+                    importEVMarginTotal:
+                      type: integer
+                      description: Maximum import power margin in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    importEVMarginPhase:
+                      deprecated: true
+                      type: integer
+                      format: int64
+                    maxImportEVMarginL1:
+                      type: integer
+                      description: Maximum import power margin in the first phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVMarginL2:
+                      type: integer
+                      description: Maximum import power margin in the second phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVMarginL3:
+                      type: integer
+                      description: Maximum import power margin in the third phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCase:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL1:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the first phase.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL2:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the second phase.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL3:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the third phase.
+                      default: 0
+                      format: int64
+                  x-readme-ref-name: AbstractImportPowerLimit
+                - properties:
+                    internalDeviceID:
+                      type: string
+                      description: Unique ID to identify the gateway the import power limit belongs to.
+                      example: aeb639cf0793e81f0804c6647af7f0900a847921c0596726f1afdfd04a3a3186
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the import power limit was created in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      description: Time at which the import power limit was updated in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                  required:
+                  - numberOfPhases
+                  - internalDeviceID
+                  - createdAt
+                  - updatedAt
+                  - maxImportTotal
+                  - maxImportL1
+                  - maxImportL2
+                  - maxImportL3
+                  - importEVMarginTotal
+                  - maxImportEVMarginL1
+                  - maxImportEVMarginL2
+                  - maxImportEVMarginL3
+                  - maxImportEVWorstCase
+                  - maxImportEVWorstCaseL1
+                  - maxImportEVWorstCaseL2
+                  - maxImportEVWorstCaseL3
+                x-readme-ref-name: ImportPowerLimit
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Import power limit not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      summary: Set gateway's import power limit
+      operationId: setSystemGatewayImportPowerLimit
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      requestBody:
+        description: Set a gateway's import power limit. Any value that is not provided in the body takes its default value.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - title: Import power limit
+                type: object
+                properties:
+                  numberOfPhases:
+                    type: integer
+                    description: Number of phases the import power limit is set for. 1 or 3. Default is 3.
+                    enum:
+                    - 1
+                    - 3
+                    example: 3
+                    default: 3
+                    format: int32
+                  maxImportTotal:
+                    type: integer
+                    description: Maximum total import power in W.
+                    default: 0
+                    format: int64
+                  maxImportL1:
+                    type: integer
+                    description: Maximum total import power in the first phase in W.
+                    default: 0
+                    format: int64
+                  maxImportL2:
+                    type: integer
+                    description: Maximum total import power in the second phase in W.
+                    default: 0
+                    format: int64
+                  maxImportL3:
+                    type: integer
+                    description: Maximum total import power in the third phase in W.
+                    default: 0
+                    format: int64
+                  importEVMarginTotal:
+                    type: integer
+                    description: Maximum import power margin in W. This is the safety margin to the limit.
+                    default: 0
+                    format: int64
+                  importEVMarginPhase:
+                    deprecated: true
+                    type: integer
+                    format: int64
+                  maxImportEVMarginL1:
+                    type: integer
+                    description: Maximum import power margin in the first phase in W. This is the safety margin to the limit.
+                    default: 0
+                    format: int64
+                  maxImportEVMarginL2:
+                    type: integer
+                    description: Maximum import power margin in the second phase in W. This is the safety margin to the limit.
+                    default: 0
+                    format: int64
+                  maxImportEVMarginL3:
+                    type: integer
+                    description: Maximum import power margin in the third phase in W. This is the safety margin to the limit.
+                    default: 0
+                    format: int64
+                  maxImportEVWorstCase:
+                    type: integer
+                    description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost.
+                    default: 0
+                    format: int64
+                  maxImportEVWorstCaseL1:
+                    type: integer
+                    description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the first phase.
+                    default: 0
+                    format: int64
+                  maxImportEVWorstCaseL2:
+                    type: integer
+                    description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the second phase.
+                    default: 0
+                    format: int64
+                  maxImportEVWorstCaseL3:
+                    type: integer
+                    description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the third phase.
+                    default: 0
+                    format: int64
+                x-readme-ref-name: AbstractImportPowerLimit
+              - additionalProperties: false
+              x-readme-ref-name: ImportPowerLimitSetStrict
+            examples:
+              ThreePhaseHousehouldAsymmetricLimits:
+                summary: Three phase household with asymmetric limits.
+                value:
+                  numberOfPhases: 3
+                  maxImportTotal: 15000
+                  maxImportL1: 4000
+                  maxImportL2: 6000
+                  maxImportL3: 5000
+              ThreePhaseHouseholdAsymmetricLimitsAdditionalMargin:
+                summary: Three phase household with asymmetric limits and an additional safety margin of 1kW.
+                value:
+                  numberOfPhases: 3
+                  maxImportTotal: 15000
+                  maxImportL1: 4000
+                  maxImportL2: 6000
+                  maxImportL3: 5000
+                  importEVMarginTotal: 1000
+                  maxImportEVMarginL1: 1000
+                  maxImportEVMarginL2: 1000
+                  maxImportEVMarginL3: 1000
+              SinglePhaseHouseholdUnknownPhase:
+                summary: Single phase household with asymmetric limits. If the phase the household is being measured on is unknown, all phase limits can be provided with the same value.
+                value:
+                  numberOfPhases: 1
+                  maxImportTotal: 6000
+                  maxImportL1: 6000
+                  maxImportL2: 6000
+                  maxImportL3: 6000
+              SinglePhaseHousehold:
+                summary: Single phase household with asymmetric limits.
+                value:
+                  numberOfPhases: 1
+                  maxImportTotal: 6000
+                  maxImportL1: 0
+                  maxImportL2: 6000
+                  maxImportL3: 0
+      responses:
+        '200':
+          description: Import power limit set.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Import power limit
+                  type: object
+                  properties:
+                    numberOfPhases:
+                      type: integer
+                      description: Number of phases the import power limit is set for. 1 or 3. Default is 3.
+                      enum:
+                      - 1
+                      - 3
+                      example: 3
+                      default: 3
+                      format: int32
+                    maxImportTotal:
+                      type: integer
+                      description: Maximum total import power in W.
+                      default: 0
+                      format: int64
+                    maxImportL1:
+                      type: integer
+                      description: Maximum total import power in the first phase in W.
+                      default: 0
+                      format: int64
+                    maxImportL2:
+                      type: integer
+                      description: Maximum total import power in the second phase in W.
+                      default: 0
+                      format: int64
+                    maxImportL3:
+                      type: integer
+                      description: Maximum total import power in the third phase in W.
+                      default: 0
+                      format: int64
+                    importEVMarginTotal:
+                      type: integer
+                      description: Maximum import power margin in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    importEVMarginPhase:
+                      deprecated: true
+                      type: integer
+                      format: int64
+                    maxImportEVMarginL1:
+                      type: integer
+                      description: Maximum import power margin in the first phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVMarginL2:
+                      type: integer
+                      description: Maximum import power margin in the second phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVMarginL3:
+                      type: integer
+                      description: Maximum import power margin in the third phase in W. This is the safety margin to the limit.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCase:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL1:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the first phase.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL2:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the second phase.
+                      default: 0
+                      format: int64
+                    maxImportEVWorstCaseL3:
+                      type: integer
+                      description: The assumed maximum charging power in W for all EVs in case the connection to the grid connection point meter is lost for the third phase.
+                      default: 0
+                      format: int64
+                  x-readme-ref-name: AbstractImportPowerLimit
+                - properties:
+                    internalDeviceID:
+                      type: string
+                      description: Unique ID to identify the gateway the import power limit belongs to.
+                      example: aeb639cf0793e81f0804c6647af7f0900a847921c0596726f1afdfd04a3a3186
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the import power limit was created in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      description: Time at which the import power limit was updated in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                  required:
+                  - numberOfPhases
+                  - internalDeviceID
+                  - createdAt
+                  - updatedAt
+                  - maxImportTotal
+                  - maxImportL1
+                  - maxImportL2
+                  - maxImportL3
+                  - importEVMarginTotal
+                  - maxImportEVMarginL1
+                  - maxImportEVMarginL2
+                  - maxImportEVMarginL3
+                  - maxImportEVWorstCase
+                  - maxImportEVWorstCaseL1
+                  - maxImportEVWorstCaseL2
+                  - maxImportEVWorstCaseL3
+                x-readme-ref-name: ImportPowerLimit
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\"\n\npayload = {\n    \"numberOfPhases\": 3,\n    \"maxImportTotal\": 15000,\n    \"maxImportL1\": 4000,\n    \"maxImportL2\": 6000,\n    \"maxImportL3\": 5000\n}\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"numberOfPhases\": 3,\n  \"maxImportTotal\": 15000,\n  \"maxImportL1\": 4000,\n  \"maxImportL2\": 6000,\n  \"maxImportL3\": 5000\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\"\n\n\tpayload := strings.NewReader(\"{\\\"numberOfPhases\\\":3,\\\"maxImportTotal\\\":15000,\\\"maxImportL1\\\":4000,\\\"maxImportL2\\\":6000,\\\"maxImportL3\\\":5000}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    numberOfPhases: 3,\n    maxImportTotal: 15000,\n    maxImportL1: 4000,\n    maxImportL2: 6000,\n    maxImportL3: 5000\n  })\n};\n\nfetch('https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"numberOfPhases\\\":3,\\\"maxImportTotal\\\":15000,\\\"maxImportL1\\\":4000,\\\"maxImportL2\\\":6000,\\\"maxImportL3\\\":5000}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .put(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"numberOfPhases\\\":3,\\\"maxImportTotal\\\":15000,\\\"maxImportL1\\\":4000,\\\"maxImportL2\\\":6000,\\\"maxImportL3\\\":5000}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .put(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"numberOfPhases\": 3,\n  \"maxImportTotal\": 15000,\n  \"maxImportL1\": 4000,\n  \"maxImportL2\": 6000,\n  \"maxImportL3\": 5000\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddJsonBody("{\"numberOfPhases\":3,\"maxImportTotal\":15000,\"maxImportL1\":4000,\"maxImportL2\":6000,\"maxImportL3\":5000}", false);
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      summary: Delete gateway's import power limit
+      operationId: deleteSystemGatewayImportPowerLimit
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      responses:
+        '204':
+          description: Import power limit deleted successfully!
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/gateways/gatewayID/import-power-limit");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/import-power-limit-schedule:
+    get:
+      operationId: getSystemImportPowerLimitSchedule
+      summary: Retrieve an import power limit schedule
+      description: 'Retrieves the import power limit schedule.
+
+
+        IMPORTANT: This is currently only supported for systems which have Time-of-Use (ToU) optimization enabled.'
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '200':
+          description: Returned import power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: An import power limit schedule defines recurring import power limits which are be applied to the grid connection point.
+                type: object
+                required:
+                - periods
+                properties:
+                  timezone:
+                    type: string
+                    description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                      Used to determine time of day of the timeframes.'
+                    default: UTC
+                  reserveSoc:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    description: 'Reserve state of charge for the battery as a fraction (0.0-1.0).
+
+
+                      If not specified, defaults to 0.15 (15%).'
+                    default: 0.15
+                    example: 0.2
+                  periods:
+                    description: 'List of periods defining which import limit should be applied at which time of the day.
+
+
+                      The period is active between `from` and `to`. `from` is included in the interval,
+
+                      `to` is excluded.
+
+
+                      Missing periods (gaps between defined periods) are interpreted as no import limit should be applied.
+
+
+                      Overlapping or duplicate periods are invalid.'
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - from
+                      - to
+                      properties:
+                        from:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: Start of the period (inclusive), in HH:MM:SS format.
+                        to:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: End of the period (exclusive), in HH:MM:SS format.
+                        weekdays:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+
+                            Omitting this is the same as selecting all days.'
+                          type: array
+                          example:
+                          - MO
+                          - WE
+                          - FR
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                        maxImportTotal:
+                          description: 'Maximum import power at the grid connection point in Watt.
+
+
+                            Omitting this field is the same as selecting no import power limit for this period.'
+                          type: integer
+                          format: int64
+                          minimum: 0
+                          example: 10000
+                x-readme-ref-name: ImportPowerLimitSchedule
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/import-power-limit-schedule"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/import-power-limit-schedule \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/import-power-limit-schedule', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/import-power-limit-schedule")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/import-power-limit-schedule");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      operationId: createSystemImportPowerLimitScheduleToU
+      summary: Create an import power limit schedule
+      description: 'Creates the import power limit schedule.
+
+
+        IMPORTANT: This is currently only supported for systems which have Time-of-Use (ToU) optimization enabled.'
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: Partially modified power limit schedule.
+        required: true
+        content:
+          application/json:
+            schema:
+              description: An import power limit schedule defines recurring import power limits which are be applied to the grid connection point.
+              type: object
+              required:
+              - periods
+              properties:
+                timezone:
+                  type: string
+                  description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                    Used to determine time of day of the timeframes.'
+                  default: UTC
+                reserveSoc:
+                  type: number
+                  format: float
+                  minimum: 0
+                  maximum: 1
+                  description: 'Reserve state of charge for the battery as a fraction (0.0-1.0).
+
+
+                    If not specified, defaults to 0.15 (15%).'
+                  default: 0.15
+                  example: 0.2
+                periods:
+                  description: 'List of periods defining which import limit should be applied at which time of the day.
+
+
+                    The period is active between `from` and `to`. `from` is included in the interval,
+
+                    `to` is excluded.
+
+
+                    Missing periods (gaps between defined periods) are interpreted as no import limit should be applied.
+
+
+                    Overlapping or duplicate periods are invalid.'
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - from
+                    - to
+                    properties:
+                      from:
+                        type: string
+                        format: time
+                        example: 00:00:00
+                        description: Start of the period (inclusive), in HH:MM:SS format.
+                      to:
+                        type: string
+                        format: time
+                        example: 00:00:00
+                        description: End of the period (exclusive), in HH:MM:SS format.
+                      weekdays:
+                        description: 'Specifies a list of weekdays this rule should apply to.
+
+
+                          Omitting this is the same as selecting all days.'
+                        type: array
+                        example:
+                        - MO
+                        - WE
+                        - FR
+                        items:
+                          type: string
+                          enum:
+                          - SU
+                          - MO
+                          - TU
+                          - WE
+                          - TH
+                          - FR
+                          - SA
+                      maxImportTotal:
+                        description: 'Maximum import power at the grid connection point in Watt.
+
+
+                          Omitting this field is the same as selecting no import power limit for this period.'
+                        type: integer
+                        format: int64
+                        minimum: 0
+                        example: 10000
+              x-readme-ref-name: ImportPowerLimitSchedule
+      responses:
+        '200':
+          description: Created import power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: An import power limit schedule defines recurring import power limits which are be applied to the grid connection point.
+                type: object
+                required:
+                - periods
+                properties:
+                  timezone:
+                    type: string
+                    description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                      Used to determine time of day of the timeframes.'
+                    default: UTC
+                  reserveSoc:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    description: 'Reserve state of charge for the battery as a fraction (0.0-1.0).
+
+
+                      If not specified, defaults to 0.15 (15%).'
+                    default: 0.15
+                    example: 0.2
+                  periods:
+                    description: 'List of periods defining which import limit should be applied at which time of the day.
+
+
+                      The period is active between `from` and `to`. `from` is included in the interval,
+
+                      `to` is excluded.
+
+
+                      Missing periods (gaps between defined periods) are interpreted as no import limit should be applied.
+
+
+                      Overlapping or duplicate periods are invalid.'
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - from
+                      - to
+                      properties:
+                        from:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: Start of the period (inclusive), in HH:MM:SS format.
+                        to:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: End of the period (exclusive), in HH:MM:SS format.
+                        weekdays:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+
+                            Omitting this is the same as selecting all days.'
+                          type: array
+                          example:
+                          - MO
+                          - WE
+                          - FR
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                        maxImportTotal:
+                          description: 'Maximum import power at the grid connection point in Watt.
+
+
+                            Omitting this field is the same as selecting no import power limit for this period.'
+                          type: integer
+                          format: int64
+                          minimum: 0
+                          example: 10000
+                x-readme-ref-name: ImportPowerLimitSchedule
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\npayload = {\n    \"timezone\": \"UTC\",\n    \"reserveSoc\": 0.2,\n    \"periods\": [\n        {\n            \"from\": \"00:00:00\",\n            \"to\": \"00:00:00\",\n            \"weekdays\": [\"MO\", \"WE\", \"FR\"],\n            \"maxImportTotal\": 10000\n        }\n    ]\n}\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/import-power-limit-schedule \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"timezone\": \"UTC\",\n  \"reserveSoc\": 0.2,\n  \"periods\": [\n    {\n      \"from\": \"00:00:00\",\n      \"to\": \"00:00:00\",\n      \"weekdays\": [\n        \"MO\",\n        \"WE\",\n        \"FR\"\n      ],\n      \"maxImportTotal\": 10000\n    }\n  ]\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\n\tpayload := strings.NewReader(\"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    timezone: 'UTC',\n    reserveSoc: 0.2,\n    periods: [\n      {\n        from: '00:00:00',\n        to: '00:00:00',\n        weekdays: ['MO', 'WE', 'FR'],\n        maxImportTotal: 10000\n      }\n    ]\n  })\n};\n\nfetch('https://api.gridx.de/systems/systemID/import-power-limit-schedule', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .put(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .put(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"timezone\": \"UTC\",\n  \"reserveSoc\": 0.2,\n  \"periods\": [\n    [\n      \"from\": \"00:00:00\",\n      \"to\": \"00:00:00\",\n      \"weekdays\": [\"MO\", \"WE\", \"FR\"],\n      \"maxImportTotal\": 10000\n    ]\n  ]\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/import-power-limit-schedule");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddJsonBody("{\"timezone\":\"UTC\",\"reserveSoc\":0.2,\"periods\":[{\"from\":\"00:00:00\",\"to\":\"00:00:00\",\"weekdays\":[\"MO\",\"WE\",\"FR\"],\"maxImportTotal\":10000}]}", false);
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateSystemImportPowerLimitSchedule
+      summary: Update an import power limit schedule
+      description: 'Updates the import power limit schedule.
+
+
+        Existing periods will be completely replaced with the updated periods.
+
+        There will be no merge of updated and existing periods.
+
+
+        IMPORTANT: This is currently only supported for systems which have Time-of-Use (ToU) optimization enabled.'
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: Partially modified power limit schedule.
+        required: true
+        content:
+          application/json:
+            schema:
+              description: An import power limit schedule defines recurring import power limits which are be applied to the grid connection point.
+              type: object
+              required:
+              - periods
+              properties:
+                timezone:
+                  type: string
+                  description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                    Used to determine time of day of the timeframes.'
+                  default: UTC
+                reserveSoc:
+                  type: number
+                  format: float
+                  minimum: 0
+                  maximum: 1
+                  description: 'Reserve state of charge for the battery as a fraction (0.0-1.0).
+
+
+                    If not specified, defaults to 0.15 (15%).'
+                  default: 0.15
+                  example: 0.2
+                periods:
+                  description: 'List of periods defining which import limit should be applied at which time of the day.
+
+
+                    The period is active between `from` and `to`. `from` is included in the interval,
+
+                    `to` is excluded.
+
+
+                    Missing periods (gaps between defined periods) are interpreted as no import limit should be applied.
+
+
+                    Overlapping or duplicate periods are invalid.'
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - from
+                    - to
+                    properties:
+                      from:
+                        type: string
+                        format: time
+                        example: 00:00:00
+                        description: Start of the period (inclusive), in HH:MM:SS format.
+                      to:
+                        type: string
+                        format: time
+                        example: 00:00:00
+                        description: End of the period (exclusive), in HH:MM:SS format.
+                      weekdays:
+                        description: 'Specifies a list of weekdays this rule should apply to.
+
+
+                          Omitting this is the same as selecting all days.'
+                        type: array
+                        example:
+                        - MO
+                        - WE
+                        - FR
+                        items:
+                          type: string
+                          enum:
+                          - SU
+                          - MO
+                          - TU
+                          - WE
+                          - TH
+                          - FR
+                          - SA
+                      maxImportTotal:
+                        description: 'Maximum import power at the grid connection point in Watt.
+
+
+                          Omitting this field is the same as selecting no import power limit for this period.'
+                        type: integer
+                        format: int64
+                        minimum: 0
+                        example: 10000
+              x-readme-ref-name: ImportPowerLimitSchedule
+      responses:
+        '200':
+          description: Updated import power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: An import power limit schedule defines recurring import power limits which are be applied to the grid connection point.
+                type: object
+                required:
+                - periods
+                properties:
+                  timezone:
+                    type: string
+                    description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                      Used to determine time of day of the timeframes.'
+                    default: UTC
+                  reserveSoc:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    description: 'Reserve state of charge for the battery as a fraction (0.0-1.0).
+
+
+                      If not specified, defaults to 0.15 (15%).'
+                    default: 0.15
+                    example: 0.2
+                  periods:
+                    description: 'List of periods defining which import limit should be applied at which time of the day.
+
+
+                      The period is active between `from` and `to`. `from` is included in the interval,
+
+                      `to` is excluded.
+
+
+                      Missing periods (gaps between defined periods) are interpreted as no import limit should be applied.
+
+
+                      Overlapping or duplicate periods are invalid.'
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - from
+                      - to
+                      properties:
+                        from:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: Start of the period (inclusive), in HH:MM:SS format.
+                        to:
+                          type: string
+                          format: time
+                          example: 00:00:00
+                          description: End of the period (exclusive), in HH:MM:SS format.
+                        weekdays:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+
+                            Omitting this is the same as selecting all days.'
+                          type: array
+                          example:
+                          - MO
+                          - WE
+                          - FR
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                        maxImportTotal:
+                          description: 'Maximum import power at the grid connection point in Watt.
+
+
+                            Omitting this field is the same as selecting no import power limit for this period.'
+                          type: integer
+                          format: int64
+                          minimum: 0
+                          example: 10000
+                x-readme-ref-name: ImportPowerLimitSchedule
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\npayload = {\n    \"timezone\": \"UTC\",\n    \"reserveSoc\": 0.2,\n    \"periods\": [\n        {\n            \"from\": \"00:00:00\",\n            \"to\": \"00:00:00\",\n            \"weekdays\": [\"MO\", \"WE\", \"FR\"],\n            \"maxImportTotal\": 10000\n        }\n    ]\n}\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/systems/systemID/import-power-limit-schedule \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"timezone\": \"UTC\",\n  \"reserveSoc\": 0.2,\n  \"periods\": [\n    {\n      \"from\": \"00:00:00\",\n      \"to\": \"00:00:00\",\n      \"weekdays\": [\n        \"MO\",\n        \"WE\",\n        \"FR\"\n      ],\n      \"maxImportTotal\": 10000\n    }\n  ]\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\n\tpayload := strings.NewReader(\"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\")\n\n\treq, _ := http.NewRequest(\"PATCH\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    timezone: 'UTC',\n    reserveSoc: 0.2,\n    periods: [\n      {\n        from: '00:00:00',\n        to: '00:00:00',\n        weekdays: ['MO', 'WE', 'FR'],\n        maxImportTotal: 10000\n      }\n    ]\n  })\n};\n\nfetch('https://api.gridx.de/systems/systemID/import-power-limit-schedule', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"timezone\\\":\\\"UTC\\\",\\\"reserveSoc\\\":0.2,\\\"periods\\\":[{\\\"from\\\":\\\"00:00:00\\\",\\\"to\\\":\\\"00:00:00\\\",\\\"weekdays\\\":[\\\"MO\\\",\\\"WE\\\",\\\"FR\\\"],\\\"maxImportTotal\\\":10000}]}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .patch(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"timezone\": \"UTC\",\n  \"reserveSoc\": 0.2,\n  \"periods\": [\n    [\n      \"from\": \"00:00:00\",\n      \"to\": \"00:00:00\",\n      \"weekdays\": [\"MO\", \"WE\", \"FR\"],\n      \"maxImportTotal\": 10000\n    ]\n  ]\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/import-power-limit-schedule");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddJsonBody("{\"timezone\":\"UTC\",\"reserveSoc\":0.2,\"periods\":[{\"from\":\"00:00:00\",\"to\":\"00:00:00\",\"weekdays\":[\"MO\",\"WE\",\"FR\"],\"maxImportTotal\":10000}]}", false);
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteSystemImportPowerLimitSchedule
+      summary: Delete an import power limit schedule
+      description: 'Deletes the import power limit schedule.
+
+
+        IMPORTANT: This is currently only supported for systems which have Time-of-Use (ToU) optimization enabled.'
+      tags:
+      - Import Power Limit
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '204':
+          description: Import power limit schedule has been deleted successfully.
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/import-power-limit-schedule"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/import-power-limit-schedule \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/import-power-limit-schedule\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/import-power-limit-schedule', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/import-power-limit-schedule\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/import-power-limit-schedule")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/import-power-limit-schedule");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

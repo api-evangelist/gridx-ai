@@ -1,0 +1,1917 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai EV Configuration API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged EV Configuration across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: EV Configuration
+  x-displayName: EV Configuration
+paths:
+  /gateways/{gatewayID}/appliances/{applianceID}/ev/configuration:
+    get:
+      operationId: getGatewayApplianceEVConfiguration
+      summary: Retrieve an EV configuration
+      description: Returns an EV charging station's configuration.
+      tags:
+      - EV Configuration
+      security:
+      - HeaderAuth:
+        - AppliancesEVConfigurationRead
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: applianceID
+        description: 'Unique identifier used to access an appliance.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      responses:
+        '200':
+          description: Returned EV configuration.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                readOnly: true
+                allOf:
+                - title: EV Charging Station Configuration
+                  description: 'Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+
+                    '
+                  type: object
+                  properties:
+                    issueTimestamp:
+                      type: string
+                      format: date-time
+                      deprecated: true
+                      description: 'Specifies when the configuration was send or received the last time by the EMS.
+
+
+                        **Deprecated** - No longer updated, always returns the current date.
+
+                        '
+                    chargingEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging is allowed.
+                    chargingRemoteControllable:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging may be controlled via network connection.
+                    lockEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether the plug is locked.
+                    minRequestedSoc:
+                      type:
+                      - number
+                      - 'null'
+                      minimum: 0
+                      maximum: 100
+                      format: double
+                      description: 'The minimum SoC the EV shall have and keep to guarantee the range for the next usage.
+
+
+                        This is set by the user and needed for `DEPARTURE_TIME_EV` and `MIN_EV` charge modes.
+
+                        If this value is set, the `userTotalCapacity` needs to be set, too.
+
+                        Value is between 0.0 - 100.0 in %.
+
+                        '
+                      example: 30
+                    departureTimestamp:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: "The planned departure timestamp of the EV for the `DEPARTURE_TIME_EV` charge mode.\n\n**The feature used to contain the following description, which is deprecated**: \nOnly the time of the day is considered, not the exact date.\nIf the time of day is in the past it is interpreted as tomorrow and if it in the future it is today.\n\nDeprecation: The deprecated behaviour will be phased out as it presents several inconsistencies. From then on \nthe timestamp will be considered as provided (with the date and time component) once this note is removed.\nEnsure to always set a departure timestamp in the future to experience consistent behaviour.\nWhen this note is removed, newly set departure times in the past may be rejected with a validation error.\n"
+                    estimatedDepartureTimestamp:
+                      type: string
+                      format: date-time
+                      description: 'The estimated timestamp when the desired SoC is reached.
+
+
+                        Optimally, the timestamp is close to the user''s wanted `departureTimestamp`.
+
+                        '
+                    userSoc:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      minimum: 0
+                      maximum: 100
+                      description: "The State of Charge (SoC) level read and set by the user for the connected EV.\nThis should be the SoC at the moment the EV is plugged, as the EMS extrapolates the currently estimated SoC \nduring the charging session from this value onwards.\nThis parameter can not be used to update the current SoC of an EV while a charging session is already \nongoing as this would lead to SoC misestimations.\n\nThis is needed in cases where the SoC cannot be determined automatically.\nValue is between 0.0 - 100.0 in %.\n"
+                      example: 50
+                    userTotalCapacity:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The size of the EV''s battery in Wh.
+
+
+                        If this cannot be determined directly from the hardware, then the user enters it during the onboarding process.
+
+                        The value is needed to calculate the energy that needs to be charged to fulfill the `minRequestedSoc`.
+
+                        '
+                      minimum: 0
+                      example: 82000
+                    chargeMode:
+                      type: string
+                      description: "Defines how the EV shall be charged.\n  * `FORCED_EV`: EV will be charged with full power until 100% SoC. This is the default behaviour, also if there is no configuration set. It does not require any additional fields to be set. Also commonly referred to as \"Quick Charge\".\n  * `MIN_EV`: EV will be charged with full power until the specified `minRequestedSoc` (must be provided). Also commonly referred to as \"Safety Charge\".\n  * `DEPARTURE_TIME_EV`: EV will be charged until `departureTimestamp` to the `minRequestedSoc`. This means that initially it charges with surplus energy, but if it is not enough it will charge with full power to meet the requested `departureTimestamp`. Also commonly referred to as \"Program Charge\".\n  * `SURPLUS_EV`: EV will only be charged with surplus energy regardless of SoC level. It does not require any additional fields to be set. Also commonly referred to as \"Solar Charge\".\n"
+                      enum:
+                      - FORCED_EV
+                      - MIN_EV
+                      - DEPARTURE_TIME_EV
+                      - SURPLUS_EV
+                    maxPowerCalculated:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum potential total charge power in Watt is calculated by the gridBox in usual setups.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        It considers the maximum power supported by the EV and that the power can be curtailed by the DLM.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    maxChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV charging power will not exceed the specified value.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    minChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The minimum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV will only be charged if the total power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 2070
+                    minChargePowerPerPhase:
+                      type: number
+                      format: double
+                      description: 'The minimum power that the EV should be charged with in Watt for one phase.
+
+
+                        EV will only be charged if **one** of the phases'' power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 1840
+                    evProfileID:
+                      description: Represents the ID of the EV profile that is going to be used in the next charging session.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  x-readme-ref-name: AbstractEVChargingStationConfiguration
+                - required:
+                  - applianceID
+                  - createdAt
+                  - updatedAt
+                  - chargingEnabled
+                  - chargingRemoteControllable
+                  - lockEnabled
+                  - minRequestedSoc
+                  - departureTimestamp
+                  - userSoc
+                  - userTotalCapacity
+                  - maxPowerCalculated
+                  - maxChargePower
+                  - minChargePower
+                  properties:
+                    applianceID:
+                      type: string
+                      format: uuid
+                      description: "ID of the EV charging station this configuration belongs to. \n"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was created.
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was updated the last time.
+                x-readme-ref-name: EVChargingStationConfiguration
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createGatewayApplianceEVConfiguration
+      summary: Create an EV Configuration
+      description: Creates an EV charging station's configuration if no configuration is present.
+      tags:
+      - EV Configuration
+      security:
+      - HeaderAuth:
+        - AppliancesEVConfigurationWrite
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: applianceID
+        description: 'Unique identifier used to access an appliance.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      requestBody:
+        description: EV configuration to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                allOf:
+                - title: EV Charging Station Configuration
+                  description: 'Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+
+                    '
+                  type: object
+                  properties:
+                    issueTimestamp:
+                      type: string
+                      format: date-time
+                      deprecated: true
+                      description: 'Specifies when the configuration was send or received the last time by the EMS.
+
+
+                        **Deprecated** - No longer updated, always returns the current date.
+
+                        '
+                    chargingEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging is allowed.
+                    chargingRemoteControllable:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging may be controlled via network connection.
+                    lockEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether the plug is locked.
+                    minRequestedSoc:
+                      type:
+                      - number
+                      - 'null'
+                      minimum: 0
+                      maximum: 100
+                      format: double
+                      description: 'The minimum SoC the EV shall have and keep to guarantee the range for the next usage.
+
+
+                        This is set by the user and needed for `DEPARTURE_TIME_EV` and `MIN_EV` charge modes.
+
+                        If this value is set, the `userTotalCapacity` needs to be set, too.
+
+                        Value is between 0.0 - 100.0 in %.
+
+                        '
+                      example: 30
+                    departureTimestamp:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: "The planned departure timestamp of the EV for the `DEPARTURE_TIME_EV` charge mode.\n\n**The feature used to contain the following description, which is deprecated**: \nOnly the time of the day is considered, not the exact date.\nIf the time of day is in the past it is interpreted as tomorrow and if it in the future it is today.\n\nDeprecation: The deprecated behaviour will be phased out as it presents several inconsistencies. From then on \nthe timestamp will be considered as provided (with the date and time component) once this note is removed.\nEnsure to always set a departure timestamp in the future to experience consistent behaviour.\nWhen this note is removed, newly set departure times in the past may be rejected with a validation error.\n"
+                    estimatedDepartureTimestamp:
+                      type: string
+                      format: date-time
+                      description: 'The estimated timestamp when the desired SoC is reached.
+
+
+                        Optimally, the timestamp is close to the user''s wanted `departureTimestamp`.
+
+                        '
+                    userSoc:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      minimum: 0
+                      maximum: 100
+                      description: "The State of Charge (SoC) level read and set by the user for the connected EV.\nThis should be the SoC at the moment the EV is plugged, as the EMS extrapolates the currently estimated SoC \nduring the charging session from this value onwards.\nThis parameter can not be used to update the current SoC of an EV while a charging session is already \nongoing as this would lead to SoC misestimations.\n\nThis is needed in cases where the SoC cannot be determined automatically.\nValue is between 0.0 - 100.0 in %.\n"
+                      example: 50
+                    userTotalCapacity:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The size of the EV''s battery in Wh.
+
+
+                        If this cannot be determined directly from the hardware, then the user enters it during the onboarding process.
+
+                        The value is needed to calculate the energy that needs to be charged to fulfill the `minRequestedSoc`.
+
+                        '
+                      minimum: 0
+                      example: 82000
+                    chargeMode:
+                      type: string
+                      description: "Defines how the EV shall be charged.\n  * `FORCED_EV`: EV will be charged with full power until 100% SoC. This is the default behaviour, also if there is no configuration set. It does not require any additional fields to be set. Also commonly referred to as \"Quick Charge\".\n  * `MIN_EV`: EV will be charged with full power until the specified `minRequestedSoc` (must be provided). Also commonly referred to as \"Safety Charge\".\n  * `DEPARTURE_TIME_EV`: EV will be charged until `departureTimestamp` to the `minRequestedSoc`. This means that initially it charges with surplus energy, but if it is not enough it will charge with full power to meet the requested `departureTimestamp`. Also commonly referred to as \"Program Charge\".\n  * `SURPLUS_EV`: EV will only be charged with surplus energy regardless of SoC level. It does not require any additional fields to be set. Also commonly referred to as \"Solar Charge\".\n"
+                      enum:
+                      - FORCED_EV
+                      - MIN_EV
+                      - DEPARTURE_TIME_EV
+                      - SURPLUS_EV
+                    maxPowerCalculated:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum potential total charge power in Watt is calculated by the gridBox in usual setups.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        It considers the maximum power supported by the EV and that the power can be curtailed by the DLM.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    maxChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV charging power will not exceed the specified value.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    minChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The minimum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV will only be charged if the total power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 2070
+                    minChargePowerPerPhase:
+                      type: number
+                      format: double
+                      description: 'The minimum power that the EV should be charged with in Watt for one phase.
+
+
+                        EV will only be charged if **one** of the phases'' power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 1840
+                    evProfileID:
+                      description: Represents the ID of the EV profile that is going to be used in the next charging session.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  x-readme-ref-name: AbstractEVChargingStationConfiguration
+                x-readme-ref-name: EVChargingStationConfigurationCreation
+              - additionalProperties: false
+              x-readme-ref-name: EVChargingStationConfigurationCreationStrict
+      responses:
+        '201':
+          description: EV charging station configuration created.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                readOnly: true
+                allOf:
+                - title: EV Charging Station Configuration
+                  description: 'Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+
+                    '
+                  type: object
+                  properties:
+                    issueTimestamp:
+                      type: string
+                      format: date-time
+                      deprecated: true
+                      description: 'Specifies when the configuration was send or received the last time by the EMS.
+
+
+                        **Deprecated** - No longer updated, always returns the current date.
+
+                        '
+                    chargingEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging is allowed.
+                    chargingRemoteControllable:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging may be controlled via network connection.
+                    lockEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether the plug is locked.
+                    minRequestedSoc:
+                      type:
+                      - number
+                      - 'null'
+                      minimum: 0
+                      maximum: 100
+                      format: double
+                      description: 'The minimum SoC the EV shall have and keep to guarantee the range for the next usage.
+
+
+                        This is set by the user and needed for `DEPARTURE_TIME_EV` and `MIN_EV` charge modes.
+
+                        If this value is set, the `userTotalCapacity` needs to be set, too.
+
+                        Value is between 0.0 - 100.0 in %.
+
+                        '
+                      example: 30
+                    departureTimestamp:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: "The planned departure timestamp of the EV for the `DEPARTURE_TIME_EV` charge mode.\n\n**The feature used to contain the following description, which is deprecated**: \nOnly the time of the day is considered, not the exact date.\nIf the time of day is in the past it is interpreted as tomorrow and if it in the future it is today.\n\nDeprecation: The deprecated behaviour will be phased out as it presents several inconsistencies. From then on \nthe timestamp will be considered as provided (with the date and time component) once this note is removed.\nEnsure to always set a departure timestamp in the future to experience consistent behaviour.\nWhen this note is removed, newly set departure times in the past may be rejected with a validation error.\n"
+                    estimatedDepartureTimestamp:
+                      type: string
+                      format: date-time
+                      description: 'The estimated timestamp when the desired SoC is reached.
+
+
+                        Optimally, the timestamp is close to the user''s wanted `departureTimestamp`.
+
+                        '
+                    userSoc:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      minimum: 0
+                      maximum: 100
+                      description: "The State of Charge (SoC) level read and set by the user for the connected EV.\nThis should be the SoC at the moment the EV is plugged, as the EMS extrapolates the currently estimated SoC \nduring the charging session from this value onwards.\nThis parameter can not be used to update the current SoC of an EV while a charging session is already \nongoing as this would lead to SoC misestimations.\n\nThis is needed in cases where the SoC cannot be determined automatically.\nValue is between 0.0 - 100.0 in %.\n"
+                      example: 50
+                    userTotalCapacity:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The size of the EV''s battery in Wh.
+
+
+                        If this cannot be determined directly from the hardware, then the user enters it during the onboarding process.
+
+                        The value is needed to calculate the energy that needs to be charged to fulfill the `minRequestedSoc`.
+
+                        '
+                      minimum: 0
+                      example: 82000
+                    chargeMode:
+                      type: string
+                      description: "Defines how the EV shall be charged.\n  * `FORCED_EV`: EV will be charged with full power until 100% SoC. This is the default behaviour, also if there is no configuration set. It does not require any additional fields to be set. Also commonly referred to as \"Quick Charge\".\n  * `MIN_EV`: EV will be charged with full power until the specified `minRequestedSoc` (must be provided). Also commonly referred to as \"Safety Charge\".\n  * `DEPARTURE_TIME_EV`: EV will be charged until `departureTimestamp` to the `minRequestedSoc`. This means that initially it charges with surplus energy, but if it is not enough it will charge with full power to meet the requested `departureTimestamp`. Also commonly referred to as \"Program Charge\".\n  * `SURPLUS_EV`: EV will only be charged with surplus energy regardless of SoC level. It does not require any additional fields to be set. Also commonly referred to as \"Solar Charge\".\n"
+                      enum:
+                      - FORCED_EV
+                      - MIN_EV
+                      - DEPARTURE_TIME_EV
+                      - SURPLUS_EV
+                    maxPowerCalculated:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum potential total charge power in Watt is calculated by the gridBox in usual setups.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        It considers the maximum power supported by the EV and that the power can be curtailed by the DLM.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    maxChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV charging power will not exceed the specified value.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    minChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The minimum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV will only be charged if the total power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 2070
+                    minChargePowerPerPhase:
+                      type: number
+                      format: double
+                      description: 'The minimum power that the EV should be charged with in Watt for one phase.
+
+
+                        EV will only be charged if **one** of the phases'' power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 1840
+                    evProfileID:
+                      description: Represents the ID of the EV profile that is going to be used in the next charging session.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  x-readme-ref-name: AbstractEVChargingStationConfiguration
+                - required:
+                  - applianceID
+                  - createdAt
+                  - updatedAt
+                  - chargingEnabled
+                  - chargingRemoteControllable
+                  - lockEnabled
+                  - minRequestedSoc
+                  - departureTimestamp
+                  - userSoc
+                  - userTotalCapacity
+                  - maxPowerCalculated
+                  - maxChargePower
+                  - minChargePower
+                  properties:
+                    applianceID:
+                      type: string
+                      format: uuid
+                      description: "ID of the EV charging station this configuration belongs to. \n"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was created.
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was updated the last time.
+                x-readme-ref-name: EVChargingStationConfiguration
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Gateway not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateGatewayApplianceEVConfiguration
+      summary: Update an EV configuration
+      description: Updates the specified appliance's EV charging station configuration by setting the body parameters.
+      tags:
+      - EV Configuration
+      security:
+      - HeaderAuth:
+        - AppliancesEVConfigurationWrite
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: applianceID
+        description: 'Unique identifier used to access an appliance.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      requestBody:
+        description: Modified EV configuration.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                allOf:
+                - title: EV Charging Station Configuration
+                  description: 'Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+
+                    '
+                  type: object
+                  properties:
+                    issueTimestamp:
+                      type: string
+                      format: date-time
+                      deprecated: true
+                      description: 'Specifies when the configuration was send or received the last time by the EMS.
+
+
+                        **Deprecated** - No longer updated, always returns the current date.
+
+                        '
+                    chargingEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging is allowed.
+                    chargingRemoteControllable:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging may be controlled via network connection.
+                    lockEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether the plug is locked.
+                    minRequestedSoc:
+                      type:
+                      - number
+                      - 'null'
+                      minimum: 0
+                      maximum: 100
+                      format: double
+                      description: 'The minimum SoC the EV shall have and keep to guarantee the range for the next usage.
+
+
+                        This is set by the user and needed for `DEPARTURE_TIME_EV` and `MIN_EV` charge modes.
+
+                        If this value is set, the `userTotalCapacity` needs to be set, too.
+
+                        Value is between 0.0 - 100.0 in %.
+
+                        '
+                      example: 30
+                    departureTimestamp:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: "The planned departure timestamp of the EV for the `DEPARTURE_TIME_EV` charge mode.\n\n**The feature used to contain the following description, which is deprecated**: \nOnly the time of the day is considered, not the exact date.\nIf the time of day is in the past it is interpreted as tomorrow and if it in the future it is today.\n\nDeprecation: The deprecated behaviour will be phased out as it presents several inconsistencies. From then on \nthe timestamp will be considered as provided (with the date and time component) once this note is removed.\nEnsure to always set a departure timestamp in the future to experience consistent behaviour.\nWhen this note is removed, newly set departure times in the past may be rejected with a validation error.\n"
+                    estimatedDepartureTimestamp:
+                      type: string
+                      format: date-time
+                      description: 'The estimated timestamp when the desired SoC is reached.
+
+
+                        Optimally, the timestamp is close to the user''s wanted `departureTimestamp`.
+
+                        '
+                    userSoc:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      minimum: 0
+                      maximum: 100
+                      description: "The State of Charge (SoC) level read and set by the user for the connected EV.\nThis should be the SoC at the moment the EV is plugged, as the EMS extrapolates the currently estimated SoC \nduring the charging session from this value onwards.\nThis parameter can not be used to update the current SoC of an EV while a charging session is already \nongoing as this would lead to SoC misestimations.\n\nThis is needed in cases where the SoC cannot be determined automatically.\nValue is between 0.0 - 100.0 in %.\n"
+                      example: 50
+                    userTotalCapacity:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The size of the EV''s battery in Wh.
+
+
+                        If this cannot be determined directly from the hardware, then the user enters it during the onboarding process.
+
+                        The value is needed to calculate the energy that needs to be charged to fulfill the `minRequestedSoc`.
+
+                        '
+                      minimum: 0
+                      example: 82000
+                    chargeMode:
+                      type: string
+                      description: "Defines how the EV shall be charged.\n  * `FORCED_EV`: EV will be charged with full power until 100% SoC. This is the default behaviour, also if there is no configuration set. It does not require any additional fields to be set. Also commonly referred to as \"Quick Charge\".\n  * `MIN_EV`: EV will be charged with full power until the specified `minRequestedSoc` (must be provided). Also commonly referred to as \"Safety Charge\".\n  * `DEPARTURE_TIME_EV`: EV will be charged until `departureTimestamp` to the `minRequestedSoc`. This means that initially it charges with surplus energy, but if it is not enough it will charge with full power to meet the requested `departureTimestamp`. Also commonly referred to as \"Program Charge\".\n  * `SURPLUS_EV`: EV will only be charged with surplus energy regardless of SoC level. It does not require any additional fields to be set. Also commonly referred to as \"Solar Charge\".\n"
+                      enum:
+                      - FORCED_EV
+                      - MIN_EV
+                      - DEPARTURE_TIME_EV
+                      - SURPLUS_EV
+                    maxPowerCalculated:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum potential total charge power in Watt is calculated by the gridBox in usual setups.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        It considers the maximum power supported by the EV and that the power can be curtailed by the DLM.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    maxChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV charging power will not exceed the specified value.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    minChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The minimum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV will only be charged if the total power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 2070
+                    minChargePowerPerPhase:
+                      type: number
+                      format: double
+                      description: 'The minimum power that the EV should be charged with in Watt for one phase.
+
+
+                        EV will only be charged if **one** of the phases'' power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 1840
+                    evProfileID:
+                      description: Represents the ID of the EV profile that is going to be used in the next charging session.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  x-readme-ref-name: AbstractEVChargingStationConfiguration
+                x-readme-ref-name: EVChargingStationConfigurationUpdate
+              - additionalProperties: false
+              x-readme-ref-name: EVChargingStationConfigurationUpdateStrict
+      responses:
+        '200':
+          description: Updated Charging Station configuration.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                readOnly: true
+                allOf:
+                - title: EV Charging Station Configuration
+                  description: 'Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+
+                    '
+                  type: object
+                  properties:
+                    issueTimestamp:
+                      type: string
+                      format: date-time
+                      deprecated: true
+                      description: 'Specifies when the configuration was send or received the last time by the EMS.
+
+
+                        **Deprecated** - No longer updated, always returns the current date.
+
+                        '
+                    chargingEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging is allowed.
+                    chargingRemoteControllable:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether charging may be controlled via network connection.
+                    lockEnabled:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Specifies whether the plug is locked.
+                    minRequestedSoc:
+                      type:
+                      - number
+                      - 'null'
+                      minimum: 0
+                      maximum: 100
+                      format: double
+                      description: 'The minimum SoC the EV shall have and keep to guarantee the range for the next usage.
+
+
+                        This is set by the user and needed for `DEPARTURE_TIME_EV` and `MIN_EV` charge modes.
+
+                        If this value is set, the `userTotalCapacity` needs to be set, too.
+
+                        Value is between 0.0 - 100.0 in %.
+
+                        '
+                      example: 30
+                    departureTimestamp:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: "The planned departure timestamp of the EV for the `DEPARTURE_TIME_EV` charge mode.\n\n**The feature used to contain the following description, which is deprecated**: \nOnly the time of the day is considered, not the exact date.\nIf the time of day is in the past it is interpreted as tomorrow and if it in the future it is today.\n\nDeprecation: The deprecated behaviour will be phased out as it presents several inconsistencies. From then on \nthe timestamp will be considered as provided (with the date and time component) once this note is removed.\nEnsure to always set a departure timestamp in the future to experience consistent behaviour.\nWhen this note is removed, newly set departure times in the past may be rejected with a validation error.\n"
+                    estimatedDepartureTimestamp:
+                      type: string
+                      format: date-time
+                      description: 'The estimated timestamp when the desired SoC is reached.
+
+
+                        Optimally, the timestamp is close to the user''s wanted `departureTimestamp`.
+
+                        '
+                    userSoc:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      minimum: 0
+                      maximum: 100
+                      description: "The State of Charge (SoC) level read and set by the user for the connected EV.\nThis should be the SoC at the moment the EV is plugged, as the EMS extrapolates the currently estimated SoC \nduring the charging session from this value onwards.\nThis parameter can not be used to update the current SoC of an EV while a charging session is already \nongoing as this would lead to SoC misestimations.\n\nThis is needed in cases where the SoC cannot be determined automatically.\nValue is between 0.0 - 100.0 in %.\n"
+                      example: 50
+                    userTotalCapacity:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The size of the EV''s battery in Wh.
+
+
+                        If this cannot be determined directly from the hardware, then the user enters it during the onboarding process.
+
+                        The value is needed to calculate the energy that needs to be charged to fulfill the `minRequestedSoc`.
+
+                        '
+                      minimum: 0
+                      example: 82000
+                    chargeMode:
+                      type: string
+                      description: "Defines how the EV shall be charged.\n  * `FORCED_EV`: EV will be charged with full power until 100% SoC. This is the default behaviour, also if there is no configuration set. It does not require any additional fields to be set. Also commonly referred to as \"Quick Charge\".\n  * `MIN_EV`: EV will be charged with full power until the specified `minRequestedSoc` (must be provided). Also commonly referred to as \"Safety Charge\".\n  * `DEPARTURE_TIME_EV`: EV will be charged until `departureTimestamp` to the `minRequestedSoc`. This means that initially it charges with surplus energy, but if it is not enough it will charge with full power to meet the requested `departureTimestamp`. Also commonly referred to as \"Program Charge\".\n  * `SURPLUS_EV`: EV will only be charged with surplus energy regardless of SoC level. It does not require any additional fields to be set. Also commonly referred to as \"Solar Charge\".\n"
+                      enum:
+                      - FORCED_EV
+                      - MIN_EV
+                      - DEPARTURE_TIME_EV
+                      - SURPLUS_EV
+                    maxPowerCalculated:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum potential total charge power in Watt is calculated by the gridBox in usual setups.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        It considers the maximum power supported by the EV and that the power can be curtailed by the DLM.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    maxChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The maximum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV charging power will not exceed the specified value.
+
+                        '
+                      minimum: 0
+                      example: 8000
+                    minChargePower:
+                      type:
+                      - number
+                      - 'null'
+                      format: double
+                      description: 'The minimum total power that the EV should be charged with in Watt.
+
+
+                        The total power is defined as sum of all phases'' power.
+
+                        EV will only be charged if the total power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 2070
+                    minChargePowerPerPhase:
+                      type: number
+                      format: double
+                      description: 'The minimum power that the EV should be charged with in Watt for one phase.
+
+
+                        EV will only be charged if **one** of the phases'' power is above the specified value.
+
+                        '
+                      minimum: 0
+                      example: 1840
+                    evProfileID:
+                      description: Represents the ID of the EV profile that is going to be used in the next charging session.
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  x-readme-ref-name: AbstractEVChargingStationConfiguration
+                - required:
+                  - applianceID
+                  - createdAt
+                  - updatedAt
+                  - chargingEnabled
+                  - chargingRemoteControllable
+                  - lockEnabled
+                  - minRequestedSoc
+                  - departureTimestamp
+                  - userSoc
+                  - userTotalCapacity
+                  - maxPowerCalculated
+                  - maxChargePower
+                  - minChargePower
+                  properties:
+                    applianceID:
+                      type: string
+                      format: uuid
+                      description: "ID of the EV charging station this configuration belongs to. \n"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was created.
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the configuration was updated the last time.
+                x-readme-ref-name: EVChargingStationConfiguration
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteGatewayApplianceEVConfiguration
+      summary: Delete an EV configuration
+      description: Deletes an EV charging Station configuration.
+      tags:
+      - EV Configuration
+      security:
+      - HeaderAuth:
+        - AppliancesEVConfigurationWrite
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: applianceID
+        description: 'Unique identifier used to access an appliance.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      responses:
+        '204':
+          description: EV configuration has been deleted successfully.
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/appliances/applianceID/ev/configuration");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,4222 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Account API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Account across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Account
+  x-displayName: Account
+paths:
+  /account:
+    get:
+      operationId: getAuthenticatedAccount
+      summary: Retrieve the authenticated Account
+      description: Get the account that is currently logged in.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountRead
+      parameters:
+      - name: include
+        description: 'This query param allows to set certain fields only when needed.
+
+          This makes the request faster as it requires to load only necessary data.
+
+
+          If this param is set, only the specified fields are included.
+
+          All other fields, which are possible to include, will be excluded then.
+
+          '
+        in: query
+        example:
+        - address
+        - customization
+        - systemCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - address
+            - customization
+            - systemCount
+            - totalCount
+      responses:
+        '200':
+          description: Account returned.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Account
+                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                  '
+                type: object
+                readOnly: true
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  id:
+                    type: string
+                    format: uuid
+                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Uniquely identifies the account.
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was created.
+                    readOnly: true
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was updated.
+                    readOnly: true
+                  systemsCount:
+                    type: integer
+                    description: SystemCount is the number of systems assigned to this account
+                    example: 1
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKind
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  productBundles:
+                    type: array
+                    readOnly: true
+                    description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                      CONNECT is always included. Absent for end-user accounts.
+
+                      '
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                required:
+                - id
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Account not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/account"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/account \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/account', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/account")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateAuthenticatedAccount
+      summary: Update the authenticated Account
+      description: Update the user data of the authenticated account.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountWrite
+      requestBody:
+        description: Updates an account.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: 'Deprecated: This field is a no-op for update operations. The account kind cannot be changed after creation.
+
+                      '
+                    x-readme-ref-name: AccountKind
+                    deprecated: true
+                  solution:
+                    type: string
+                    description: 'Deprecated: This field is a no-op for update operations. The account solution cannot be changed after creation.
+
+                      '
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                    deprecated: true
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  productBundles:
+                    type: array
+                    description: "Product bundles to activate on the account. Only applicable to B2B child accounts.\n\n- If omitted (`null` / field absent), the existing bundles are left unchanged\n  (standard PATCH semantics).\n- An empty array is rejected with `422`; CONNECT must always be present.\n- All specified bundles must be active on the parent account; violating this\n  is rejected with `422`.\n- The provided set fully replaces the current bundles — values are not merged.\n- Removing a bundle also removes it from all descendant accounts on which it\n  is currently active. Adding a bundle only activates it on this account; it\n  is not inherited by child accounts and must be added to each of them\n  explicitly.\n- Bundles on your own account (the authenticated account) cannot be changed;\n  attempting this is rejected with `403`. Only child accounts are writable.\n- Cannot be set on non-B2B accounts.\n\n**Errors:** Rejected requests return `422`. If bundles are missing on the parent\naccount, `details` contains one entry per offending bundle in the format\n`bundle_not_in_parent: <BUNDLE>`, e.g. `bundle_not_in_parent: FLEX`. All\noffending bundles are reported at once. Other violations return a descriptive\nmessage in `details` that is not meant to be parsed.\n"
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                x-readme-ref-name: AccountUpdate
+              - additionalProperties: false
+              x-readme-ref-name: AccountUpdateStrict
+      responses:
+        '200':
+          description: Account updated.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Account
+                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                  '
+                type: object
+                readOnly: true
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  id:
+                    type: string
+                    format: uuid
+                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Uniquely identifies the account.
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was created.
+                    readOnly: true
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was updated.
+                    readOnly: true
+                  systemsCount:
+                    type: integer
+                    description: SystemCount is the number of systems assigned to this account
+                    example: 1
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKind
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  productBundles:
+                    type: array
+                    readOnly: true
+                    description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                      CONNECT is always included. Absent for end-user accounts.
+
+                      '
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                required:
+                - id
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Account not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/account\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/account \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/account', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/account\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts:
+    get:
+      operationId: listAccounts
+      summary: List all Accounts
+      description: 'List accounts that are accessible to the authenticated user.
+
+
+        By default only direct children accounts are returned.
+
+        This can be changed by setting the `full_hierarchy` query parameter to `true`.'
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsRead
+      parameters:
+      - name: kind
+        description: Account kind to filter by.
+        in: query
+        example: b2b
+        schema:
+          type: string
+          enum:
+          - b2b
+          - end-user
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: account_ids
+        description: IDs of the accounts to filter by.
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        example:
+        - 17874c1b-d073-4b06-bf01-a1497fbe1142
+        - d600fdd5-8ab8-4621-8116-42d6d5866075
+      - name: include
+        description: 'This query param allows to set certain fields only when needed.
+
+          This makes the request faster as it requires to load only necessary data.
+
+
+          If this param is set, only the specified fields are included.
+
+          All other fields, which are possible to include, will be excluded then.
+
+          '
+        in: query
+        example:
+        - address
+        - customization
+        - systemCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - address
+            - customization
+            - systemCount
+            - totalCount
+      - name: full_hierarchy
+        description: 'By default only direct children accounts are returned.
+
+          If set to `true`, the response includes the full account hierarchy
+
+          including the authenticated account or the account request for itself.
+
+
+          For accounts with a large number of children, this can be a costly operation and should be used with caution.
+
+          Consider using it together with the `account_ids` filter to increase performance.
+
+          '
+        in: query
+        schema:
+          type: boolean
+          default: false
+        example: true
+      responses:
+        '200':
+          description: Accounts returned.
+          headers:
+            Link:
+              description: 'Pagination links following RFC 5988. Contains `rel="first"`, `rel="next"`, and `rel="prev"`
+
+                relations as applicable based on the current page.
+
+
+                Example: `</accounts?page=1&per_page=20>; rel="first", </accounts?page=3&per_page=20>; rel="next"`
+
+                '
+              schema:
+                type: string
+            X-Total-Count:
+              description: 'Total number of elements matching the query, regardless of pagination.
+
+
+                Only present when `totalCount` is included in the `include` query parameter.
+
+                '
+              schema:
+                type: integer
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  title: Account
+                  description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                    '
+                  type: object
+                  readOnly: true
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                      description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                      minLength: 1
+                      maxLength: 256
+                    email:
+                      type: string
+                      format: email
+                      example: john@doe.com
+                      description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                      maxLength: 256
+                    solution:
+                      type: string
+                      description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                      enum:
+                      - HOME
+                      - CHARGE
+                      - GENERAL
+                      - SMART_DISTRICT
+                      - MICROGRID
+                      - HOME_VIRTUAL_METERING
+                      - COMMERCIAL
+                      - CUSTOM_P2P
+                      x-readme-ref-name: AccountSolution
+                    id:
+                      type: string
+                      format: uuid
+                      example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                      description: Uniquely identifies the account.
+                    parentID:
+                      type: string
+                      format: uuid
+                      example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                      description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the account was created.
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the account was updated.
+                      readOnly: true
+                    systemsCount:
+                      type: integer
+                      description: SystemCount is the number of systems assigned to this account
+                      example: 1
+                    kind:
+                      type: string
+                      readOnly: true
+                      enum:
+                      - b2b
+                      - end-user
+                      description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                      x-readme-ref-name: AccountKind
+                    mainAddress:
+                      title: Address
+                      description: Represents a physical address of a customer.
+                      allOf:
+                      - type: object
+                        properties:
+                          city:
+                            description: The city of the location.
+                            type: string
+                            example: Aachen
+                          country:
+                            description: The country of the location.
+                            type: string
+                            example: Germany
+                          addressLine1:
+                            description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                            type: string
+                            example: Oppenhoffallee 143
+                          addressLine2:
+                            description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine3:
+                            description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine4:
+                            description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          timeZone:
+                            description: The TZ Identifier of the location's timezone.
+                            type: string
+                            example: Europe/Berlin
+                            readOnly: true
+                        x-readme-ref-name: AbstractLocation
+                      - type: object
+                        properties:
+                          postalcode:
+                            description: The postal code of the location.
+                            type: string
+                            example: '52062'
+                          region:
+                            description: The region of the address.
+                            type: string
+                          telephone:
+                            description: The telephone number of the customer.
+                            type: string
+                      x-readme-ref-name: Address
+                    customization:
+                      description: Customization can be used to store arbitrary data.
+                    productBundles:
+                      type: array
+                      readOnly: true
+                      description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                        CONNECT is always included. Absent for end-user accounts.
+
+                        '
+                      items:
+                        type: string
+                        description: 'Represents an active product bundle on a B2B account.
+
+                          - CONNECT is always active and present on every B2B account.
+
+                          - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                          Non-B2B accounts expose no product bundles.
+
+                          '
+                        enum:
+                        - CONNECT
+                        - CONTROL
+                        - OPTIMIZE
+                        - FLEX
+                        x-readme-ref-name: ProductBundle
+                  required:
+                  - id
+                  - createdAt
+                  - updatedAt
+                  x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createAccount
+      summary: Create an Account
+      description: 'Create a new child account under the authenticated account. Unless a
+
+        property''s own description states otherwise, the child account inherits
+
+        the authenticated account''s value for any property not explicitly
+
+        specified in the request.'
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsWrite
+      requestBody:
+        description: Creates an account.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                required:
+                - name
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. If not set, defaults to the authenticated account.
+                  kind:
+                    type: string
+                    enum:
+                    - b2b
+                    - end-user
+                    default: b2b
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKindWithDefault
+                  groups:
+                    type: array
+                    description: the IDs of the policy groups that the account should be assigned to.
+                    example:
+                    - 532365fc-5a0e-4323-bc66-4ce9f1308480
+                    items:
+                      type: string
+                      format: uuid
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  productBundles:
+                    type: array
+                    description: "Product bundles to activate on the new account. Only applicable to B2B accounts.\n\n- If omitted, defaults to `[CONNECT]`.\n- An empty array is rejected with `422`; CONNECT must always be present.\n- All specified bundles must be active on the parent account; violating this\n  is rejected with `422`.\n- Cannot be set on non-B2B accounts.\n\n**Errors:** Rejected requests return `422`. If bundles are missing on the parent\naccount, `details` contains one entry per offending bundle in the format\n`bundle_not_in_parent: <BUNDLE>`, e.g. `bundle_not_in_parent: FLEX`. All\noffending bundles are reported at once. \n\n**Note:** This field is currently optional but will become required on 2027-04-01.\n"
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                x-readme-ref-name: AccountCreate
+              - additionalProperties: false
+              x-readme-ref-name: AccountCreateStrict
+      responses:
+        '201':
+          description: Account created.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Account
+                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                  '
+                type: object
+                readOnly: true
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  id:
+                    type: string
+                    format: uuid
+                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Uniquely identifies the account.
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was created.
+                    readOnly: true
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was updated.
+                    readOnly: true
+                  systemsCount:
+                    type: integer
+                    description: SystemCount is the number of systems assigned to this account
+                    example: 1
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKind
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  productBundles:
+                    type: array
+                    readOnly: true
+                    description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                      CONNECT is always included. Absent for end-user accounts.
+
+                      '
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                required:
+                - id
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/accounts \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/accounts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/accounts\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}:
+    get:
+      operationId: getAccount
+      summary: Retrieve an Account
+      description: Get an Account by its ID. Make sure you have the necessary permissions.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsRead
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: include
+        description: 'This query param allows to set certain fields only when needed.
+
+          This makes the request faster as it requires to load only necessary data.
+
+
+          If this param is set, only the specified fields are included.
+
+          All other fields, which are possible to include, will be excluded then.
+
+          '
+        in: query
+        example:
+        - address
+        - customization
+        - systemCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - address
+            - customization
+            - systemCount
+            - totalCount
+      responses:
+        '200':
+          description: Account returned.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Account
+                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                  '
+                type: object
+                readOnly: true
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  id:
+                    type: string
+                    format: uuid
+                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Uniquely identifies the account.
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was created.
+                    readOnly: true
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was updated.
+                    readOnly: true
+                  systemsCount:
+                    type: integer
+                    description: SystemCount is the number of systems assigned to this account
+                    example: 1
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKind
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  productBundles:
+                    type: array
+                    readOnly: true
+                    description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                      CONNECT is always included. Absent for end-user accounts.
+
+                      '
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                required:
+                - id
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Account not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateAccount
+      summary: Update an Account
+      description: Update an Account's information. Make sure you have the necessary permissions.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      requestBody:
+        description: Updates an account.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: 'Deprecated: This field is a no-op for update operations. The account kind cannot be changed after creation.
+
+                      '
+                    x-readme-ref-name: AccountKind
+                    deprecated: true
+                  solution:
+                    type: string
+                    description: 'Deprecated: This field is a no-op for update operations. The account solution cannot be changed after creation.
+
+                      '
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                    deprecated: true
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  productBundles:
+                    type: array
+                    description: "Product bundles to activate on the account. Only applicable to B2B child accounts.\n\n- If omitted (`null` / field absent), the existing bundles are left unchanged\n  (standard PATCH semantics).\n- An empty array is rejected with `422`; CONNECT must always be present.\n- All specified bundles must be active on the parent account; violating this\n  is rejected with `422`.\n- The provided set fully replaces the current bundles — values are not merged.\n- Removing a bundle also removes it from all descendant accounts on which it\n  is currently active. Adding a bundle only activates it on this account; it\n  is not inherited by child accounts and must be added to each of them\n  explicitly.\n- Bundles on your own account (the authenticated account) cannot be changed;\n  attempting this is rejected with `403`. Only child accounts are writable.\n- Cannot be set on non-B2B accounts.\n\n**Errors:** Rejected requests return `422`. If bundles are missing on the parent\naccount, `details` contains one entry per offending bundle in the format\n`bundle_not_in_parent: <BUNDLE>`, e.g. `bundle_not_in_parent: FLEX`. All\noffending bundles are reported at once. Other violations return a descriptive\nmessage in `details` that is not meant to be parsed.\n"
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                x-readme-ref-name: AccountUpdate
+              - additionalProperties: false
+              x-readme-ref-name: AccountUpdateStrict
+      responses:
+        '200':
+          description: Account updated.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Account
+                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                  '
+                type: object
+                readOnly: true
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                    minLength: 1
+                    maxLength: 256
+                  email:
+                    type: string
+                    format: email
+                    example: john@doe.com
+                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                    maxLength: 256
+                  solution:
+                    type: string
+                    description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                    enum:
+                    - HOME
+                    - CHARGE
+                    - GENERAL
+                    - SMART_DISTRICT
+                    - MICROGRID
+                    - HOME_VIRTUAL_METERING
+                    - COMMERCIAL
+                    - CUSTOM_P2P
+                    x-readme-ref-name: AccountSolution
+                  id:
+                    type: string
+                    format: uuid
+                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Uniquely identifies the account.
+                  parentID:
+                    type: string
+                    format: uuid
+                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was created.
+                    readOnly: true
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Specifies when the account was updated.
+                    readOnly: true
+                  systemsCount:
+                    type: integer
+                    description: SystemCount is the number of systems assigned to this account
+                    example: 1
+                  kind:
+                    type: string
+                    readOnly: true
+                    enum:
+                    - b2b
+                    - end-user
+                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                    x-readme-ref-name: AccountKind
+                  mainAddress:
+                    title: Address
+                    description: Represents a physical address of a customer.
+                    allOf:
+                    - type: object
+                      properties:
+                        city:
+                          description: The city of the location.
+                          type: string
+                          example: Aachen
+                        country:
+                          description: The country of the location.
+                          type: string
+                          example: Germany
+                        addressLine1:
+                          description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                          type: string
+                          example: Oppenhoffallee 143
+                        addressLine2:
+                          description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine3:
+                          description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        addressLine4:
+                          description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                          type: string
+                        timeZone:
+                          description: The TZ Identifier of the location's timezone.
+                          type: string
+                          example: Europe/Berlin
+                          readOnly: true
+                      x-readme-ref-name: AbstractLocation
+                    - type: object
+                      properties:
+                        postalcode:
+                          description: The postal code of the location.
+                          type: string
+                          example: '52062'
+                        region:
+                          description: The region of the address.
+                          type: string
+                        telephone:
+                          description: The telephone number of the customer.
+                          type: string
+                    x-readme-ref-name: Address
+                  customization:
+                    description: Customization can be used to store arbitrary data.
+                  productBundles:
+                    type: array
+                    readOnly: true
+                    description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                      CONNECT is always included. Absent for end-user accounts.
+
+                      '
+                    items:
+                      type: string
+                      description: 'Represents an active product bundle on a B2B account.
+
+                        - CONNECT is always active and present on every B2B account.
+
+                        - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                        Non-B2B accounts expose no product bundles.
+
+                        '
+                      enum:
+                      - CONNECT
+                      - CONTROL
+                      - OPTIMIZE
+                      - FLEX
+                      x-readme-ref-name: ProductBundle
+                required:
+                - id
+                - createdAt
+                - updatedAt
+                x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Account not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/accounts/accountID \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/accounts/accountID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteAccount
+      summary: Delete an Account
+      description: Delete an account given its ID.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: delete-users
+        description: 'If set, users belonging to this account will also be deleted.
+
+          '
+        in: query
+        explode: false
+        example: true
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: Account deleted successfully.
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/accounts/accountID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/accounts:
+    get:
+      operationId: listChildAccounts
+      summary: List all nested Accounts
+      description: 'List all accounts of the given account that are accessible to the authenticated user.
+
+
+        By default only direct children accounts are returned.
+
+        This can be changed by setting the `full_hierarchy` query parameter to `true`.'
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - NestedAccountsRead
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: kind
+        description: Account kind to filter by.
+        in: query
+        example: b2b
+        schema:
+          type: string
+          enum:
+          - b2b
+          - end-user
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: full_hierarchy
+        description: 'By default only direct children accounts are returned.
+
+          If set to `true`, the response includes the full account hierarchy
+
+          including the authenticated account or the account request for itself.
+
+
+          For accounts with a large number of children, this can be a costly operation and should be used with caution.
+
+          Consider using it together with the `account_ids` filter to increase performance.
+
+          '
+        in: query
+        schema:
+          type: boolean
+          default: false
+        example: true
+      - name: include
+        description: 'This query param allows to set certain fields only when needed.
+
+          This makes the request faster as it requires to load only necessary data.
+
+
+          If this param is set, only the specified fields are included.
+
+          All other fields, which are possible to include, will be excluded then.
+
+          '
+        in: query
+        example:
+        - address
+        - customization
+        - systemCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - address
+            - customization
+            - systemCount
+            - totalCount
+      responses:
+        '200':
+          description: Accounts returned.
+          headers:
+            Link:
+              description: 'Pagination links following RFC 5988. Contains `rel="first"`, `rel="next"`, and `rel="prev"`
+
+                relations as applicable based on the current page.
+
+
+                Example: `</accounts?page=1&per_page=20>; rel="first", </accounts?page=3&per_page=20>; rel="next"`
+
+                '
+              schema:
+                type: string
+            X-Total-Count:
+              description: 'Total number of elements matching the query, regardless of pagination.
+
+
+                Only present when `totalCount` is included in the `include` query parameter.
+
+                '
+              schema:
+                type: integer
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  title: Account
+                  description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                    '
+                  type: object
+                  readOnly: true
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                      description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                      minLength: 1
+                      maxLength: 256
+                    email:
+                      type: string
+                      format: email
+                      example: john@doe.com
+                      description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                      maxLength: 256
+                    solution:
+                      type: string
+                      description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                      enum:
+                      - HOME
+                      - CHARGE
+                      - GENERAL
+                      - SMART_DISTRICT
+                      - MICROGRID
+                      - HOME_VIRTUAL_METERING
+                      - COMMERCIAL
+                      - CUSTOM_P2P
+                      x-readme-ref-name: AccountSolution
+                    id:
+                      type: string
+                      format: uuid
+                      example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                      description: Uniquely identifies the account.
+                    parentID:
+                      type: string
+                      format: uuid
+                      example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                      description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the account was created.
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      description: Specifies when the account was updated.
+                      readOnly: true
+                    systemsCount:
+                      type: integer
+                      description: SystemCount is the number of systems assigned to this account
+                      example: 1
+                    kind:
+                      type: string
+                      readOnly: true
+                      enum:
+                      - b2b
+                      - end-user
+                      description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                      x-readme-ref-name: AccountKind
+                    mainAddress:
+                      title: Address
+                      description: Represents a physical address of a customer.
+                      allOf:
+                      - type: object
+                        properties:
+                          city:
+                            description: The city of the location.
+                            type: string
+                            example: Aachen
+                          country:
+                            description: The country of the location.
+                            type: string
+                            example: Germany
+                          addressLine1:
+                            description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                            type: string
+                            example: Oppenhoffallee 143
+                          addressLine2:
+                            description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine3:
+                            description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          addressLine4:
+                            description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                            type: string
+                          timeZone:
+                            description: The TZ Identifier of the location's timezone.
+                            type: string
+                            example: Europe/Berlin
+                            readOnly: true
+                        x-readme-ref-name: AbstractLocation
+                      - type: object
+                        properties:
+                          postalcode:
+                            description: The postal code of the location.
+                            type: string
+                            example: '52062'
+                          region:
+                            description: The region of the address.
+                            type: string
+                          telephone:
+                            description: The telephone number of the customer.
+                            type: string
+                      x-readme-ref-name: Address
+                    customization:
+                      description: Customization can be used to store arbitrary data.
+                    productBundles:
+                      type: array
+                      readOnly: true
+                      description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                        CONNECT is always included. Absent for end-user accounts.
+
+                        '
+                      items:
+                        type: string
+                        description: 'Represents an active product bundle on a B2B account.
+
+                          - CONNECT is always active and present on every B2B account.
+
+                          - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                          Non-B2B accounts expose no product bundles.
+
+                          '
+                        enum:
+                        - CONNECT
+                        - CONTROL
+                        - OPTIMIZE
+                        - FLEX
+                        x-readme-ref-name: ProductBundle
+                  required:
+                  - id
+                  - createdAt
+                  - updatedAt
+                  x-readme-ref-name: Account
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/accounts"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/accounts \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/accounts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/accounts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/accounts")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/accounts");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/tree:
+    get:
+      deprecated: true
+      summary: Get account tree
+      description: Returns the account tree of the passed account.
+      tags:
+      - Account
+      security:
+      - HeaderAuth:
+        - AccountsRead
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: depth
+        in: query
+        description: 'The depth of the tree to return. If not set, the whole tree is returned.
+
+          '
+        schema:
+          type: integer
+          minimum: 0
+          example: 2
+      - name: account_ids
+        description: IDs of the accounts to filter by.
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        example:
+        - 17874c1b-d073-4b06-bf01-a1497fbe1142
+        - d600fdd5-8ab8-4621-8116-42d6d5866075
+      responses:
+        '200':
+          $ref: '#/components/responses/GetAccountTreeResponse'
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/tree"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/tree \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/tree\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/tree', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/tree\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/tree\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/tree")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/tree");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+      operationId: getAccountsByAccountIDTree
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/parents:
+    get:
+      summary: List all parent accounts
+      operationId: listAccountParentAccounts
+      description: Lists all parent accounts starting at the passed account until root.
+      tags:
+      - Account
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      responses:
+        '200':
+          description: "Account parents sorted hierarchical.\nThe first item is the parent of the passed account. \nThe next is the parent of the parent of the passed account. \n"
+          content:
+            application/json:
+              example:
+              - accountID: parent
+                kind: end-user
+              - accountID: parent-parent
+                audience: my-audience
+                kind: b2b
+              - accountID: root
+                kind: b2b
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    accountID:
+                      type: string
+                    audience:
+                      type: string
+                    kind:
+                      type: string
+                  required:
+                  - accountID
+                  - kind
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security: []
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/parents"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/parents \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/parents\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/parents', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/parents\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/parents\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/parents")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/parents");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/bidding-zone:
+    get:
+      summary: Get bidding zone
+      operationId: getAccountBiddingZone
+      description: Get the electricity market bidding zone of the given accountID.
+      tags:
+      - Account
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      responses:
+        '200':
+          description: Bidding zone of the account.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'The bidding zone determines from which electricity market bidding
+
+                  zone the raw market prices for market data tariffs are used.'
+                allOf:
+                - type: object
+                  description: 'The bidding zone determines from which electricity market bidding
+
+                    zone the raw market prices for market data tariffs are used.
+
+
+                    The bidding zone is the ENTSOE-E Area EIC codes (Y).
+
+
+                    See https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+                    & https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+
+                    for available codes.'
+                  properties:
+                    biddingZone:
+                      example: 10Y1001A1001A44P
+                      type: string
+                  required:
+                  - biddingZone
+                  x-readme-ref-name: AbstractBiddingZone
+                - type: object
+                  properties:
+                    biddingZone: {}
+                x-readme-ref-name: BiddingZone
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/bidding-zone"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/bidding-zone \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/bidding-zone\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/bidding-zone', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/bidding-zone\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/bidding-zone\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/bidding-zone")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/bidding-zone");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      summary: Set bidding zone
+      operationId: setAccountBiddingZone
+      description: Set the electricity market bidding zone of the given accountID.
+      tags:
+      - Account
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      requestBody:
+        required: true
+        content:
+          application/vnd.gridx.v2+json:
+            schema:
+              description: Set of bidding zones.
+              allOf:
+              - description: Set of bidding zones.
+                allOf:
+                - type: object
+                  description: 'The bidding zone determines from which electricity market bidding
+
+                    zone the raw market prices for market data tariffs are used.
+
+
+                    The bidding zone is the ENTSOE-E Area EIC codes (Y).
+
+
+                    See https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+                    & https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+
+                    for available codes.'
+                  properties:
+                    biddingZone:
+                      example: 10Y1001A1001A44P
+                      type: string
+                  required:
+                  - biddingZone
+                  x-readme-ref-name: AbstractBiddingZone
+                - type: object
+                  properties:
+                    biddingZone: {}
+                x-readme-ref-name: BiddingZoneSet
+              - additionalProperties: false
+              x-readme-ref-name: BiddingZoneSetStrict
+      responses:
+        '200':
+          description: Bidding zone of the account.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'The bidding zone determines from which electricity market bidding
+
+                  zone the raw market prices for market data tariffs are used.'
+                allOf:
+                - type: object
+                  description: 'The bidding zone determines from which electricity market bidding
+
+                    zone the raw market prices for market data tariffs are used.
+
+
+                    The bidding zone is the ENTSOE-E Area EIC codes (Y).
+
+
+                    See https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+                    & https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+
+
+                    for available codes.'
+                  properties:
+                    biddingZone:
+                      example: 10Y1001A1001A44P
+                      type: string
+                  required:
+                  - biddingZone
+                  x-readme-ref-name: AbstractBiddingZone
+                - type: object
+                  properties:
+                    biddingZone: {}
+                x-readme-ref-name: BiddingZone
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/bidding-zone\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/vnd.gridx.v2+json\"\n}\n\nresponse = requests.put(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/accounts/accountID/bidding-zone \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/bidding-zone\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {\n    accept: 'application/vnd.gridx.v2+json',\n    'content-type': 'application/vnd.gridx.v2+json'\n  }\n};\n\nfetch('https://api.gridx.de/accounts/accountID/bidding-zone', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/bidding-zone\")\n  .put(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/bidding-zone\")\n  .put(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/bidding-zone\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/vnd.gridx.v2+json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/bidding-zone");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/vnd.gridx.v2+json");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  responses:
+    GetAccountTreeResponse:
+      description: Account tree returned.
+      content:
+        application/vnd.gridx.v2+json:
+          schema:
+            $ref: '#/components/schemas/AccountTreeNode'
+  schemas:
+    AccountTreeNode:
+      description: Account tree node.
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+          description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+          minLength: 1
+          maxLength: 256
+        email:
+          type: string
+          format: email
+          example: john@doe.com
+          description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+          maxLength: 256
+        solution:
+          type: string
+          description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+          enum:
+          - HOME
+          - CHARGE
+          - GENERAL
+          - SMART_DISTRICT
+          - MICROGRID
+          - HOME_VIRTUAL_METERING
+          - COMMERCIAL
+          - CUSTOM_P2P
+          x-readme-ref-name: AccountSolution
+        id:
+          type: string
+          format: uuid
+          example: 49a4f165-8233-426b-a1a4-e569665a25dd
+          description: Uniquely identifies the account.
+        parentID:
+          type: string
+          format: uuid
+          example: 19a4f165-8233-426b-a1a4-e569665a25dd
+          description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+        createdAt:
+          type: string
+          format: date-time
+          description: Specifies when the account was created.
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: Specifies when the account was updated.
+          readOnly: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountTreeNode'
+        kind:
+          type: string
+          readOnly: true
+          enum:
+          - b2b
+          - end-user
+          description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+          x-readme-ref-name: AccountKind
+        productBundles:
+          type: array
+          readOnly: true
+          description: 'Product bundles active on this account. Only present for B2B accounts.
+
+            CONNECT is always included. Absent for end-user accounts.
+
+            '
+          items:
+            type: string
+            description: 'Represents an active product bundle on a B2B account.
+
+              - CONNECT is always active and present on every B2B account.
+
+              - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+              Non-B2B accounts expose no product bundles.
+
+              '
+            enum:
+            - CONNECT
+            - CONTROL
+            - OPTIMIZE
+            - FLEX
+            x-readme-ref-name: ProductBundle
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - kind
+      x-readme-ref-name: AccountTreeNode
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

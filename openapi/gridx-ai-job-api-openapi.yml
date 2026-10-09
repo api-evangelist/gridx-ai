@@ -1,0 +1,1692 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Job API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Job across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Job
+  x-displayName: Job
+paths:
+  /gateways/{gatewayID}/jobs:
+    get:
+      operationId: listGatewayJobs
+      summary: List Gateway's Jobs
+      description: List jobs that belong to the given gateway.
+      tags:
+      - Job
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: sort
+        description: 'The field to sort the results by, to be used in combination with the `order` parameter.
+
+          Defaults to `finished`.
+
+          '
+        in: query
+        schema:
+          type: string
+          enum:
+          - requested
+          - received
+          - started
+          - finished
+          default: finished
+        example: started
+      - name: order
+        description: 'Order direction of the results, to be used in combination with the `sort` parameter.
+
+          Defaults to `asc`.
+
+          '
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        example: desc
+      responses:
+        '200':
+          description: 'An array of up to `per_page` jobs, sorted by `sort` and `order`.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                  - description: Represents an application-based job on the gridBox.
+                    type: object
+                    properties:
+                      type:
+                        description: 'Represents the kind of the job. A job can be of type:
+
+                          - `UNKNOWN_TYPE`
+
+                          - `RESET`: Indicates that the application has to be reset.
+
+                          - `SCAN`: Indicates that the application should start a scan.
+
+                          - `RESTART`: Indicates that the application should restart.
+
+                          '
+                        type: string
+                        enum:
+                        - UNKNOWN_TYPE
+                        - SCAN
+                        - RESET
+                        - RESTART
+                        example: RESET
+                        x-readme-ref-name: JobType
+                      requestedAt:
+                        description: Represents the time at which the job was requested.
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        example: '2018-04-15T00:00:00Z'
+                      state:
+                        type: string
+                        description: 'Represents the current state of the job. It can be one of:
+
+                          * `UNKNOWN_STATE`
+
+                          * `PENDING`: Indicates that the job waits to be fetched.
+
+                          * `RECEIVED`: Indicates that the job has reached the gridbox.
+
+                          * `STARTED`: Indicates that the job has been started.
+
+                          * `DONE`: Indicates that the job is done.
+
+                          * `ERROR`: Indicates that the job has failed.
+
+                          * `CANCELED`: Indicates that the job was remotely cancelled.It might only have an impact if the state is still pending.
+
+                          '
+                        enum:
+                        - UNKNOWN_STATE
+                        - PENDING
+                        - RECEIVED
+                        - STARTED
+                        - DONE
+                        - ERROR
+                        - CANCELED
+                        example: PENDING
+                        x-readme-ref-name: JobState
+                    x-readme-ref-name: AbstractJob
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        readOnly: true
+                        description: Unique identifier of a job.
+                        example: d90fc059-b1d0-4277-a347-43609e232f4f
+                      receivedAt:
+                        description: Represents the time at which the job was received by the gateway.
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        example: '2018-04-15T00:00:00Z'
+                      startedAt:
+                        description: Represents the time at which the job was started.
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        example: '2018-04-15T00:00:00Z'
+                      finishedAt:
+                        description: Represents the time at which the job was finished.
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        example: '2018-04-15T00:00:00Z'
+                      executions:
+                        description: Represents a set of job executions.
+                        type: array
+                        items:
+                          title: Job Execution
+                          description: Represents an execution of a job.
+                          type: object
+                          properties:
+                            id:
+                              description: Unique identifier of a job execution.
+                              type: string
+                              format: uuid
+                              example: 5830cd32-a194-4b9d-bea3-c2332f27167f
+                            jobID:
+                              description: Unique identifier of a job.
+                              type: string
+                              format: uuid
+                            succeeded:
+                              description: Indicates that the execution was successful.
+                              type: boolean
+                            error:
+                              description: A possible error message.
+                              type: string
+                            startedAt:
+                              description: Represents the time at which the execution was started at the gridbox.
+                              type: string
+                              format: date-time
+                              readOnly: true
+                              example: '2018-04-15T00:00:00Z'
+                            finishedAt:
+                              description: Represents the time at which the execution was finished.
+                              type: string
+                              format: date-time
+                              readOnly: true
+                              example: '2018-04-15T00:00:00Z'
+                          required:
+                          - id
+                          x-readme-ref-name: JobExecution
+                    required:
+                    - id
+                    - state
+                    - type
+                    - executions
+                  x-readme-ref-name: JobWithExecutions
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Gateway not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - JobsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/jobs"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways/gatewayID/jobs \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/jobs\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/jobs', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/jobs")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/jobs");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createJob
+      summary: Create a job
+      description: 'Creates a job with the given type, specified in the request body, for the given gateway,
+
+        only if a job with that type doesn''t already exist.
+
+
+        * `SCAN`: Once this job is triggered, the gridBox will look for connected appliances and update the list accordingly.
+
+
+        * `RESET`: This type of job resets gridBox to default and removes it from previously configured system.
+
+
+        * `RESTART`: Once this job is triggered, the gridBox will restart.
+
+
+        *Job execution is asynchronous and does not guarantee immediate execution.*
+
+
+        This is a body-based alternative to `POST /gateways/{gatewayID}/jobs/{jobType}`.'
+      tags:
+      - Job
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      requestBody:
+        description: Creates a job.
+        required: true
+        content:
+          application/vnd.gridx.v2+json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  type:
+                    description: 'Represents the type of job that can be created:
+
+                      - `RESET`: Indicates that the application has to be reset.
+
+                      - `SCAN`: Indicates that the application should start a scan.
+
+                      - `RESTART`: Indicates that the application should restart.
+
+                      '
+                    type: string
+                    enum:
+                    - SCAN
+                    - RESET
+                    - RESTART
+                    example: RESET
+                    x-readme-ref-name: JobCreateType
+                required:
+                - type
+                x-readme-ref-name: JobCreate
+              - additionalProperties: false
+              x-readme-ref-name: JobCreateStrict
+      responses:
+        '201':
+          description: 'A job.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                allOf:
+                - description: Represents an application-based job on the gridBox.
+                  type: object
+                  properties:
+                    type:
+                      description: 'Represents the kind of the job. A job can be of type:
+
+                        - `UNKNOWN_TYPE`
+
+                        - `RESET`: Indicates that the application has to be reset.
+
+                        - `SCAN`: Indicates that the application should start a scan.
+
+                        - `RESTART`: Indicates that the application should restart.
+
+                        '
+                      type: string
+                      enum:
+                      - UNKNOWN_TYPE
+                      - SCAN
+                      - RESET
+                      - RESTART
+                      example: RESET
+                      x-readme-ref-name: JobType
+                    requestedAt:
+                      description: Represents the time at which the job was requested.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    state:
+                      type: string
+                      description: 'Represents the current state of the job. It can be one of:
+
+                        * `UNKNOWN_STATE`
+
+                        * `PENDING`: Indicates that the job waits to be fetched.
+
+                        * `RECEIVED`: Indicates that the job has reached the gridbox.
+
+                        * `STARTED`: Indicates that the job has been started.
+
+                        * `DONE`: Indicates that the job is done.
+
+                        * `ERROR`: Indicates that the job has failed.
+
+                        * `CANCELED`: Indicates that the job was remotely cancelled.It might only have an impact if the state is still pending.
+
+                        '
+                      enum:
+                      - UNKNOWN_STATE
+                      - PENDING
+                      - RECEIVED
+                      - STARTED
+                      - DONE
+                      - ERROR
+                      - CANCELED
+                      example: PENDING
+                      x-readme-ref-name: JobState
+                  x-readme-ref-name: AbstractJob
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                      description: Unique identifier of a job.
+                      example: d90fc059-b1d0-4277-a347-43609e232f4f
+                  required:
+                  - state
+                  - type
+                x-readme-ref-name: JobCreation
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '409':
+          description: Resource already exists
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Conflict
+                  description: 'Conflict indicates that the client is attempting to create a resource that already exists.
+
+                    '
+                  type: object
+                  example:
+                    message: Resource already exists
+                x-readme-ref-name: ConflictException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - JobsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/gateways/gatewayID/jobs\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/vnd.gridx.v2+json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/gateways/gatewayID/jobs \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/jobs\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {\n    accept: 'application/vnd.gridx.v2+json',\n    'content-type': 'application/vnd.gridx.v2+json'\n  }\n};\n\nfetch('https://api.gridx.de/gateways/gatewayID/jobs', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/gateways/gatewayID/jobs\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/vnd.gridx.v2+json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/jobs");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/vnd.gridx.v2+json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /gateways/{gatewayID}/jobs/{jobType}:
+    post:
+      operationId: createGatewayJob
+      summary: Create a job with a given type
+      deprecated: true
+      description: '**Deprecated**: Use `POST /gateways/{gatewayID}/jobs` instead.
+
+
+        Creates a job with the given type for the given gateway, only if a job with that type doesn''t already exist.
+
+        Please note that the job type is case-sensitive (the job type path parameter is lower case opposed to the enum value returned in the body).
+
+
+        * `scan`: Once this job is triggered, the gridBox will look for connected appliances and update the list accordingly.
+
+
+        * `reset`: This type of job resets gridBox to default and removes it from previously configured system.
+
+
+        * `restart`: Once this job is triggered, the gridBox will restart.
+
+
+        *Job execution is asynchronous and does not guarantee immediate execution.*'
+      tags:
+      - Job
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: jobType
+        description: 'The type of job to create. The value is case-sensitive and must be lowercase.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          x-extensible-enum:
+          - scan
+          - reset
+          - restart
+        examples:
+          jobTypeReset:
+            summary: Reset Job.
+            value: reset
+          jobTypeScan:
+            summary: Scan Job.
+            value: scan
+          jobTypeRestart:
+            summary: Restart Job.
+            value: restart
+      responses:
+        '201':
+          description: 'A job.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                allOf:
+                - description: Represents an application-based job on the gridBox.
+                  type: object
+                  properties:
+                    type:
+                      description: 'Represents the kind of the job. A job can be of type:
+
+                        - `UNKNOWN_TYPE`
+
+                        - `RESET`: Indicates that the application has to be reset.
+
+                        - `SCAN`: Indicates that the application should start a scan.
+
+                        - `RESTART`: Indicates that the application should restart.
+
+                        '
+                      type: string
+                      enum:
+                      - UNKNOWN_TYPE
+                      - SCAN
+                      - RESET
+                      - RESTART
+                      example: RESET
+                      x-readme-ref-name: JobType
+                    requestedAt:
+                      description: Represents the time at which the job was requested.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    state:
+                      type: string
+                      description: 'Represents the current state of the job. It can be one of:
+
+                        * `UNKNOWN_STATE`
+
+                        * `PENDING`: Indicates that the job waits to be fetched.
+
+                        * `RECEIVED`: Indicates that the job has reached the gridbox.
+
+                        * `STARTED`: Indicates that the job has been started.
+
+                        * `DONE`: Indicates that the job is done.
+
+                        * `ERROR`: Indicates that the job has failed.
+
+                        * `CANCELED`: Indicates that the job was remotely cancelled.It might only have an impact if the state is still pending.
+
+                        '
+                      enum:
+                      - UNKNOWN_STATE
+                      - PENDING
+                      - RECEIVED
+                      - STARTED
+                      - DONE
+                      - ERROR
+                      - CANCELED
+                      example: PENDING
+                      x-readme-ref-name: JobState
+                  x-readme-ref-name: AbstractJob
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                      description: Unique identifier of a job.
+                      example: d90fc059-b1d0-4277-a347-43609e232f4f
+                  required:
+                  - state
+                  - type
+                x-readme-ref-name: JobCreation
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - JobsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/jobs/jobType"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.post(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/gateways/gatewayID/jobs/jobType \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/jobs/jobType\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'POST', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/jobs/jobType', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobType\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobType\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/jobs/jobType")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "POST"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/jobs/jobType");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /gateways/{gatewayID}/jobs/{jobID}:
+    get:
+      operationId: getGatewayJob
+      summary: Get a Job
+      description: Gets a particular job that belongs to the given gateway.
+      tags:
+      - Job
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: jobID
+        description: 'Unique identifier of a job.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 0dce59b6-edd5-4366-a6fb-27c0ab3e8f90
+      responses:
+        '200':
+          description: 'A job.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                allOf:
+                - description: Represents an application-based job on the gridBox.
+                  type: object
+                  properties:
+                    type:
+                      description: 'Represents the kind of the job. A job can be of type:
+
+                        - `UNKNOWN_TYPE`
+
+                        - `RESET`: Indicates that the application has to be reset.
+
+                        - `SCAN`: Indicates that the application should start a scan.
+
+                        - `RESTART`: Indicates that the application should restart.
+
+                        '
+                      type: string
+                      enum:
+                      - UNKNOWN_TYPE
+                      - SCAN
+                      - RESET
+                      - RESTART
+                      example: RESET
+                      x-readme-ref-name: JobType
+                    requestedAt:
+                      description: Represents the time at which the job was requested.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    state:
+                      type: string
+                      description: 'Represents the current state of the job. It can be one of:
+
+                        * `UNKNOWN_STATE`
+
+                        * `PENDING`: Indicates that the job waits to be fetched.
+
+                        * `RECEIVED`: Indicates that the job has reached the gridbox.
+
+                        * `STARTED`: Indicates that the job has been started.
+
+                        * `DONE`: Indicates that the job is done.
+
+                        * `ERROR`: Indicates that the job has failed.
+
+                        * `CANCELED`: Indicates that the job was remotely cancelled.It might only have an impact if the state is still pending.
+
+                        '
+                      enum:
+                      - UNKNOWN_STATE
+                      - PENDING
+                      - RECEIVED
+                      - STARTED
+                      - DONE
+                      - ERROR
+                      - CANCELED
+                      example: PENDING
+                      x-readme-ref-name: JobState
+                  x-readme-ref-name: AbstractJob
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                      description: Unique identifier of a job.
+                      example: d90fc059-b1d0-4277-a347-43609e232f4f
+                    receivedAt:
+                      description: Represents the time at which the job was received by the gateway.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    startedAt:
+                      description: Represents the time at which the job was started.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    finishedAt:
+                      description: Represents the time at which the job was finished.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    executions:
+                      description: Represents a set of job executions.
+                      type: array
+                      items:
+                        title: Job Execution
+                        description: Represents an execution of a job.
+                        type: object
+                        properties:
+                          id:
+                            description: Unique identifier of a job execution.
+                            type: string
+                            format: uuid
+                            example: 5830cd32-a194-4b9d-bea3-c2332f27167f
+                          jobID:
+                            description: Unique identifier of a job.
+                            type: string
+                            format: uuid
+                          succeeded:
+                            description: Indicates that the execution was successful.
+                            type: boolean
+                          error:
+                            description: A possible error message.
+                            type: string
+                          startedAt:
+                            description: Represents the time at which the execution was started at the gridbox.
+                            type: string
+                            format: date-time
+                            readOnly: true
+                            example: '2018-04-15T00:00:00Z'
+                          finishedAt:
+                            description: Represents the time at which the execution was finished.
+                            type: string
+                            format: date-time
+                            readOnly: true
+                            example: '2018-04-15T00:00:00Z'
+                        required:
+                        - id
+                        x-readme-ref-name: JobExecution
+                  required:
+                  - id
+                  - state
+                  - type
+                  - executions
+                x-readme-ref-name: JobWithExecutions
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: Job or Gateway not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - JobsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/jobs/jobID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways/gatewayID/jobs/jobID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/jobs/jobID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/jobs/jobID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/jobs/jobID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/jobs/jobID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: cancelGatewayJob
+      summary: Cancel a particular job
+      description: Cancels a particular job from the given gateway.
+      tags:
+      - Job
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: jobID
+        description: 'Unique identifier of a job.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 0dce59b6-edd5-4366-a6fb-27c0ab3e8f90
+      responses:
+        '200':
+          description: 'A job.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: object
+                allOf:
+                - description: Represents an application-based job on the gridBox.
+                  type: object
+                  properties:
+                    type:
+                      description: 'Represents the kind of the job. A job can be of type:
+
+                        - `UNKNOWN_TYPE`
+
+                        - `RESET`: Indicates that the application has to be reset.
+
+                        - `SCAN`: Indicates that the application should start a scan.
+
+                        - `RESTART`: Indicates that the application should restart.
+
+                        '
+                      type: string
+                      enum:
+                      - UNKNOWN_TYPE
+                      - SCAN
+                      - RESET
+                      - RESTART
+                      example: RESET
+                      x-readme-ref-name: JobType
+                    requestedAt:
+                      description: Represents the time at which the job was requested.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    state:
+                      type: string
+                      description: 'Represents the current state of the job. It can be one of:
+
+                        * `UNKNOWN_STATE`
+
+                        * `PENDING`: Indicates that the job waits to be fetched.
+
+                        * `RECEIVED`: Indicates that the job has reached the gridbox.
+
+                        * `STARTED`: Indicates that the job has been started.
+
+                        * `DONE`: Indicates that the job is done.
+
+                        * `ERROR`: Indicates that the job has failed.
+
+                        * `CANCELED`: Indicates that the job was remotely cancelled.It might only have an impact if the state is still pending.
+
+                        '
+                      enum:
+                      - UNKNOWN_STATE
+                      - PENDING
+                      - RECEIVED
+                      - STARTED
+                      - DONE
+                      - ERROR
+                      - CANCELED
+                      example: PENDING
+                      x-readme-ref-name: JobState
+                  x-readme-ref-name: AbstractJob
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                      description: Unique identifier of a job.
+                      example: d90fc059-b1d0-4277-a347-43609e232f4f
+                    receivedAt:
+                      description: Represents the time at which the job was received by the gateway.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    startedAt:
+                      description: Represents the time at which the job was started.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    finishedAt:
+                      description: Represents the time at which the job was finished.
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      example: '2018-04-15T00:00:00Z'
+                    executions:
+                      description: Represents a set of job executions.
+                      type: array
+                      items:
+                        title: Job Execution
+                        description: Represents an execution of a job.
+                        type: object
+                        properties:
+                          id:
+                            description: Unique identifier of a job execution.
+                            type: string
+                            format: uuid
+                            example: 5830cd32-a194-4b9d-bea3-c2332f27167f
+                          jobID:
+                            description: Unique identifier of a job.
+                            type: string
+                            format: uuid
+                          succeeded:
+                            description: Indicates that the execution was successful.
+                            type: boolean
+                          error:
+                            description: A possible error message.
+                            type: string
+                          startedAt:
+                            description: Represents the time at which the execution was started at the gridbox.
+                            type: string
+                            format: date-time
+                            readOnly: true
+                            example: '2018-04-15T00:00:00Z'
+                          finishedAt:
+                            description: Represents the time at which the execution was finished.
+                            type: string
+                            format: date-time
+                            readOnly: true
+                            example: '2018-04-15T00:00:00Z'
+                        required:
+                        - id
+                        x-readme-ref-name: JobExecution
+                  required:
+                  - id
+                  - state
+                  - type
+                  - executions
+                x-readme-ref-name: JobWithExecutions
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: Job or Gateway not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - JobsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/jobs/jobID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/gateways/gatewayID/jobs/jobID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/jobs/jobID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/jobs/jobID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/jobs/jobID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/jobs/jobID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/jobs/jobID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,254 @@
+overlay: 1.0.0
+info:
+  title: gridX API enhancements (API Evangelist)
+  version: 1.0.0
+generated: '2026-10-09'
+method: generated
+source: openapi/gridx-ai-openapi.yml
+extends: ../openapi/_original/gridx-ai-openapi.yml
+actions:
+- target: $.paths['/accounts/{accountID}/tree'].get
+  description: Operation ships without an operationId; add one so tooling and skills can reference it.
+  update:
+    operationId: getAccountTree
+- target: $.info
+  update:
+    x-apis-json: https://raw.githubusercontent.com/api-evangelist/gridx-ai/refs/heads/main/apis.yml
+    x-provider: gridX GmbH
+    x-documentation: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- target: $
+  description: Spec declares HeaderAuth but no top-level security requirement; apply it globally.
+  update:
+    security:
+    - HeaderAuth: []
+- target: $.paths['/account'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/account/tokens'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/account/tokens/{tokenID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/accounts'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user/stars/accounts'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/parents'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/customers'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/customers/{customerID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances/{applianceID}/ev/configuration'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/ev-profiles'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/ev-profiles/{evProfileID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/evcharging-schedules'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/live'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/historical'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances/{applianceID}/measurements/appliance'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances/{applianceID}/measurements'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances/{applianceID}/measurements/energymanagement'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/power-limit-schedules'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/power-limit-schedules/{scheduleID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/power-limit-schedules-intervals'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/product-functionalities'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/product-functionalities/{functionalityID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/product-options'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user/tokens'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user/tokens/{tokenID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user/logins'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/users/{userID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/users'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/users/{userID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/customers/{customerID}/users'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/curtailment-clusters/{clusterID}/live'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/emobility/timeofuse'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/evcs-user-priorities'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/health-checks'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/assets/{assetID}/intent/current'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/assets/{assetID}/intent/history'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/scanconfiguration'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/systems'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/assets'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/assets/{assetID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/appliances/{applianceID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/scans'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/firmware'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/jobs'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/gateways/{gatewayID}/jobs/{jobID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/gateways/{gatewayID}/import-power-limit'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/gateways/{gatewayID}/export-power-limit'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/user/stars/systems'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/list'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/tags'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/assets/{assetID}/measurements'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/account/market-prices/{platform}'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/bidding-zone'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/tariff'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/tariff/prices'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/tariff/grid-fees'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/decisions'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/settings'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/forecasts/meter'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/forecasts/meter/last-updated'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/forecasts/pv'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/status'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/status/current'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/readiness'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/timeofuse/kpi'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/costs-kpi'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/systems/{systemID}/import-power-limit-schedule'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/webhooks'].get
+  update:
+    x-agent-readonly: true
+- target: $.paths['/accounts/{accountID}/webhooks/{webhookID}'].get
+  update:
+    x-agent-readonly: true

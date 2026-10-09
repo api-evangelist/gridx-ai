@@ -1,0 +1,1510 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Tag API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Tag across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Tag
+  x-displayName: Tag
+paths:
+  /systems/{systemID}/tags:
+    put:
+      summary: Replace and create all tags for a specific system
+      description: 'Replaces all tags associated with a specific system. If the request payload contains tags,
+
+        all existing tags will be removed and replaced with the ones provided.
+
+        If an empty array is provided, all tags will be removed for the system.'
+      operationId: setSystemTags
+      tags:
+      - Tag
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: 'Array of tags to be assigned to the system.
+
+          All existing tags will be replaced with the ones provided in the request payload.
+
+          A request payload with an empty array `[]` will remove all tags for the system.
+
+          '
+        required: true
+        content:
+          application/json:
+            schema:
+              description: 'An array of tags where each tag includes a name and a value.
+
+                '
+              type: array
+              items:
+                allOf:
+                - type: object
+                  description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                  required:
+                  - name
+                  - value
+                  properties:
+                    name:
+                      type: string
+                      description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                      maxLength: 128
+                      pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                      example: category
+                    value:
+                      type: string
+                      description: 'The value associated with the tag name.
+
+                        This can be any valid string up to 128 characters.
+
+                        '
+                      maxLength: 128
+                      example: technology
+                  x-readme-ref-name: AbstractTag
+                - additionalProperties: false
+                x-readme-ref-name: AbstractTagStrict
+              x-readme-ref-name: AbstractTagsStrict
+      responses:
+        '200':
+          description: Tags successfully created for the system.
+          content:
+            application/json:
+              schema:
+                description: 'An array of tags.
+
+                  '
+                type: array
+                items:
+                  allOf:
+                  - type: object
+                    description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                    required:
+                    - name
+                    - value
+                    properties:
+                      name:
+                        type: string
+                        description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                        maxLength: 128
+                        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                        example: category
+                      value:
+                        type: string
+                        description: 'The value associated with the tag name.
+
+                          This can be any valid string up to 128 characters.
+
+                          '
+                        maxLength: 128
+                        example: technology
+                    x-readme-ref-name: AbstractTag
+                  - properties:
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was created in RFC3339 format.
+                        example: '2017-12-22T14:20:50Z'
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was last updated in RFC3339 format.
+                        example: '2017-12-24T08:33:00Z'
+                  x-readme-ref-name: Tag
+                example:
+                - name: category
+                  value: technology
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                - name: priority
+                  value: high
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                x-readme-ref-name: Tags
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tags\"\n\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/tags \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tags\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tags', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .put(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .put(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tags\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tags");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      summary: Update or create tags for a system
+      description: 'Partially set or update tags for a specific system.
+
+        If a tag with the given name exists, its value will be updated.
+
+        If the tag does not exist, it will be created.
+
+        The response status code is always `200 OK`, even if new tags are created.'
+      operationId: partialSetSystemTags
+      tags:
+      - Tag
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: 'Array of tags to be updated or created for the post.
+
+          If a tag with the given name exists, its value will be updated.
+
+          If the tag does not exist, it will be created.
+
+          '
+        required: true
+        content:
+          application/json:
+            schema:
+              description: 'An array of tags where each tag includes a name and a value.
+
+                '
+              type: array
+              items:
+                allOf:
+                - type: object
+                  description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                  required:
+                  - name
+                  - value
+                  properties:
+                    name:
+                      type: string
+                      description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                      maxLength: 128
+                      pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                      example: category
+                    value:
+                      type: string
+                      description: 'The value associated with the tag name.
+
+                        This can be any valid string up to 128 characters.
+
+                        '
+                      maxLength: 128
+                      example: technology
+                  x-readme-ref-name: AbstractTag
+                - additionalProperties: false
+                x-readme-ref-name: AbstractTagStrict
+              x-readme-ref-name: AbstractTagsStrict
+      responses:
+        '200':
+          description: Tags were successfully updated or created.
+          content:
+            application/json:
+              schema:
+                description: 'An array of tags.
+
+                  '
+                type: array
+                items:
+                  allOf:
+                  - type: object
+                    description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                    required:
+                    - name
+                    - value
+                    properties:
+                      name:
+                        type: string
+                        description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                        maxLength: 128
+                        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                        example: category
+                      value:
+                        type: string
+                        description: 'The value associated with the tag name.
+
+                          This can be any valid string up to 128 characters.
+
+                          '
+                        maxLength: 128
+                        example: technology
+                    x-readme-ref-name: AbstractTag
+                  - properties:
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was created in RFC3339 format.
+                        example: '2017-12-22T14:20:50Z'
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was last updated in RFC3339 format.
+                        example: '2017-12-24T08:33:00Z'
+                  x-readme-ref-name: Tag
+                example:
+                - name: category
+                  value: technology
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                - name: priority
+                  value: high
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                x-readme-ref-name: Tags
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tags\"\n\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/systems/systemID/tags \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tags\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tags', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tags\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tags");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    get:
+      summary: List Tags for a Specific System
+      description: Retrieves a list of tags associated with a specific system. Optionally filters tags by their names and values using prefix, suffix, and substring filters. All provided filters are combined using logical AND, meaning only tags that satisfy **all** filter conditions will be returned. If no filters are provided, all tags for the specified post are returned. **Note:** All filtering is case-sensitive.
+      operationId: listSystemTags
+      tags:
+      - Tag
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: nameHasPrefix
+        in: query
+        description: Filters tags where the name starts with the specified prefix.
+        required: false
+        schema:
+          type: string
+          example: cat
+      - name: nameHasSuffix
+        in: query
+        description: Filters tags where the name ends with the specified suffix.
+        required: false
+        schema:
+          type: string
+          example: ory
+      - name: nameContains
+        in: query
+        description: Filters tags where the name contains the specified substring.
+        required: false
+        schema:
+          type: string
+          example: ate
+      - name: value
+        in: query
+        description: Filters tags by an exact match on the tag value.
+        required: false
+        schema:
+          type: string
+          example: technology
+      - name: valueHasPrefix
+        in: query
+        description: Filters tags where the value starts with the specified prefix.
+        required: false
+        schema:
+          type: string
+          example: tech
+      - name: valueHasSuffix
+        in: query
+        description: Filters tags where the value ends with the specified suffix.
+        required: false
+        schema:
+          type: string
+          example: logy
+      - name: valueContains
+        in: query
+        description: Filters tags where the value contains the specified substring.
+        required: false
+        schema:
+          type: string
+          example: chnol
+      responses:
+        '200':
+          description: Tags that match provided optional filters returned.
+          content:
+            application/json:
+              schema:
+                description: 'An array of tags.
+
+                  '
+                type: array
+                items:
+                  allOf:
+                  - type: object
+                    description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                    required:
+                    - name
+                    - value
+                    properties:
+                      name:
+                        type: string
+                        description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                        maxLength: 128
+                        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                        example: category
+                      value:
+                        type: string
+                        description: 'The value associated with the tag name.
+
+                          This can be any valid string up to 128 characters.
+
+                          '
+                        maxLength: 128
+                        example: technology
+                    x-readme-ref-name: AbstractTag
+                  - properties:
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was created in RFC3339 format.
+                        example: '2017-12-22T14:20:50Z'
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the system tag was last updated in RFC3339 format.
+                        example: '2017-12-24T08:33:00Z'
+                  x-readme-ref-name: Tag
+                example:
+                - name: category
+                  value: technology
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                - name: priority
+                  value: high
+                  createdAt: '2017-12-22T14:20:50Z'
+                  updatedAt: '2017-12-22T14:20:50Z'
+                x-readme-ref-name: Tags
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tags"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/tags \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tags\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tags', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tags")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tags");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/tags/{tagName}:
+    put:
+      summary: Create or update a tag for a system
+      description: 'Creates or updates a tag for a specific system. If the tag doesn''t exist, it will be created,
+
+        and the status code `201 Created` will be returned.
+
+        If the tag exists, its value will be updated and the status code `200 OK` will be returned
+
+        (even if the new value is the same as the previous one).'
+      operationId: setSystemTag
+      tags:
+      - Tag
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: tagName
+        in: path
+        required: true
+        description: The name of the tag to create or update. Must only contain lowercase letters and hyphens, and must not start or end with a hyphen. Must be 128 characters max.
+        schema:
+          type: string
+          maxLength: 128
+          pattern: ^[a-z]+(-[a-z]+)*$
+      requestBody:
+        description: The value to associate with the tag.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                description: 'A TagValue represents a value for a key-value tag pair that can be associated with a specific system.
+
+                  Each tag has a value which has a maximum length of 128 characters.
+
+                  '
+                required:
+                - value
+                properties:
+                  value:
+                    type: string
+                    description: 'The value associated with the tag name.
+
+                      This can be any valid string up to 128 characters.
+
+                      '
+                    maxLength: 128
+                    example: technology
+                x-readme-ref-name: TagValue
+              - additionalProperties: false
+              x-readme-ref-name: TagValueStrict
+      responses:
+        '200':
+          description: Tag was successfully updated.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                  required:
+                  - name
+                  - value
+                  properties:
+                    name:
+                      type: string
+                      description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                      maxLength: 128
+                      pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                      example: category
+                    value:
+                      type: string
+                      description: 'The value associated with the tag name.
+
+                        This can be any valid string up to 128 characters.
+
+                        '
+                      maxLength: 128
+                      example: technology
+                  x-readme-ref-name: AbstractTag
+                - properties:
+                    createdAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the system tag was created in RFC3339 format.
+                      example: '2017-12-22T14:20:50Z'
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the system tag was last updated in RFC3339 format.
+                      example: '2017-12-24T08:33:00Z'
+                x-readme-ref-name: Tag
+        '201':
+          description: Tag was successfully created.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  description: "A Tag represents a key-value pair that can be associated with a specific system.\nIt allows categorization, labeling, or providing metadata to systems.\nEach tag consists of a name and value, where the name is constrained to lowercase letters and hyphens, \nand both the name and value have a maximum length of 128 characters.\n"
+                  required:
+                  - name
+                  - value
+                  properties:
+                    name:
+                      type: string
+                      description: "The unique identifier of the tag within the context of the system.\nThe tag name must consist only of lowercase letters (a-z), numbers (0-9), and hyphens (-), and must not start or end with a hyphen. \nIt can be at most 128 characters long.\n"
+                      maxLength: 128
+                      pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+                      example: category
+                    value:
+                      type: string
+                      description: 'The value associated with the tag name.
+
+                        This can be any valid string up to 128 characters.
+
+                        '
+                      maxLength: 128
+                      example: technology
+                  x-readme-ref-name: AbstractTag
+                - properties:
+                    createdAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the system tag was created in RFC3339 format.
+                      example: '2017-12-22T14:20:50Z'
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the system tag was last updated in RFC3339 format.
+                      example: '2017-12-24T08:33:00Z'
+                x-readme-ref-name: Tag
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tags/tagName\"\n\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/tags/tagName \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tags/tagName\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tags/tagName', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags/tagName\")\n  .put(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags/tagName\")\n  .put(null)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tags/tagName\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tags/tagName");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      summary: Delete a tag for a system
+      description: 'Deletes a tag for a specific system. If the tag exists, it will be deleted and the status code `204 OK` will be returned.
+
+        If the tag doesn''t exist the status code `404 Created` will be returned.'
+      operationId: deleteSystemTag
+      tags:
+      - Tag
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: tagName
+        in: path
+        required: true
+        description: The name of the tag to create or update. Must only contain lowercase letters and hyphens, and must not start or end with a hyphen. Must be 128 characters max.
+        schema:
+          type: string
+          maxLength: 128
+          pattern: ^[a-z]+(-[a-z]+)*$
+      responses:
+        '204':
+          description: System tag deleted successfully!
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System tag not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemsWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tags/tagName"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/tags/tagName \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tags/tagName\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tags/tagName', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags/tagName\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tags/tagName\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tags/tagName")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tags/tagName");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,930 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Cluster API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Cluster across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Cluster
+  x-displayName: Cluster
+paths:
+  /curtailment-clusters/{clusterID}/live:
+    get:
+      operationId: getLatestCurtailmentClusterLiveMeasurement
+      summary: Retrieve Cluster's Live Measurement
+      description: Retrieves a cluster's latest aggregated measurement.
+      tags:
+      - Cluster
+      parameters:
+      - name: clusterID
+        description: Unique identifier used to access a cluster.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 2c7043ae-1539-4e02-bdbd-0395c90d6bd0
+      responses:
+        '200':
+          description: Successfully returned cluster's live measurements.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Measurement
+                type: object
+                properties:
+                  measuredAt:
+                    type: string
+                    format: date-time
+                    example: '2018-04-01T00:10:00Z'
+                    description: "Date and time at which the data point was observed.\nFor power values the data point is written after the aggregated \ntime span. For energy values the observation is stored at the \nbeginning of the aggregated time span.\n"
+                  grid:
+                    type: number
+                    format: double
+                    description: 'Grid is the measured power/energy at the grid connection point.
+
+
+                      For power values, Positive values indicate supply, Negative values
+
+                      indicate feed in.
+
+                      '
+                  gridL1:
+                    type: number
+                    format: double
+                    description: "GridL1 is the power/energy measured at the grid connection point's \nfirst phase.\n"
+                  gridL2:
+                    type: number
+                    format: double
+                    description: "GridL2 is the power/energy measured at the grid connection point's \nsecond phase.\n"
+                  gridL3:
+                    type: number
+                    format: double
+                    description: "GridL3 is the power/energy measured at the grid connection point's \nthird phase.\n"
+                  gridSupplyLimit:
+                    type: number
+                    format: double
+                    description: 'GridSupplyLimit is the restriction of supplied power at the grid
+
+                      connection point.
+
+                      '
+                  photovoltaic:
+                    type: number
+                    format: double
+                    description: 'Photovoltaic is the measured power/energy in front of the
+
+                      photovoltaic systems.
+
+                      '
+                  photovoltaicExternal:
+                    type: number
+                    format: double
+                    description: 'PhotovoltaicExternal is the measured power/energy in front of the
+
+                      external photovoltaic systems.
+
+                      '
+                  blockTypeThermalPowerStation:
+                    type: number
+                    format: double
+                    description: 'BTTPPower is the measured power for the block-type thermal power
+
+                      station.
+
+                      '
+                  fuelCell:
+                    type: number
+                    format: double
+                    description: 'FuelCell is the measured power/energy in front of the fuel cells.
+
+                      '
+                  production:
+                    type: number
+                    format: double
+                    description: Sum of all energy producing appliances (e.g. PV).
+                  battery:
+                    title: Battery Measurement
+                    description: 'MeasurementBattery represents the aggregated power or energy the gateway
+
+                      measured from a battery.
+
+                      '
+                    type: object
+                    properties:
+                      applianceID:
+                        type: string
+                        description: 'ApplianceID is the battery''s appliance ID. It is empty for
+
+                          aggregated batteries.
+
+                          '
+                        example: a7d56cb5-2dac-48d4-952a-6eb75ee0ce18
+                      power:
+                        type: number
+                        format: double
+                        description: 'Power is the measured power used to charge/discharge the battery.
+
+
+                          Unit W, Meaning, Positive values indicate discharging. Negative
+
+                          values indicate charging.
+
+                          '
+                      charge:
+                        type: number
+                        format: double
+                        minimum: 0
+                        description: 'Charge is the measured power used to charge the battery.
+
+
+                          Unit W. Positive values indicate charging power.
+
+                          '
+                      discharge:
+                        type: number
+                        format: double
+                        minimum: 0
+                        description: 'Discharge is the measured power used to discharge the battery.
+
+
+                          Unit W. Positive values indicate discharging power.
+
+                          '
+                      remainingCharge:
+                        type: number
+                        format: double
+                        description: RemainingCharge is the amount of energy left.
+                      capacity:
+                        type: number
+                        format: double
+                        description: Maximum energy the battery can provide in Wh.
+                      nominalCapacity:
+                        type: number
+                        format: double
+                        description: Nominal capacity of the battery in Wh.
+                      stateOfCharge:
+                        type: number
+                        format: double
+                        description: 'State of Charge indicates how full a battery is. Unit Percentage
+
+                          points 0.0-1.0.
+
+                          '
+                    x-readme-ref-name: BatteryMeasurement
+                  batteries:
+                    type: array
+                    description: Battery measurements for each battery in the system.
+                    items:
+                      title: Battery Measurement
+                      description: 'MeasurementBattery represents the aggregated power or energy the gateway
+
+                        measured from a battery.
+
+                        '
+                      type: object
+                      properties:
+                        applianceID:
+                          type: string
+                          description: 'ApplianceID is the battery''s appliance ID. It is empty for
+
+                            aggregated batteries.
+
+                            '
+                          example: a7d56cb5-2dac-48d4-952a-6eb75ee0ce18
+                        power:
+                          type: number
+                          format: double
+                          description: 'Power is the measured power used to charge/discharge the battery.
+
+
+                            Unit W, Meaning, Positive values indicate discharging. Negative
+
+                            values indicate charging.
+
+                            '
+                        charge:
+                          type: number
+                          format: double
+                          minimum: 0
+                          description: 'Charge is the measured power used to charge the battery.
+
+
+                            Unit W. Positive values indicate charging power.
+
+                            '
+                        discharge:
+                          type: number
+                          format: double
+                          minimum: 0
+                          description: 'Discharge is the measured power used to discharge the battery.
+
+
+                            Unit W. Positive values indicate discharging power.
+
+                            '
+                        remainingCharge:
+                          type: number
+                          format: double
+                          description: RemainingCharge is the amount of energy left.
+                        capacity:
+                          type: number
+                          format: double
+                          description: Maximum energy the battery can provide in Wh.
+                        nominalCapacity:
+                          type: number
+                          format: double
+                          description: Nominal capacity of the battery in Wh.
+                        stateOfCharge:
+                          type: number
+                          format: double
+                          description: 'State of Charge indicates how full a battery is. Unit Percentage
+
+                            points 0.0-1.0.
+
+                            '
+                      x-readme-ref-name: BatteryMeasurement
+                  heatPump:
+                    type: number
+                    format: double
+                    description: 'Aggregated measured power/energy for heat pumps.
+
+                      '
+                  heatPumpExternal:
+                    type: number
+                    format: double
+                    description: "Aggregated measured power/energy for heat pumps that have their own \nheat pump tariff.\n"
+                  heatPumps:
+                    type: array
+                    description: Heat pump measurements for each heat pump in the system.
+                    items:
+                      title: Heat pump measurement
+                      type: object
+                      properties:
+                        applianceID:
+                          type: string
+                        power:
+                          type: number
+                          format: double
+                        sgReadyState:
+                          type: string
+                          default: UNKNOWN
+                          enum:
+                          - UNKNOWN
+                          - 'OFF'
+                          - AUTO
+                          - RECOMMEND_ON
+                          - 'ON'
+                          description: Defines the state set for SG Ready.
+                      x-readme-ref-name: HeatPumpMeasurement
+                  evChargingStation:
+                    title: 'MeasurementEVStation represents the power or energy the gateway measured
+
+                      from a ev charging station
+
+                      '
+                    type: object
+                    properties:
+                      applianceID:
+                        type: string
+                        description: gridX API internal ID of the appliance.
+                        example: a7d56cb5-2dac-48d4-952a-6eb75ee0ce18
+                      power:
+                        type: number
+                        format: double
+                        description: 'Measured power used to charge/discharge via EV station,
+
+                          positive values indicate charging, negatives discharging.
+
+                          '
+                      charge:
+                        type: number
+                        format: double
+                        minimum: 0
+                        description: 'Charge is the measured power used to charge the EV.
+
+
+                          Unit W. Positive values indicate charging power.
+
+                          '
+                      discharge:
+                        type: number
+                        format: double
+                        minimum: 0
+                        description: 'Discharge is the measured power used to discharge the EV.
+
+
+                          Unit W. Positive values indicate discharging power.
+
+                          '
+                      stateOfCharge:
+                        type: number
+                        format: double
+                        description: 'Percentage of the EVs battery capacity charged (0.0-1.0).
+
+                          '
+                      readingTotal:
+                        type: number
+                        format: double
+                        description: The sum of all meter readings in Wh.
+                      readingTariff1:
+                        type: number
+                        format: double
+                        description: The meter reading of meter tariff 1 in Wh.
+                      readingTariff2:
+                        type: number
+                        format: double
+                        description: The meter reading of meter tariff 2 in Wh.
+                      plugState:
+                        type: string
+                        description: Defines whether this EV is currently plugged in the charging station and whether it's charging.
+                        default: UNPLUGGED
+                        enum:
+                        - UNPLUGGED
+                        - PLUGGED_ON_STATION
+                        - PLUGGED_ON_STATION_AND_PLUGGED_ON_VEHICLE
+                      stationState:
+                        type: string
+                        description: Describes the status of the charging station. Note that this value is only meaningful in live measurements.
+                        default: UNKNOWN
+                        enum:
+                        - UNKNOWN
+                        - NOT_READY
+                        - READY
+                        - CHARGING
+                        - CHARGING_INTERRUPTED
+                        - ERROR
+                        - AUTHORIZATION_REJECTED
+                        - ZERO_POWER_LOCK
+                        - CHARGING_IN_PHASE_SWITCH
+                      currentL1:
+                        type: number
+                        format: double
+                        description: Current of the first phase in Ampere.
+                      currentL2:
+                        type: number
+                        format: double
+                        description: Current of the second phase in Ampere.
+                      currentL3:
+                        type: number
+                        format: double
+                        description: Current of the third phase in Ampere.
+                    x-readme-ref-name: EVStationMeasurement
+                  evChargingStations:
+                    type: array
+                    description: "Charging station measurements for all charging stations that are \npart of the system.\n"
+                    items:
+                      title: 'MeasurementEVStation represents the power or energy the gateway measured
+
+                        from a ev charging station
+
+                        '
+                      type: object
+                      properties:
+                        applianceID:
+                          type: string
+                          description: gridX API internal ID of the appliance.
+                          example: a7d56cb5-2dac-48d4-952a-6eb75ee0ce18
+                        power:
+                          type: number
+                          format: double
+                          description: 'Measured power used to charge/discharge via EV station,
+
+                            positive values indicate charging, negatives discharging.
+
+                            '
+                        charge:
+                          type: number
+                          format: double
+                          minimum: 0
+                          description: 'Charge is the measured power used to charge the EV.
+
+
+                            Unit W. Positive values indicate charging power.
+
+                            '
+                        discharge:
+                          type: number
+                          format: double
+                          minimum: 0
+                          description: 'Discharge is the measured power used to discharge the EV.
+
+
+                            Unit W. Positive values indicate discharging power.
+
+                            '
+                        stateOfCharge:
+                          type: number
+                          format: double
+                          description: 'Percentage of the EVs battery capacity charged (0.0-1.0).
+
+                            '
+                        readingTotal:
+                          type: number
+                          format: double
+                          description: The sum of all meter readings in Wh.
+                        readingTariff1:
+                          type: number
+                          format: double
+                          description: The meter reading of meter tariff 1 in Wh.
+                        readingTariff2:
+                          type: number
+                          format: double
+                          description: The meter reading of meter tariff 2 in Wh.
+                        plugState:
+                          type: string
+                          description: Defines whether this EV is currently plugged in the charging station and whether it's charging.
+                          default: UNPLUGGED
+                          enum:
+                          - UNPLUGGED
+                          - PLUGGED_ON_STATION
+                          - PLUGGED_ON_STATION_AND_PLUGGED_ON_VEHICLE
+                        stationState:
+                          type: string
+                          description: Describes the status of the charging station. Note that this value is only meaningful in live measurements.
+                          default: UNKNOWN
+                          enum:
+                          - UNKNOWN
+                          - NOT_READY
+                          - READY
+                          - CHARGING
+                          - CHARGING_INTERRUPTED
+                          - ERROR
+                          - AUTHORIZATION_REJECTED
+                          - ZERO_POWER_LOCK
+                          - CHARGING_IN_PHASE_SWITCH
+                        currentL1:
+                          type: number
+                          format: double
+                          description: Current of the first phase in Ampere.
+                        currentL2:
+                          type: number
+                          format: double
+                          description: Current of the second phase in Ampere.
+                        currentL3:
+                          type: number
+                          format: double
+                          description: Current of the third phase in Ampere.
+                      x-readme-ref-name: EVStationMeasurement
+                  consumption:
+                    type: number
+                    format: double
+                    description: Adjusted power/energy of the system.
+                  totalConsumption:
+                    type: number
+                    format: double
+                    description: 'Adjusted power/energy of the system including heatpumps
+
+                      and EV charging stations.
+
+                      '
+                  selfConsumption:
+                    type: number
+                    format: double
+                    description: 'Power/Energy consumed through production and charged into battery.
+
+                      '
+                  directConsumption:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed through production directly.
+
+                      '
+                  directConsumptionHousehold:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed by the household through production directly.
+
+                      '
+                  directConsumptionHeatPump:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed by the heat pump through production directly.
+
+                      '
+                  directConsumptionEV:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed by the EV through production directly.
+
+                      '
+                  directConsumptionHeater:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed by the heater through production directly.
+
+                      '
+                  selfSupply:
+                    type: number
+                    format: double
+                    description: 'Power/energy consumed through storage and production.
+
+                      '
+                  selfSufficiencyRate:
+                    type: number
+                    format: double
+                    description: 'Ratio of produced energy vs total consumed energy (0.0-1.0).
+
+                      '
+                    example: 0.9
+                  selfConsumptionRate:
+                    type: number
+                    format: double
+                    description: Ratio of self consumption vs production (0.0-1.0).
+                  directConsumptionRate:
+                    type: number
+                    format: double
+                    description: Ratio of direct consumption vs production (0.0-1.0).
+                  heating:
+                    type: number
+                    format: double
+                    description: Aggregated power/energy measured for heaters.
+                  heatingTemperature:
+                    type: number
+                    format: double
+                    description: Average temperature of the heaters in °C.
+                  heaters:
+                    type: array
+                    description: 'Heating measurement for all heaters that are part of the system.
+
+                      '
+                    items:
+                      title: Heater Measurement
+                      type: object
+                      properties:
+                        measuredAt:
+                          type: string
+                          format: date-time
+                          description: Represents the time when the data was measured.
+                        applianceID:
+                          type: string
+                          description: Unique identifier for referencing a heater.
+                        power:
+                          type: number
+                          format: double
+                          description: Power consumed by the heater in W.
+                        powerL1:
+                          type: number
+                          format: int64
+                          description: Power consumed by the heater on the first phase in W.
+                        powerL2:
+                          type: number
+                          format: int64
+                          description: Power consumed by the heater on the second phase in W.
+                        powerL3:
+                          type: number
+                          format: int64
+                          description: Power consumed by the heater on the third phase in W.
+                        temperature:
+                          type: number
+                          format: double
+                          description: Temperature measured by this heater in °C.
+                        minTemperature:
+                          type: number
+                          format: double
+                          description: Minimum temperature measured by this heater in °C.
+                        maxTemperature:
+                          type: number
+                          format: double
+                          description: Maximum temperature measured by this heater in °C.
+                      x-readme-ref-name: MeasurementHeating
+                  appliancePower:
+                    type: number
+                    format: double
+                    description: 'Power of the appliances with misc location, empty for energy.
+
+                      '
+                  appliances:
+                    type: array
+                    items:
+                      title: Additional meter appliances
+                      description: "Used in installations that have multiple grid meters, e.g. for \nmulti family homes which a central PV but multiple meters.\n"
+                      type: object
+                      properties:
+                        applianceID:
+                          type: string
+                          description: gridX API internal identifier of the meter.
+                          example: a7d56cb5-2dac-48d4-952a-6eb75ee0ce18
+                        power:
+                          type: number
+                          format: double
+                          description: Power/energy measured for this meter in W.
+                        kind:
+                          type: string
+                          description: Kind of the appliance measurement.
+                      required:
+                      - applianceID
+                      x-readme-ref-name: MeasurementAppliance
+                  gridMeterReadingPositive:
+                    type: number
+                    format: double
+                    description: 'Meter reading for grid in Ws (Imported Energy), empty for energy.
+
+                      '
+                  gridMeterReadingNegative:
+                    type: number
+                    format: double
+                    description: 'Meter reading for grid in Ws (Exported Energy), empty for energy.
+
+                      '
+                  heatPumpMeterReadingPositive:
+                    type: number
+                    format: double
+                    description: "Meter reading for heatpump in Ws (Imported Energy), empty for \nenergy.\n"
+                  heatPumpMeterReadingNegative:
+                    type: number
+                    format: double
+                    description: "Meter Reading for heatpump in Ws (Exported Energy), empty for \nenergy.\n"
+                  windTurbine:
+                    type: number
+                    format: double
+                  fuelCellMeterReadingPositive:
+                    type: number
+                    format: double
+                    description: Meter reading for FuelCell in Ws (Imported Energy).
+                  fuelCellMeterReadingNegative:
+                    type: number
+                    format: double
+                    description: Meter reading for FuelCell in Ws (Exported Energy).
+                  l1CurtailmentPower:
+                    type: number
+                    format: double
+                    description: "Potential max. charging power minus the actual setpoint in Ws on \nphase 1.\n"
+                  l2CurtailmentPower:
+                    type: number
+                    format: double
+                    description: "Potential max. charging power minus the actual setpoint in Ws on \nphase 2.\n"
+                  l3CurtailmentPower:
+                    type: number
+                    format: double
+                    description: "Potential max. charging power minus the actual setpoint in Ws on \nphase 3.\n"
+                  fuseProtectionCount:
+                    type: integer
+                    description: 'Number of times the fuse was protected, based on the curtailed power
+
+                      over all phases.
+
+                      '
+                  airConditioner:
+                    type: number
+                    format: double
+                    description: 'Combined power of all air conditioner assets.
+
+                      '
+                x-readme-ref-name: ClusterMeasurement
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '401':
+          description: Unauthorized.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Unauthorized
+                  description: The client isn't authorized to access the requested resource.
+                  example:
+                    message: Unauthorized
+                x-readme-ref-name: UnauthorizedException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - SystemMeasurementsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/curtailment-clusters/clusterID/live"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/curtailment-clusters/clusterID/live \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/curtailment-clusters/clusterID/live\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/curtailment-clusters/clusterID/live', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/curtailment-clusters/clusterID/live\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/curtailment-clusters/clusterID/live\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/curtailment-clusters/clusterID/live")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/curtailment-clusters/clusterID/live");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,710 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Intent API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Intent across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Intent
+  x-displayName: Intent
+paths:
+  /assets/{assetID}/intent/current:
+    get:
+      x-badges:
+      - label: draft
+        color: red
+      summary: Current intent and active modifiers for an asset
+      description: 'Returns the latest intent reported by the EMS for the given asset, together with
+
+        the set of modifier flags active at the most recent reporting tick.
+
+
+        If the EMS has not yet reported an intent for this asset, `intent` is `null`,
+
+        `modifiers` is an empty array, and `reportedAt` is `null`.'
+      operationId: getAssetIntentCurrent
+      tags:
+      - Intent
+      parameters:
+      - name: assetID
+        description: 'Unique identifier used to access an asset.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      responses:
+        '200':
+          description: Current intent state for the asset
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - assetID
+                - intent
+                - modifiers
+                - reportedAt
+                properties:
+                  assetID:
+                    type: string
+                    description: The asset this state belongs to.
+                    example: asset-abc-123
+                  intent:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The high-level strategic goal the EMS is pursuing for the asset.
+
+                      `null` means no intent has been reported yet for this asset.
+
+
+                      | Value | Description |
+
+                      |---|---|
+
+                      | `INTENT_UNSPECIFIED` | Default zero value. The EMS has not set a meaningful intent for the asset. |
+
+                      | `INTENT_SSO` | Self-sufficiency optimisation. The asset control is determined by SSO targets. |
+
+                      | `INTENT_INTERNAL_TARGET` | The EMS is driving the asset towards an internally defined target, for example during a force-charge session. |
+
+                      | `INTENT_EXTERNAL_TARGET` | The EMS derived its decision for the asset from an external control input via DER-API. |'
+                    enum:
+                    - INTENT_UNSPECIFIED
+                    - INTENT_SSO
+                    - INTENT_INTERNAL_TARGET
+                    - INTENT_EXTERNAL_TARGET
+                    example: INTENT_SSO
+                    x-readme-ref-name: Intent
+                  modifiers:
+                    type: array
+                    description: 'The set of modifier flags active at the most recent reporting tick.
+
+                      A tick is one aggregation window (currently one minute). Multiple modifiers
+
+                      can be present simultaneously because each constraint is evaluated independently:
+
+                      for example, an import limit and a fuse protection limit can both apply to
+
+                      the same decision at the same tick.
+
+
+                      | Value | Description |
+
+                      |---|---|
+
+                      | `MODIFIER_LIMITED_BY_FEED_IN` | Output is capped by a feed-in limitation regulation (e.g. EEG §9, G100). |
+
+                      | `MODIFIER_LIMITED_BY_TAKEOFF` | Output is capped by a grid takeoff limitation (e.g. §14a, G100). |
+
+                      | `MODIFIER_LIMITED_BY_SURPLUS` | The asset is operating in surplus-charge mode; insufficient power is available to increase the power allocation. |
+
+                      | `MODIFIER_LIMITED_INTERNALLY` | An internal hardware limit or configuration from API is limiting the asset. |
+
+                      | `MODIFIER_LIMITED_EXTERNALLY` | An external DER-API signal is limiting the asset. |
+
+                      | `MODIFIER_FUSE_PROTECTION` | The asset is limited due to system fuse limits. |
+
+                      | `MODIFIER_MINIMUM_POWER_NOT_REACHED` | The available or requested power is below the asset''s minimum threshold to charge. |'
+                    items:
+                      type: string
+                      description: 'A real-time constraint that qualifies how the core intent is being executed.
+
+
+                        | Value | Description |
+
+                        |---|---|
+
+                        | `MODIFIER_LIMITED_BY_FEED_IN` | Output is capped by a feed-in limitation regulation (e.g. EEG §9, G100). |
+
+                        | `MODIFIER_LIMITED_BY_TAKEOFF` | Output is capped by a grid takeoff limitation (e.g. §14a, G100). |
+
+                        | `MODIFIER_LIMITED_BY_SURPLUS` | The asset is operating in surplus-charge mode; insufficient power is available to increase the power allocation. |
+
+                        | `MODIFIER_LIMITED_INTERNALLY` | An internal hardware limit or configuration from API is limiting the asset. |
+
+                        | `MODIFIER_LIMITED_EXTERNALLY` | An external DER-API signal is limiting the asset. |
+
+                        | `MODIFIER_FUSE_PROTECTION` | The asset is limited due to system fuse limits. |
+
+                        | `MODIFIER_MINIMUM_POWER_NOT_REACHED` | The available or requested power is below the asset''s minimum threshold to charge. |'
+                      enum:
+                      - MODIFIER_LIMITED_BY_FEED_IN
+                      - MODIFIER_LIMITED_BY_TAKEOFF
+                      - MODIFIER_LIMITED_BY_SURPLUS
+                      - MODIFIER_LIMITED_INTERNALLY
+                      - MODIFIER_LIMITED_EXTERNALLY
+                      - MODIFIER_FUSE_PROTECTION
+                      - MODIFIER_MINIMUM_POWER_NOT_REACHED
+                      x-readme-ref-name: Modifier
+                    example:
+                    - MODIFIER_LIMITED_BY_FEED_IN
+                    - MODIFIER_LIMITED_BY_SURPLUS
+                  reportedAt:
+                    type: string
+                    format: date-time
+                    description: 'Timestamp of the most recent report that produced this state.
+
+                      `null` if the EMS has not yet reported for this asset.'
+                    example: '2026-06-09T10:05:00Z'
+                x-readme-ref-name: AssetIntentCurrent
+              examples:
+                sso_with_modifiers:
+                  summary: Asset controlled for SSO, with two active limitations
+                  description: "The EMS is running self-sufficiency optimisation. \nTwo modifiers are active simultaneously for the decision \nas the asset is limited by fuse protection (phase specific limits) and total \nimport power limits."
+                  value:
+                    assetID: asset-abc-123
+                    intent: INTENT_SSO
+                    modifiers:
+                    - MODIFIER_FUSE_PROTECTION
+                    - MODIFIER_LIMITED_BY_TAKEOFF
+                    reportedAt: '2026-06-09T10:05:00Z'
+                external_target_and_limit:
+                  summary: Asset controlled according to external target, with one active external limitations
+                  description: 'The EMS is controlling the asset according to an external target (e.g. Time-of-Use).
+
+                    At the same time, the asset is also limited to a reduced operating range.
+
+                    One example of this is following a specific external battery-charge target, but preventing
+
+                    charging too quickly (for example if there is additional local surplus).'
+                  value:
+                    assetID: asset-abc-123
+                    intent: INTENT_EXTERNAL_TARGET
+                    modifiers:
+                    - MODIFIER_LIMITED_EXTERNALLY
+                    reportedAt: '2026-06-09T10:05:00Z'
+                no_intent_yet:
+                  summary: EMS has not reported yet
+                  description: 'The EMS has not sent a report for this asset. All fields are null and
+
+                    modifiers is empty.'
+                  value:
+                    assetID: asset-abc-123
+                    intent: null
+                    modifiers: []
+                    reportedAt: null
+        '400':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/assets/assetID/intent/current"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/assets/assetID/intent/current \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/assets/assetID/intent/current\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/assets/assetID/intent/current', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/assets/assetID/intent/current\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/assets/assetID/intent/current\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/assets/assetID/intent/current")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/assets/assetID/intent/current");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /assets/{assetID}/intent/history:
+    get:
+      x-badges:
+      - label: draft
+        color: red
+      summary: Historical intent and modifier segments for an asset
+      description: 'Returns closed `[from, to)` intervals during which a given intent or modifier was
+
+        continuously active, bounded by the requested time range.
+
+
+        **Intent segments** are derived from the sparse change-event log. A gap between
+
+        two segments means the EMS reported a different intent during that period.
+
+
+        **Modifier segments** are derived from the minute-resolution modifier log.
+
+        A gap of more than one reporting tick (> 1 minute) closes a segment. The
+
+        `gapTolerance` parameter overrides this threshold.
+
+
+        A segment with `to` omitted was still active at query time and was not clipped by
+
+        the `to` boundary. A segment whose `to` equals the request `to` was clipped at
+
+        the query boundary and may still be ongoing.
+
+
+        The maximum allowed range between `from` and `to` is 30 days.
+
+
+        For examples, see also `/assets/{assetID}/intent/current`.'
+      operationId: getAssetIntentHistory
+      tags:
+      - Intent
+      parameters:
+      - name: assetID
+        description: 'Unique identifier used to access an asset.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      - name: from
+        in: query
+        required: true
+        description: Start of the time range (inclusive), RFC 3339.
+        schema:
+          type: string
+          format: date-time
+        example: '2026-06-09T08:00:00Z'
+      - name: to
+        in: query
+        required: true
+        description: End of the time range (exclusive), RFC 3339.
+        schema:
+          type: string
+          format: date-time
+        example: '2026-06-09T10:00:00Z'
+      - name: gapTolerance
+        in: query
+        required: false
+        description: 'Maximum gap between consecutive modifier reports before the segment is considered
+
+          closed, expressed as a duration string (e.g. `2m`, `5m`). Defaults to `2m`.'
+        schema:
+          type: string
+          default: 2m
+        example: 2m
+      responses:
+        '200':
+          description: Intent and modifier segments within the requested range
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - assetID
+                - from
+                - to
+                - intentSegments
+                - modifierSegments
+                properties:
+                  assetID:
+                    type: string
+                    example: asset-abc-123
+                  from:
+                    type: string
+                    format: date-time
+                    description: The requested range start (echoed back).
+                    example: '2026-06-09T08:00:00Z'
+                  to:
+                    type: string
+                    format: date-time
+                    description: The requested range end (echoed back).
+                    example: '2026-06-09T10:00:00Z'
+                  intentSegments:
+                    type: array
+                    description: 'Intervals during which a specific intent was active, ordered by `from` ascending.
+
+                      Intent is a point-in-time value: exactly one intent is active per asset at any
+
+                      given timestamp, so these segments never overlap and together partition the
+
+                      timeline within the requested range.'
+                    items:
+                      type: object
+                      required:
+                      - from
+                      - intent
+                      description: A closed interval during which the asset held a specific intent.
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          description: Start of the interval (inclusive).
+                          example: '2026-06-09T08:00:00Z'
+                        to:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: 'End of the interval (exclusive). Omitted when the intent is still active at
+
+                            query time and was not clipped by the request `to` boundary.'
+                          example: '2026-06-09T09:30:00Z'
+                        intent:
+                          type:
+                          - string
+                          - 'null'
+                          description: 'The high-level strategic goal the EMS is pursuing for the asset.
+
+                            `null` means no intent has been reported yet for this asset.
+
+
+                            | Value | Description |
+
+                            |---|---|
+
+                            | `INTENT_UNSPECIFIED` | Default zero value. The EMS has not set a meaningful intent for the asset. |
+
+                            | `INTENT_SSO` | Self-sufficiency optimisation. The asset control is determined by SSO targets. |
+
+                            | `INTENT_INTERNAL_TARGET` | The EMS is driving the asset towards an internally defined target, for example during a force-charge session. |
+
+                            | `INTENT_EXTERNAL_TARGET` | The EMS derived its decision for the asset from an external control input via DER-API. |'
+                          enum:
+                          - INTENT_UNSPECIFIED
+                          - INTENT_SSO
+                          - INTENT_INTERNAL_TARGET
+                          - INTENT_EXTERNAL_TARGET
+                          example: INTENT_SSO
+                          x-readme-ref-name: Intent
+                      x-readme-ref-name: IntentSegment
+                  modifierSegments:
+                    type: object
+                    description: 'Map of modifier flag → list of intervals during which that flag was continuously
+
+                      active. Keys are values from the `Modifier` enum (e.g. MODIFIER_LIMITED_BY_SURPLUS).
+
+                      Each list is ordered by `from` ascending. A modifier absent from the map was not
+
+                      active during the requested range.
+
+
+                      Modifier intervals are derived from the minute-resolution aggregation (one minute
+
+                      by default), so each interval spans at least one aggregation window. Unlike intent
+
+                      segments, modifier intervals across different keys can overlap: multiple modifiers
+
+                      can apply to the same asset during the same window because each one is evaluated
+
+                      independently.'
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        description: A closed [from, to) interval.
+                        properties:
+                          from:
+                            type: string
+                            format: date-time
+                            description: Start of the interval (inclusive).
+                            example: '2026-06-16T00:00:00Z'
+                          to:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            description: 'End of the interval (exclusive). Omitted when the interval is still active at
+
+                              query time and was not clipped by the request `to` boundary.'
+                            example: '2026-06-16T00:04:00Z'
+                        x-readme-ref-name: TimeInterval
+                    example:
+                      MODIFIER_LIMITED_BY_SURPLUS:
+                      - from: '2026-06-16T00:00:00Z'
+                        to: '2026-06-16T00:04:00Z'
+                      - from: '2026-06-16T00:12:00Z'
+                        to: '2026-06-16T00:40:00Z'
+                x-readme-ref-name: AssetIntentHistory
+        '400':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/assets/assetID/intent/history"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/assets/assetID/intent/history \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/assets/assetID/intent/history\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/assets/assetID/intent/history', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/assets/assetID/intent/history\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/assets/assetID/intent/history\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/assets/assetID/intent/history")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/assets/assetID/intent/history");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

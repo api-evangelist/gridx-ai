@@ -1,0 +1,2272 @@
+generated: '2026-10-09'
+method: generated
+source: openapi/gridx-ai-openapi.yml
+description: Recommended x-agentic-access execution contracts, classified heuristically from
+  the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
+  audience per deployment. See research/curity/agentic-governance/.
+summary:
+  operations: 157
+  by_action_class:
+    connected: 79
+    acting: 78
+  by_consequence:
+    read: 79
+    write: 77
+    safety-critical: 1
+  human_in_the_loop_required: 1
+operations:
+- path: /account
+  method: get
+  operationId: getAuthenticatedAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /account
+  method: patch
+  operationId: updateAuthenticatedAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /account/tokens
+  method: get
+  operationId: listOrganizationalApiTokens
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GetAPITokens
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /account/tokens
+  method: post
+  operationId: createOrganizationalApiToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - APITokenWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /account/tokens/{tokenID}
+  method: get
+  operationId: getOrganizationalApiToken
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GetAPIToken
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /account/tokens/{tokenID}
+  method: patch
+  operationId: updateOrganizationalApiToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - UpdateAPIToken
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /account/tokens/{tokenID}
+  method: delete
+  operationId: deleteOrganizationalApiToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DeleteAPIToken
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /account/tokens/{tokenID}/rotate
+  method: post
+  operationId: rotateOrganizationalApiToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RotateAPIToken
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts
+  method: get
+  operationId: listAccounts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts
+  method: post
+  operationId: createAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}
+  method: get
+  operationId: getAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}
+  method: patch
+  operationId: updateAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}
+  method: delete
+  operationId: deleteAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/accounts
+  method: get
+  operationId: listChildAccounts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - NestedAccountsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/tree
+  method: get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/stars/accounts
+  method: get
+  operationId: listStarredAccounts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ListAccounts
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/stars/accounts/{accountID}
+  method: put
+  operationId: starAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - StarAccount
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/stars/accounts/{accountID}
+  method: delete
+  operationId: unstarAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - UnstarAccount
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/parents
+  method: get
+  operationId: listAccountParentAccounts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /customers
+  method: get
+  operationId: listCustomers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CustomersRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /customers/{customerID}
+  method: get
+  operationId: getCustomer
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CustomersRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /customers/{customerID}
+  method: patch
+  operationId: updateCustomer
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CustomersWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /customers/{customerID}
+  method: delete
+  operationId: deleteCustomer
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CustomersWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/appliances/{applianceID}/ev/configuration
+  method: get
+  operationId: getGatewayApplianceEVConfiguration
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AppliancesEVConfigurationRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}/ev/configuration
+  method: post
+  operationId: createGatewayApplianceEVConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AppliancesEVConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/appliances/{applianceID}/ev/configuration
+  method: patch
+  operationId: updateGatewayApplianceEVConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AppliancesEVConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/appliances/{applianceID}/ev/configuration
+  method: delete
+  operationId: deleteGatewayApplianceEVConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AppliancesEVConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/ev-profiles
+  method: get
+  operationId: listSystemEVProfiles
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - EVProfilesRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/ev-profiles
+  method: post
+  operationId: createSystemEVProfile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - EVProfilesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/ev-profiles/{evProfileID}
+  method: get
+  operationId: getSystemEVProfile
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - EVProfilesRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/ev-profiles/{evProfileID}
+  method: patch
+  operationId: updateSystemEVProfile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - EVProfilesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/ev-profiles/{evProfileID}
+  method: delete
+  operationId: deleteSystemEVProfile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - EVProfilesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/evcharging-schedules
+  method: get
+  operationId: listSystemEVChargingSchedules
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SchedulesRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/evcharging-schedules
+  method: post
+  operationId: createSystemEVChargingSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SchedulesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/live
+  method: get
+  operationId: getSystemLiveMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/historical
+  method: get
+  operationId: getSystemHistoricalMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}/measurements/appliance
+  method: get
+  operationId: getSystemRawMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ApplianceMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}/measurements
+  method: get
+  operationId: getSystemCombinedMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ApplianceMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}/measurements/energymanagement
+  method: get
+  operationId: getSystemEnergyManagementMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ApplianceMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/power-limit-schedules
+  method: get
+  operationId: listSystemPowerLimitSchedules
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/power-limit-schedules
+  method: post
+  operationId: createSystemPowerLimitSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/power-limit-schedules/{scheduleID}
+  method: get
+  operationId: getSystemPowerLimitSchedule
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/power-limit-schedules/{scheduleID}
+  method: patch
+  operationId: updateSystemPowerLimitSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/power-limit-schedules/{scheduleID}
+  method: delete
+  operationId: deleteSystemPowerLimitSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/power-limit-schedules-intervals
+  method: get
+  operationId: listSystemPowerLimitScheduleIntervals
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /product-functionalities
+  method: get
+  operationId: listProductFunctionalities
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /product-functionalities/{functionalityID}
+  method: get
+  operationId: getProductFunctionality
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/product-options
+  method: get
+  operationId: listAccountProductOptions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/tokens
+  method: get
+  operationId: listAuthenticatedUserTokens
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GetAPITokens
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/tokens
+  method: post
+  operationId: createUserToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - APITokenWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/tokens/{tokenID}
+  method: get
+  operationId: getUserToken
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GetAPIToken
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/tokens/{tokenID}
+  method: patch
+  operationId: updateUserToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - UpdateAPIToken
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/tokens/{tokenID}
+  method: delete
+  operationId: deleteUserToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DeleteAPIToken
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user
+  method: get
+  operationId: getAuthenticatedUser
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ReadUser
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user
+  method: patch
+  operationId: updateAuthenticatedUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WriteUser
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/logins
+  method: get
+  operationId: listAuthenticatedUserLogins
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ListLogins
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /users/{userID}
+  method: get
+  operationId: getUser
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ReadUser
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/users
+  method: get
+  operationId: listUsersForAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ReadUser
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/users
+  method: post
+  operationId: createUserForAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WriteUser
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/users/{userID}
+  method: get
+  operationId: getUserForAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ReadUser
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/users/{userID}
+  method: delete
+  operationId: deleteUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsUsersWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/users/{userID}
+  method: patch
+  operationId: updateAccountUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WriteUser
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /customers/{customerID}/users
+  method: get
+  operationId: listUsersOfCustomer
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CustomersUsersRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /curtailment-clusters/{clusterID}/live
+  method: get
+  operationId: getLatestCurtailmentClusterLiveMeasurement
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/emobility/timeofuse
+  method: get
+  operationId: getEmobilityTimeOfUseSettings
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/emobility/timeofuse
+  method: post
+  operationId: postEmobilityTimeOfUseSettings
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/emobility/timeofuse
+  method: patch
+  operationId: patchEmobilityTimeOfUseSettings
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/emobility/timeofuse
+  method: delete
+  operationId: deleteEmobilityTimeOfUseSettings
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /emobility/assets
+  method: post
+  operationId: findAssetInAccount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/evcs-user-priorities
+  method: get
+  operationId: getPriorities
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/evcs-user-priorities
+  method: delete
+  operationId: resetAllUserPriorities
+  x-agentic-access:
+    action-class: acting
+    consequence: safety-critical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 120
+      exchange: true
+      purpose-required: true
+      proof-of-possession: true
+    escalation:
+      human-in-the-loop: required
+    audit: required
+- path: /systems/{systemID}/evcs-user-priorities/{assetID}
+  method: put
+  operationId: putUserPriority
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /health-checks
+  method: post
+  operationId: runHealthChecks
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /health-checks
+  method: get
+  operationId: listHealthChecks
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /assets/{assetID}/intent/current
+  method: get
+  operationId: getAssetIntentCurrent
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /assets/{assetID}/intent/history
+  method: get
+  operationId: getAssetIntentHistory
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/scanconfiguration
+  method: get
+  operationId: getScanConfiguration
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ScanConfigurationRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/scanconfiguration
+  method: post
+  operationId: createScanConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - ScanConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/scanconfiguration
+  method: patch
+  operationId: updateScanConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - ScanConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/scanconfiguration
+  method: delete
+  operationId: deleteScanConfiguration
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - ScanConfigurationWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/systems
+  method: get
+  operationId: listAccountSystems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/systems
+  method: post
+  operationId: assignSystemToAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/systems
+  method: delete
+  operationId: unassignSystemFromAccount
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/assets
+  method: get
+  operationId: listSystemAsset
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AssetRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/assets/{assetID}
+  method: get
+  operationId: getSystemAsset
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AssetRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/assets/{assetID}
+  method: patch
+  operationId: updateSystemAsset
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AssetWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/assets/{assetID}
+  method: delete
+  operationId: deleteSystemAsset
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AssetWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/appliances
+  method: get
+  operationId: listGatewayAppliances
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AppliancesRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}
+  method: get
+  operationId: getGatewayAppliance
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AppliancesRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/appliances/{applianceID}
+  method: patch
+  operationId: updateGatewayAppliance
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AppliancesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/appliances/{applianceID}
+  method: delete
+  operationId: deleteGatewayAppliance
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AppliancesWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways
+  method: get
+  operationId: listGateways
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GatewaysRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}
+  method: get
+  operationId: getGateway
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GatewaysRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}
+  method: delete
+  operationId: deleteGateway
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - GatewaysWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/scans
+  method: get
+  operationId: listGatewayScans
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - ScansRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/firmware
+  method: get
+  operationId: getGatewayFirmware
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - GatewaysRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/jobs
+  method: get
+  operationId: listGatewayJobs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - JobsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/jobs
+  method: post
+  operationId: createJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - JobsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/jobs/{jobType}
+  method: post
+  operationId: createGatewayJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - JobsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /gateways/{gatewayID}/jobs/{jobID}
+  method: get
+  operationId: getGatewayJob
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - JobsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /gateways/{gatewayID}/jobs/{jobID}
+  method: delete
+  operationId: cancelGatewayJob
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - JobsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/gateways/{gatewayID}/import-power-limit
+  method: get
+  operationId: getSystemGatewayImportPowerLimit
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/gateways/{gatewayID}/import-power-limit
+  method: put
+  operationId: setSystemGatewayImportPowerLimit
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/gateways/{gatewayID}/import-power-limit
+  method: delete
+  operationId: deleteSystemGatewayImportPowerLimit
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/gateways/{gatewayID}/export-power-limit
+  method: get
+  operationId: getSystemGatewayExportPowerLimit
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/gateways/{gatewayID}/export-power-limit
+  method: put
+  operationId: setSystemGatewayExportPowerLimit
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/gateways/{gatewayID}/export-power-limit
+  method: delete
+  operationId: deleteSystemGatewayExportPowerLimit
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/stars/systems
+  method: get
+  operationId: listStarredSystems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - UserRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /user/stars/systems/{systemID}
+  method: put
+  operationId: starSystem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - UserWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /user/stars/systems/{systemID}
+  method: delete
+  operationId: unstarSystem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - UserWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems
+  method: get
+  operationId: listSystems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems
+  method: post
+  operationId: createSystem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/list
+  method: get
+  operationId: getSystemsList
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}
+  method: get
+  operationId: getSystem
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}
+  method: patch
+  operationId: updateSystem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}
+  method: delete
+  operationId: deleteSystem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/gateways
+  method: post
+  operationId: createSystemGateway
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - GatewaysWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tags
+  method: put
+  operationId: setSystemTags
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tags
+  method: patch
+  operationId: partialSetSystemTags
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tags
+  method: get
+  operationId: listSystemTags
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - SystemsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/tags/{tagName}
+  method: put
+  operationId: setSystemTag
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tags/{tagName}
+  method: delete
+  operationId: deleteSystemTag
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - SystemsWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/assets/{assetID}/measurements
+  method: get
+  operationId: getAssetMeasurements
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AppliancesMeasurementsRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /account/market-prices/{platform}
+  method: get
+  operationId: listMarketPrices
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/bidding-zone
+  method: get
+  operationId: getAccountBiddingZone
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/bidding-zone
+  method: put
+  operationId: setAccountBiddingZone
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tariff
+  method: get
+  operationId: getSystemTariff
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/tariff
+  method: post
+  operationId: setSystemTariff
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tariff
+  method: patch
+  operationId: updateSystemTariff
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tariff
+  method: delete
+  operationId: deleteSystemTariff
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tariff/prices
+  method: get
+  operationId: listSystemTariffPrices
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/tariff/prices
+  method: post
+  operationId: setSystemTariffPrices
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/tariff/grid-fees
+  method: get
+  operationId: listSystemGridFees
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/decisions
+  method: get
+  operationId: getSystemTimeOfUseDecisions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/settings
+  method: get
+  operationId: getSystemTimeOfUseSettings
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/settings
+  method: put
+  operationId: setSystemTimeOfUseSettings
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/timeofuse/settings
+  method: patch
+  operationId: updateSystemTimeOfUseSettings
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/timeofuse/forecasts/meter
+  method: get
+  operationId: listSystemTimeOfUseForecasts
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/forecasts/meter/last-updated
+  method: get
+  operationId: getSystemTimeOfUseForecastLastUpdated
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/forecasts/pv
+  method: get
+  operationId: getSystemTimeOfUseForecastPv
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/status
+  method: get
+  operationId: listHistoricalSystemTimeOfUseStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/status/current
+  method: get
+  operationId: getSystemTimeOfUseCurrentStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/readiness
+  method: get
+  operationId: getSystemTimeOfUseReadiness
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/timeofuse/kpi
+  method: get
+  operationId: listHistoricalSystemTimeOfUseKPIs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/costs-kpi
+  method: get
+  operationId: getCostsKpiForSystem
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/import-power-limit-schedule
+  method: get
+  operationId: getSystemImportPowerLimitSchedule
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /systems/{systemID}/import-power-limit-schedule
+  method: put
+  operationId: createSystemImportPowerLimitScheduleToU
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/import-power-limit-schedule
+  method: patch
+  operationId: updateSystemImportPowerLimitSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /systems/{systemID}/import-power-limit-schedule
+  method: delete
+  operationId: deleteSystemImportPowerLimitSchedule
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks
+  method: get
+  operationId: listWebhookSubscriptions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - WebhooksRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/webhooks
+  method: post
+  operationId: createWebhookSubscription
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks/{webhookID}
+  method: get
+  operationId: getWebhookSubscription
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - WebhooksRead
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /accounts/{accountID}/webhooks/{webhookID}
+  method: delete
+  operationId: deleteWebhookSubscription
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks/{webhookID}
+  method: put
+  operationId: updateWebhookSubscription
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks/{webhookID}/ping
+  method: post
+  operationId: pingWebhookSubscription
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks/{webhookID}/secret
+  method: post
+  operationId: rotateWebhookSubscriptionSecret
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /accounts/{accountID}/webhooks/{webhookID}/secret
+  method: put
+  operationId: updateWebhookSubscriptionSecret
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - WebhooksWrite
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required

@@ -1,0 +1,3823 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Gateway API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Gateway across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Gateway
+  x-displayName: Gateway
+paths:
+  /gateways:
+    get:
+      operationId: listGateways
+      summary: List all Gateways
+      description: List gateways that are accessible to the authenticated user.
+      tags:
+      - Gateway
+      parameters:
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: sort
+        description: 'The field to sort the results by, to be used in combination with the `order` parameter.
+
+          Defaults to `created`.
+
+          '
+        in: query
+        schema:
+          type: string
+          enum:
+          - updated
+          - serialnumber
+          - created
+          - type
+          default: created
+        example: updated
+      - name: order
+        description: 'Order direction of the results, to be used in combination with the `sort` parameter.
+
+          Defaults to `asc`.
+
+          '
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        example: desc
+      - name: include
+        description: "This query param allows to set certain fields only when needed.\nThis makes the request faster as it requires to load only necessary data.\n\nIf this param is set, only the specified fields are included.\nAll other fields, which are possible to include, will be excluded then.\n\n**Note:** `connectionStatus` is always included in the response and does not need to be specified.\nThis value is deprecated and will be removed in a future version.\n\n**Note:** `additionalIdentifiers` is always included in the response if the gateway has any, and \ndoes not need to be specified.\nThis value is deprecated and will be removed in a future version.\n"
+        in: query
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - applianceComposition
+            - connectionStatus
+            - additionalIdentifiers
+            - systems
+            - scanners
+      - name: start_code
+        description: 'Filter by gateway startcode.
+
+          A startcode belongs to one gateway, so using this will return only one gateway.
+
+          '
+        in: query
+        schema:
+          type: string
+          example: 39FDDF7D85BAAD2D
+          pattern: ^[A-F0-9]{16}$
+      - name: serial_number
+        description: 'Filter by gateway serial number.
+
+          A serial number is unique, so using this will return only one gateway.
+
+          '
+        in: query
+        schema:
+          type: string
+          example: C083-200-000-000-199-P-X
+      responses:
+        '200':
+          description: 'An array of gateways of up to `per_page` gateways, sorted by `sort` and `order`.
+
+
+            Each entry in the array is a separate gateway. If no gateway is available, the resulting array will be empty.
+
+            '
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                  - title: Gateway
+                    description: 'A gateway used to monitor and control appliances.
+
+
+                      For instance, our beloved gridbox is a gateway.
+
+                      '
+                    type: object
+                    properties:
+                      name:
+                        deprecated: true
+                        type: string
+                        maxLength: 255
+                        description: Name of the gateway.
+                      debugModeUntil:
+                        deprecated: true
+                        type: string
+                        format: date-time
+                        description: 'Date until which debug messages are logged in RFC3339 format.
+
+                          **Deprecated**: defaults to `createdAt` + 3 days.
+
+                          '
+                    x-readme-ref-name: AbstractGateway
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                        description: Unique identifier of a gateway.
+                        readOnly: true
+                      type:
+                        type: string
+                        description: 'Type of the gateway.
+
+
+                          **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                          '
+                        deprecated: true
+                        enum:
+                        - VIRTUAL
+                        - PHYSICAL
+                        - OTHER
+                        x-readme-ref-name: GatewayType
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the Gateway was created in RFC3339 format.
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the Gateway was last updated in RFC3339 format.
+                      registeredAt:
+                        deprecated: true
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: 'Date when the Gateway was first registered in RFC3339 format.
+
+                          **Deprecated**: defaults to `createdAt`.
+
+                          '
+                      connectionStatus:
+                        title: Connection Status
+                        type: object
+                        readOnly: true
+                        properties:
+                          status:
+                            type: string
+                            description: "Indicates the connection status. Is one of:\n  * `AVAILABLE`: Gateway has sent data in the last 5 minutes\n  * `TEMPORARILY_UNAVAILABLE`: Gateway has not sent data in the last 5 minutes\n  * `UNAVAILABLE`: Gateway has not sent data in the last 24 hours\n  * `UNKNOWN`: Gateway was never online and never sent data or the connection status can't be determined."
+                            enum:
+                            - AVAILABLE
+                            - TEMPORARILY_UNAVAILABLE
+                            - UNAVAILABLE
+                            - UNKNOWN
+                          contactedAt:
+                            type: string
+                            format: date-time
+                            deprecated: true
+                            description: 'When the gateway/appliance has last contacted the gridX cloud.
+
+
+                              In case the gateway was never online and never sent data, this field is null.
+
+
+                              Deprecated: Gateway heartbeats will be removed in future versions and this will be only estimated. Use `statusChangedAt` instead.
+
+                              '
+                          statusChangedAt:
+                            type: string
+                            format: date-time
+                            description: 'When the gateway status last changed. In case the gateway was never online this field is null.
+
+                              '
+                        required:
+                        - status
+                        x-readme-ref-name: ConnectionStatus
+                      vendorID:
+                        deprecated: true
+                        description: 'ID of the vendor account to which the corresponding system is assigned.
+
+                          **Deprecated**: omitted from responses by default.
+
+                          '
+                        type: string
+                        format: uuid
+                        example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                      startcode:
+                        description: Code used to register a new gateway.
+                        type: string
+                        example: 39FDDF7D85BAAD2D
+                      manufacturer:
+                        deprecated: true
+                        description: 'Manufacturer of the gateway.
+
+                          **Deprecated**: defaults to `gridX`.
+
+                          '
+                        type: string
+                        example: gridX
+                        readOnly: true
+                      model:
+                        description: Model of the gateway.
+                        type: string
+                        example: 2.00P-X
+                        readOnly: true
+                      serialnumber:
+                        description: Serial number of the gateway.
+                        type: string
+                        example: C083-200-000-000-199-P-X
+                        readOnly: true
+                      additionalIdentifiers:
+                        description: Additional identifiers used by the gateway.
+                        type: array
+                        items:
+                          title: Additional identifiers of the gridBox.
+                          description: Additional identifiers used by the gridBox.
+                          type: object
+                          properties:
+                            service:
+                              type: string
+                              readOnly: true
+                              description: The service this identifier is referring to, e.g the protocol used for the appliance-gridBox handshake
+                              example: EEBUS
+                            type:
+                              type: string
+                              readOnly: true
+                              description: The type of the identifier.
+                              example: SKI
+                              enum:
+                              - UNKNOWN
+                              - SKI
+                            identifier:
+                              type: string
+                              readOnly: true
+                              description: The actual identifier, e.g "SKI" used in the TLS certificate for the communication. If type is "SKI", it is hexadecimal-encoded.
+                          x-readme-ref-name: AdditionalIdentifier
+                        readOnly: true
+                      scanners:
+                        type: array
+                        readOnly: true
+                        description: List of scanner names that are enabled for this gateway.
+                        items:
+                          type: string
+                          description: The name of the scanner which searches for the appliance in the network.
+                          example: SMA_INVERTER_IGMP_HOST_DISCOVERY
+                          x-extensible-enum:
+                          - SMA_INVERTER_IGMP_HOST_DISCOVERY
+                          - SMA_INVERTER_ARP_HOST_DISCOVERY
+                          - SMA_METER
+                          - BCONTROL_METER
+                          - SOLAREDGE_INVERTER_METER_MODBUS_TCP
+                          - SOLAREDGE_INVERTER_METER_MODBUS_RTU
+                          - SOLARLOG_MONITOR
+                          - CUSTOMER_HOLFELDER_METER
+                          - CUSTOMER_HOLFELDER_INVERTER
+                          - E3DC_INVERTER_METER
+                          - KOSTAL_INVERTER
+                          - STUDER_INVERTER
+                          - FRONIUS_INVERTER
+                          - HUAWEI_INVERTER
+                          - KEBA_CHARGING_STATION
+                          - ECHARGE_CHARGING_STATION
+                          - INNOGY_CHARGING_STATION
+                          - ELECTRIS_METER
+                          - SOLARWATT_INVERTER_METER
+                          - ABL_CHARGING_STATION
+                          - SIEMENS_PAC_METER
+                          - JANITZA_METER
+                          - JANITZA_METER_RTU
+                          - EVTEC_CHARGING_STATION
+                          - HIKING_METER_RTU
+                          - EEBUS_FUEL_CELL_METER
+                          - KOSTAL_INVERTER_PLENTICORE
+                          - SONNENBATTERIE_UPNP
+                          - VIRTUAL_METER
+                          - MENNEKES_UPNP
+                          - ANYBUS_MBUS_CONVERTER_METER
+                          - EEBUS_GENERIC
+                          - SIMULATION_GENERIC
+                          - ALFEN_NG9XX_MODBUS_CHARGING_STATION
+                          - ALPITRONIC_HYPERCHARGER_MODBUS_CHARGING_STATION
+                          - MY_PV_AC_THOR_HEATER
+                          - COMPLEO_MODBUS_CHARGING_STATION
+                          - OCPP_CHARGING_STATION
+                          - BENDER_CHARGING_STATION
+                          - VOLTERION_REDOX_FLOW_BATTERY
+                          - XNET_METER
+                          - RSW_METER
+                          - SCHNEIDER_METER
+                          - INNOGY_MODBUS_CHARGING_STATION
+                          - MENNEKES_PREMIUM_MODBUS_CHARGING_STATION
+                          - PLPLANO_MODBUS_RTU_METER
+                          - HEIDELBERG_ENERGY_CONTROL_MODBUS_RTU_CHARGING_STATION
+                          - CARLO_GAVAZZI_MODBUS_RTU_METER
+                          - VESTEL_CHARGING_STATION
+                          - INNOTEC_HEAT_PUMP
+                          - WALLBE_MODBUS_CHARGING_STATION
+                          - EVBOX_MAX_CHARGING_STATION
+                          - ISKRAEMECO_METER
+                          - SUNGROW_MODBUS_INVERTER
+                          - WAGO_IO_DEVICE
+                          - GOE_CHARGING_STATION
+                          - XNET_CLOUD_HEAT_PUMP
+                          - XNET_CLOUD_GENERIC
+                          - LANDIS_GYR_METER
+                          - POWERDALE_CHARGING_STATION
+                          - EASTRON_SDM230_METER
+                          - EASTRON_SDM72DM_METER
+                          - ZUCCHETTI_CONNEXT_BOX
+                          - PLVARIO_ENERGY_METER_EM3
+                          - ABB_OPC_UA_CHARGING_STATION
+                          - DATA_LOGGER_DEVICE
+                          - POWERSIDE_METER
+                          - PPC_METER
+                          - RUTENBECK_TCR_IP4_IO_DEVICE
+                          - JEAN_MUELLER_PL_MULTI_METER
+                          - ENPHASE_ENVOY_S_GATEWAY
+                          - SOLAX_MODBUS_RTU_INVERTER
+                          - ALPHA_ESS_HI10_HYBRID_INVERTER
+                          - ZUCCHETTI_MODBUS_RTU_INVERTER
+                          - STIEBEL_ELTRON_MODBUS_TCP_HEAT_PUMP
+                          - MENNEKES_AMTRON_COMPACT_2S_MODBUS_RTU_CHARGING_STATION
+                          - SAIA_PCD1_E_LINE_HEAT_PUMP
+                          - SUNGROW_SG_MODBUS_INVERTER
+                          - SOLAX_MODBUS_TCP_INVERTER
+                          - PHOENIX_CONTACT_EM_PRO_METER
+                          - DAIKIN_HOMEHUB_MODBUS_TCP_HEAT_PUMP
+                          - SOLPLANET_MODBUS_TCP_INVERTER
+                          - SUNGROW_SHXRS_SHXT_MODBUS_INVERTER
+                          - KOSTAD_DC_CHARGING_STATION
+                          - GIVENERGY_GIV_TCP_INVERTER
+                          - FOX_ESS_MODBUS_TCP_INVERTER
+                          - SHELLY_HTTP_METER
+                          - PIXII_MODBUS_TCP_BESS
+                          - GOODWE_MODBUS_TCP_INVERTER
+                          - READY_FOR_GRIDX
+                          - KOSTAL_ENECTOR_CHARGING_STATION
+                          - MENNEKES_4YOU_CHARGING_STATION
+                          - EKOENERGETYKA_CHARGING_STATION
+                          - VIESSMANN_EEBUS_INVERTER_AND_HEAT_PUMP
+                          - VAILLANT_EEBUS_HEAT_PUMP
+                          - PROLAN_EEBUS_STB
+                          - PPC_EEBUS_METER
+                          - THEBEN_SE_EEBUS_METER
+                          - DAIKIN_ALTHERMA4_MODBUS_TCP_HEAT_PUMP
+                          - FOXESS_CHARGING_STATION
+                          - BOSCH_BUDERUS_EEBUS_HEAT_PUMP
+                          - KOSTAL_EBOX_DC_B11_EEBUS_CHARGING_STATION
+                          - SOLPLANET_IBC_SOLAR_CHARGING_STATION
+                          - ADS_TEC_CHARGING_STATION
+                          - WOLF_EEBUS_HEAT_PUMP
+                          - SHELLY_3EMPRO_HTTP_METER
+                          - SHELLY_PRO2_HTTP_IO_DEVICE
+                          - SWISTEC_EEBUS_METER
+                          - BMW_DC_WALLBOX_EEBUS_CHARGING_STATION
+                          - SUNGROW_CHARGING_STATION
+                          - ETREL_INCH_DUO_CHARGING_STATION
+                          - ALPHAESS_SMILE_G3_T4_T10
+                          - SUNGROW_EMS300CP_BESS
+                          - HUAWEI_SMART_LOGGER_BESS
+                          - SOLAX_MODBUS_TCP_METER
+                          x-readme-ref-name: ScannerName
+                      applianceComposition:
+                        type: array
+                        readOnly: true
+                        description: Appliance types that are connected to the gateway for overview purposes.
+                        example:
+                        - HEAT_PUMP
+                        items:
+                          type: string
+                    required:
+                    - id
+                    - type
+                    - connectionStatus
+                    - createdAt
+                    - updatedAt
+                  x-readme-ref-name: Gateway
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - GatewaysRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /gateways/{gatewayID}:
+    get:
+      operationId: getGateway
+      summary: Retrieve a Gateway
+      description: Retrieves the details of an existing gateway.
+      tags:
+      - Gateway
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      - name: include
+        description: "This query param allows to set certain fields only when needed.\nThis makes the request faster as it requires to load only necessary data.\n\nIf this param is set, only the specified fields are included.\nAll other fields, which are possible to include, will be excluded then.\n\n**Note:** `connectionStatus` is always included in the response and does not need to be specified.\nThis value is deprecated and will be removed in a future version.\n\n**Note:** `additionalIdentifiers` is always included in the response if the gateway has any, and \ndoes not need to be specified.\nThis value is deprecated and will be removed in a future version.\n"
+        in: query
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - applianceComposition
+            - connectionStatus
+            - additionalIdentifiers
+            - systems
+            - scanners
+      responses:
+        '200':
+          description: Returned gateway.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - allOf:
+                  - title: Gateway
+                    description: 'A gateway used to monitor and control appliances.
+
+
+                      For instance, our beloved gridbox is a gateway.
+
+                      '
+                    type: object
+                    properties:
+                      name:
+                        deprecated: true
+                        type: string
+                        maxLength: 255
+                        description: Name of the gateway.
+                      debugModeUntil:
+                        deprecated: true
+                        type: string
+                        format: date-time
+                        description: 'Date until which debug messages are logged in RFC3339 format.
+
+                          **Deprecated**: defaults to `createdAt` + 3 days.
+
+                          '
+                    x-readme-ref-name: AbstractGateway
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                        description: Unique identifier of a gateway.
+                        readOnly: true
+                      type:
+                        type: string
+                        description: 'Type of the gateway.
+
+
+                          **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                          '
+                        deprecated: true
+                        enum:
+                        - VIRTUAL
+                        - PHYSICAL
+                        - OTHER
+                        x-readme-ref-name: GatewayType
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the Gateway was created in RFC3339 format.
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: Date when the Gateway was last updated in RFC3339 format.
+                      registeredAt:
+                        deprecated: true
+                        type: string
+                        format: date-time
+                        readOnly: true
+                        description: 'Date when the Gateway was first registered in RFC3339 format.
+
+                          **Deprecated**: defaults to `createdAt`.
+
+                          '
+                      connectionStatus:
+                        title: Connection Status
+                        type: object
+                        readOnly: true
+                        properties:
+                          status:
+                            type: string
+                            description: "Indicates the connection status. Is one of:\n  * `AVAILABLE`: Gateway has sent data in the last 5 minutes\n  * `TEMPORARILY_UNAVAILABLE`: Gateway has not sent data in the last 5 minutes\n  * `UNAVAILABLE`: Gateway has not sent data in the last 24 hours\n  * `UNKNOWN`: Gateway was never online and never sent data or the connection status can't be determined."
+                            enum:
+                            - AVAILABLE
+                            - TEMPORARILY_UNAVAILABLE
+                            - UNAVAILABLE
+                            - UNKNOWN
+                          contactedAt:
+                            type: string
+                            format: date-time
+                            deprecated: true
+                            description: 'When the gateway/appliance has last contacted the gridX cloud.
+
+
+                              In case the gateway was never online and never sent data, this field is null.
+
+
+                              Deprecated: Gateway heartbeats will be removed in future versions and this will be only estimated. Use `statusChangedAt` instead.
+
+                              '
+                          statusChangedAt:
+                            type: string
+                            format: date-time
+                            description: 'When the gateway status last changed. In case the gateway was never online this field is null.
+
+                              '
+                        required:
+                        - status
+                        x-readme-ref-name: ConnectionStatus
+                      vendorID:
+                        deprecated: true
+                        description: 'ID of the vendor account to which the corresponding system is assigned.
+
+                          **Deprecated**: omitted from responses by default.
+
+                          '
+                        type: string
+                        format: uuid
+                        example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                      startcode:
+                        description: Code used to register a new gateway.
+                        type: string
+                        example: 39FDDF7D85BAAD2D
+                      manufacturer:
+                        deprecated: true
+                        description: 'Manufacturer of the gateway.
+
+                          **Deprecated**: defaults to `gridX`.
+
+                          '
+                        type: string
+                        example: gridX
+                        readOnly: true
+                      model:
+                        description: Model of the gateway.
+                        type: string
+                        example: 2.00P-X
+                        readOnly: true
+                      serialnumber:
+                        description: Serial number of the gateway.
+                        type: string
+                        example: C083-200-000-000-199-P-X
+                        readOnly: true
+                      additionalIdentifiers:
+                        description: Additional identifiers used by the gateway.
+                        type: array
+                        items:
+                          title: Additional identifiers of the gridBox.
+                          description: Additional identifiers used by the gridBox.
+                          type: object
+                          properties:
+                            service:
+                              type: string
+                              readOnly: true
+                              description: The service this identifier is referring to, e.g the protocol used for the appliance-gridBox handshake
+                              example: EEBUS
+                            type:
+                              type: string
+                              readOnly: true
+                              description: The type of the identifier.
+                              example: SKI
+                              enum:
+                              - UNKNOWN
+                              - SKI
+                            identifier:
+                              type: string
+                              readOnly: true
+                              description: The actual identifier, e.g "SKI" used in the TLS certificate for the communication. If type is "SKI", it is hexadecimal-encoded.
+                          x-readme-ref-name: AdditionalIdentifier
+                        readOnly: true
+                      scanners:
+                        type: array
+                        readOnly: true
+                        description: List of scanner names that are enabled for this gateway.
+                        items:
+                          type: string
+                          description: The name of the scanner which searches for the appliance in the network.
+                          example: SMA_INVERTER_IGMP_HOST_DISCOVERY
+                          x-extensible-enum:
+                          - SMA_INVERTER_IGMP_HOST_DISCOVERY
+                          - SMA_INVERTER_ARP_HOST_DISCOVERY
+                          - SMA_METER
+                          - BCONTROL_METER
+                          - SOLAREDGE_INVERTER_METER_MODBUS_TCP
+                          - SOLAREDGE_INVERTER_METER_MODBUS_RTU
+                          - SOLARLOG_MONITOR
+                          - CUSTOMER_HOLFELDER_METER
+                          - CUSTOMER_HOLFELDER_INVERTER
+                          - E3DC_INVERTER_METER
+                          - KOSTAL_INVERTER
+                          - STUDER_INVERTER
+                          - FRONIUS_INVERTER
+                          - HUAWEI_INVERTER
+                          - KEBA_CHARGING_STATION
+                          - ECHARGE_CHARGING_STATION
+                          - INNOGY_CHARGING_STATION
+                          - ELECTRIS_METER
+                          - SOLARWATT_INVERTER_METER
+                          - ABL_CHARGING_STATION
+                          - SIEMENS_PAC_METER
+                          - JANITZA_METER
+                          - JANITZA_METER_RTU
+                          - EVTEC_CHARGING_STATION
+                          - HIKING_METER_RTU
+                          - EEBUS_FUEL_CELL_METER
+                          - KOSTAL_INVERTER_PLENTICORE
+                          - SONNENBATTERIE_UPNP
+                          - VIRTUAL_METER
+                          - MENNEKES_UPNP
+                          - ANYBUS_MBUS_CONVERTER_METER
+                          - EEBUS_GENERIC
+                          - SIMULATION_GENERIC
+                          - ALFEN_NG9XX_MODBUS_CHARGING_STATION
+                          - ALPITRONIC_HYPERCHARGER_MODBUS_CHARGING_STATION
+                          - MY_PV_AC_THOR_HEATER
+                          - COMPLEO_MODBUS_CHARGING_STATION
+                          - OCPP_CHARGING_STATION
+                          - BENDER_CHARGING_STATION
+                          - VOLTERION_REDOX_FLOW_BATTERY
+                          - XNET_METER
+                          - RSW_METER
+                          - SCHNEIDER_METER
+                          - INNOGY_MODBUS_CHARGING_STATION
+                          - MENNEKES_PREMIUM_MODBUS_CHARGING_STATION
+                          - PLPLANO_MODBUS_RTU_METER
+                          - HEIDELBERG_ENERGY_CONTROL_MODBUS_RTU_CHARGING_STATION
+                          - CARLO_GAVAZZI_MODBUS_RTU_METER
+                          - VESTEL_CHARGING_STATION
+                          - INNOTEC_HEAT_PUMP
+                          - WALLBE_MODBUS_CHARGING_STATION
+                          - EVBOX_MAX_CHARGING_STATION
+                          - ISKRAEMECO_METER
+                          - SUNGROW_MODBUS_INVERTER
+                          - WAGO_IO_DEVICE
+                          - GOE_CHARGING_STATION
+                          - XNET_CLOUD_HEAT_PUMP
+                          - XNET_CLOUD_GENERIC
+                          - LANDIS_GYR_METER
+                          - POWERDALE_CHARGING_STATION
+                          - EASTRON_SDM230_METER
+                          - EASTRON_SDM72DM_METER
+                          - ZUCCHETTI_CONNEXT_BOX
+                          - PLVARIO_ENERGY_METER_EM3
+                          - ABB_OPC_UA_CHARGING_STATION
+                          - DATA_LOGGER_DEVICE
+                          - POWERSIDE_METER
+                          - PPC_METER
+                          - RUTENBECK_TCR_IP4_IO_DEVICE
+                          - JEAN_MUELLER_PL_MULTI_METER
+                          - ENPHASE_ENVOY_S_GATEWAY
+                          - SOLAX_MODBUS_RTU_INVERTER
+                          - ALPHA_ESS_HI10_HYBRID_INVERTER
+                          - ZUCCHETTI_MODBUS_RTU_INVERTER
+                          - STIEBEL_ELTRON_MODBUS_TCP_HEAT_PUMP
+                          - MENNEKES_AMTRON_COMPACT_2S_MODBUS_RTU_CHARGING_STATION
+                          - SAIA_PCD1_E_LINE_HEAT_PUMP
+                          - SUNGROW_SG_MODBUS_INVERTER
+                          - SOLAX_MODBUS_TCP_INVERTER
+                          - PHOENIX_CONTACT_EM_PRO_METER
+                          - DAIKIN_HOMEHUB_MODBUS_TCP_HEAT_PUMP
+                          - SOLPLANET_MODBUS_TCP_INVERTER
+                          - SUNGROW_SHXRS_SHXT_MODBUS_INVERTER
+                          - KOSTAD_DC_CHARGING_STATION
+                          - GIVENERGY_GIV_TCP_INVERTER
+                          - FOX_ESS_MODBUS_TCP_INVERTER
+                          - SHELLY_HTTP_METER
+                          - PIXII_MODBUS_TCP_BESS
+                          - GOODWE_MODBUS_TCP_INVERTER
+                          - READY_FOR_GRIDX
+                          - KOSTAL_ENECTOR_CHARGING_STATION
+                          - MENNEKES_4YOU_CHARGING_STATION
+                          - EKOENERGETYKA_CHARGING_STATION
+                          - VIESSMANN_EEBUS_INVERTER_AND_HEAT_PUMP
+                          - VAILLANT_EEBUS_HEAT_PUMP
+                          - PROLAN_EEBUS_STB
+                          - PPC_EEBUS_METER
+                          - THEBEN_SE_EEBUS_METER
+                          - DAIKIN_ALTHERMA4_MODBUS_TCP_HEAT_PUMP
+                          - FOXESS_CHARGING_STATION
+                          - BOSCH_BUDERUS_EEBUS_HEAT_PUMP
+                          - KOSTAL_EBOX_DC_B11_EEBUS_CHARGING_STATION
+                          - SOLPLANET_IBC_SOLAR_CHARGING_STATION
+                          - ADS_TEC_CHARGING_STATION
+                          - WOLF_EEBUS_HEAT_PUMP
+                          - SHELLY_3EMPRO_HTTP_METER
+                          - SHELLY_PRO2_HTTP_IO_DEVICE
+                          - SWISTEC_EEBUS_METER
+                          - BMW_DC_WALLBOX_EEBUS_CHARGING_STATION
+                          - SUNGROW_CHARGING_STATION
+                          - ETREL_INCH_DUO_CHARGING_STATION
+                          - ALPHAESS_SMILE_G3_T4_T10
+                          - SUNGROW_EMS300CP_BESS
+                          - HUAWEI_SMART_LOGGER_BESS
+                          - SOLAX_MODBUS_TCP_METER
+                          x-readme-ref-name: ScannerName
+                      applianceComposition:
+                        type: array
+                        readOnly: true
+                        description: Appliance types that are connected to the gateway for overview purposes.
+                        example:
+                        - HEAT_PUMP
+                        items:
+                          type: string
+                    required:
+                    - id
+                    - type
+                    - connectionStatus
+                    - createdAt
+                    - updatedAt
+                  x-readme-ref-name: Gateway
+                - properties:
+                    system:
+                      title: System
+                      description: "A System represents the logical view of one gateway and its appliances.\n\nFor example, a household can be represented as a system with a gateway such as a \ngridBox, and its connected appliances.\n"
+                      allOf:
+                      - title: System
+                        description: "A System represents the logical view of one gateway and its appliances.\n  \nFor example, a household can be represented as a system with a gateway such as a \ngridBox, and its connected appliances.\n"
+                        type: object
+                        allOf:
+                        - title: System
+                          description: "A System represents the logical view of one gateway and its appliances.\n\nFor example, a household can be represented as a system with a gateway such as a \ngridBox, and its connected appliances.\n"
+                          properties:
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              maxLength: 200
+                              description: Name of the System.
+                              example: gridX Headquarter
+                            solution:
+                              type: string
+                              description: "Represents the solution that the system uses:\n- HOME if the system is for a household. \n- CHARGE if the system is for charging station fleet management.\n"
+                              x-extensible-enum:
+                              - HOME
+                              - CHARGE
+                              - GENERAL
+                              - SMART_DISTRICT
+                              - MICROGRID
+                              - HOME_VIRTUAL_METERING
+                              - COMMERCIAL
+                              - CUSTOM_P2P
+                              x-readme-ref-name: SystemSolution
+                            priorities:
+                              description: Allows prioritisation of EMS functionalities by appliance type. Accepted values are ["BATTERY", "EV", "HEATPUMP", "HEATER"].
+                              type: array
+                              items:
+                                type: string
+                              example:
+                              - EV
+                              - BATTERY
+                            appliancePriorities:
+                              type: array
+                              description: 'Allows prioritisation of EMS functionalities by appliance UUIDs.
+
+                                This option takes precendence over `priorities` field as it is more explicit.
+
+                                '
+                              items:
+                                type: string
+                                format: uuid
+                            plan:
+                              description: "Charge plan of the system. Must be one of two possible options: \n  * `2020_DLM_EVS_00` - Use this value for Dynamic Load Management.\n  * `2020_SLM_EVS_00` - Use this value for Static Load Management.\n"
+                              type: string
+                              x-extensible-enum:
+                              - 2020_DLM_EVS_00
+                              - 2020_SLM_EVS_00
+                              x-readme-ref-name: SystemChargePlan
+                            operatingSince:
+                              type: string
+                              format: date-time
+                              description: Date since when the system is active in RFC3339 format.
+                              example: '2017-12-23T10:15:40Z'
+                            curtailmentStrategy:
+                              type: string
+                              deprecated: true
+                              description: "Deprecated: Only EQUALLY remains available and future implementations will likely use another field name.\nThe curtailment strategy describes how appliances shall be curtailed.\n  * EQUALLY: Every appliance gets equally (fair) curtailed.\n"
+                              x-extensible-enum:
+                              - EQUALLY
+                              x-readme-ref-name: SystemCurtailmentStrategy
+                            location:
+                              title: Location
+                              description: Represents a GPS location with longitude and latitude.
+                              type: object
+                              allOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    description: The city of the location.
+                                    type: string
+                                    example: Aachen
+                                  country:
+                                    description: The country of the location.
+                                    type: string
+                                    example: Germany
+                                  addressLine1:
+                                    description: 'First line of the location''s address, typically containing the
+
+                                      main information such as the street name and house number.
+
+                                      '
+                                    type: string
+                                    example: Oppenhoffallee 143
+                                  addressLine2:
+                                    description: 'Second line of the location''s address, typically containing additional
+
+                                      information such as apartment numbers, suite numbers, or other details
+
+                                      that can help in identifying the exact location of the address.
+
+                                      '
+                                    type: string
+                                  addressLine3:
+                                    description: 'Third line of the location''s address, typically containing any other
+
+                                      details that can help in identifying the exact location of the address.
+
+                                      '
+                                    type: string
+                                  addressLine4:
+                                    description: 'Fourth line of the location''s address, typically containing any other
+
+                                      details that can help in identifying the exact location of the address.
+
+                                      '
+                                    type: string
+                                  timeZone:
+                                    description: The TZ Identifier of the location's timezone.
+                                    type: string
+                                    example: Europe/Berlin
+                                    readOnly: true
+                                x-readme-ref-name: InventoryAbstractLocation
+                              - type: object
+                                properties:
+                                  country:
+                                    deprecated: true
+                                    description: 'Deprecated - Instead of this freeform text field, use countryCode
+
+                                      '
+                                  countryCode:
+                                    type: string
+                                    description: Country code in ISO 3166-1 alpha-2.
+                                    example: DE
+                                    enum:
+                                    - AF
+                                    - AX
+                                    - AL
+                                    - DZ
+                                    - AS
+                                    - AD
+                                    - AO
+                                    - AI
+                                    - AQ
+                                    - AG
+                                    - AR
+                                    - AM
+                                    - AW
+                                    - AU
+                                    - AT
+                                    - AZ
+                                    - BS
+                                    - BH
+                                    - BD
+                                    - BB
+                                    - BY
+                                    - BE
+                                    - BZ
+                                    - BJ
+                                    - BM
+                                    - BT
+                                    - BO
+                                    - BQ
+                                    - BA
+                                    - BW
+                                    - BV
+                                    - BR
+                                    - IO
+                                    - BN
+                                    - BG
+                                    - BF
+                                    - BI
+                                    - CV
+                                    - KH
+                                    - CM
+                                    - CA
+                                    - KY
+                                    - CF
+                                    - TD
+                                    - CL
+                                    - CN
+                                    - CX
+                                    - CC
+                                    - CO
+                                    - KM
+                                    - CG
+                                    - CD
+                                    - CK
+                                    - CR
+                                    - CI
+                                    - HR
+                                    - CU
+                                    - CW
+                                    - CY
+                                    - CZ
+                                    - DK
+                                    - DJ
+                                    - DM
+                                    - DO
+                                    - EC
+                                    - EG
+                                    - SV
+                                    - GQ
+                                    - ER
+                                    - EE
+                                    - SZ
+                                    - ET
+                                    - FK
+                                    - FO
+                                    - FJ
+                                    - FI
+                                    - FR
+                                    - GF
+                                    - PF
+                                    - TF
+                                    - GA
+                                    - GM
+                                    - GE
+                                    - DE
+                                    - GH
+                                    - GI
+                                    - GR
+                                    - GL
+                                    - GD
+                                    - GP
+                                    - GU
+                                    - GT
+                                    - GG
+                                    - GN
+                                    - GW
+                                    - GY
+                                    - HT
+                                    - HM
+                                    - VA
+                                    - HN
+                                    - HK
+                                    - HU
+                                    - IS
+                                    - IN
+                                    - ID
+                                    - IR
+                                    - IQ
+                                    - IE
+                                    - IM
+                                    - IL
+                                    - IT
+                                    - JM
+                                    - JP
+                                    - JE
+                                    - JO
+                                    - KZ
+                                    - KE
+                                    - KI
+                                    - KP
+                                    - KR
+                                    - KW
+                                    - KG
+                                    - LA
+                                    - LV
+                                    - LB
+                                    - LS
+                                    - LR
+                                    - LY
+                                    - LI
+                                    - LT
+                                    - LU
+                                    - MO
+                                    - MG
+                                    - MW
+                                    - MY
+                                    - MV
+                                    - ML
+                                    - MT
+                                    - MH
+                                    - MQ
+                                    - MR
+                                    - MU
+                                    - YT
+                                    - MX
+                                    - FM
+                                    - MD
+                                    - MC
+                                    - MN
+                                    - ME
+                                    - MS
+                                    - MA
+                                    - MZ
+                                    - MM
+                                    - NA
+                                    - NR
+                                    - NP
+                                    - NL
+                                    - NC
+                                    - NZ
+                                    - NI
+                                    - NE
+                                    - NG
+                                    - NU
+                                    - NF
+                                    - MK
+                                    - MP
+                                    - 'NO'
+                                    - OM
+                                    - PK
+                                    - PW
+                                    - PS
+                                    - PA
+                                    - PG
+                                    - PY
+                                    - PE
+                                    - PH
+                                    - PN
+                                    - PL
+                                    - PT
+                                    - PR
+                                    - QA
+                                    - RE
+                                    - RO
+                                    - RU
+                                    - RW
+                                    - BL
+                                    - SH
+                                    - KN
+                                    - LC
+                                    - MF
+                                    - PM
+                                    - VC
+                                    - WS
+                                    - SM
+                                    - ST
+                                    - SA
+                                    - SN
+                                    - RS
+                                    - SC
+                                    - SL
+                                    - SG
+                                    - SX
+                                    - SK
+                                    - SI
+                                    - SB
+                                    - SO
+                                    - ZA
+                                    - GS
+                                    - SS
+                                    - ES
+                                    - LK
+                                    - SD
+                                    - SR
+                                    - SJ
+                                    - SE
+                                    - CH
+                                    - SY
+                                    - TW
+                                    - TJ
+                                    - TZ
+                                    - TH
+                                    - TL
+                                    - TG
+                                    - TK
+                                    - TO
+                                    - TT
+                                    - TN
+                                    - TR
+                                    - TM
+                                    - TC
+                                    - TV
+                                    - UG
+                                    - UA
+                                    - AE
+                                    - GB
+                                    - US
+                                    - UM
+                                    - UY
+                                    - UZ
+                                    - VU
+                                    - VE
+                                    - VN
+                                    - VG
+                                    - VI
+                                    - WF
+                                    - EH
+                                    - YE
+                                    - ZM
+                                    - ZW
+                                    x-readme-ref-name: LocationCountryCode
+                                  postalCode:
+                                    description: The postal code of the location.
+                                    type: string
+                                    example: '52062'
+                                  longitude:
+                                    description: The geographic coordinate that specifies the east–west position of the location.
+                                    type: number
+                                    example: 6.09294299
+                                    readOnly: true
+                                  latitude:
+                                    description: The geographic coordinate that specifies the north–south position of the location.
+                                    type: number
+                                    example: 50.77441934
+                                    readOnly: true
+                              x-readme-ref-name: Location
+                            metadata:
+                              title: Metadata
+                              description: Represents system's metadata.
+                              type: object
+                              properties:
+                                wizard:
+                                  title: Wizard
+                                  type: object
+                                  description: Represents the metadata to keep track of the current wizard step.
+                                  required:
+                                  - step
+                                  properties:
+                                    step:
+                                      description: Represents the current wizard step.
+                                      type: string
+                                      x-extensible-enum:
+                                      - WELCOME
+                                      - STARTCODE
+                                      - GRIDBOX_STATUS
+                                      - SYSTEM_TYPE_SELECT
+                                      - ACCOUNT_ASSIGNMENT
+                                      - PERSONAL_INFORMATION
+                                      - SYSTEM_OVERVIEW
+                                      - SYSTEM_CHILDREN_SETUP
+                                      - SYSTEM_SETUP
+                                      - PARAGRAPH_14A
+                                      - ENERGYMANAGEMENT
+                                      - HEATING_ROD
+                                      - ENERGYMANAGEMENT_ACTIVATION
+                                      - ENERGY_SUPPLIER
+                                      - SYSTEM_CHECK
+                                      - DONE
+                                      - ELECTRICITY_TARIFF_V2
+                                      - KOSTAL_CONFIGURATION
+                                      - ENPHASE_CONNECTION
+                                      - EEBUS_PAIRING
+                                      - SONNEN_CONNECTION
+                                      - IO_DEVICE_CONFIGURATION
+                                      - IO_DEVICE_HEAT_PUMP_CONFIGURATION
+                                      - TROUBLESHOOT_INSTALLATION
+                                      - INSTALLER_HUB
+                                      - ENA_G100
+                                      - PV_SYSTEM
+                                      - FUSE_PROTECTION
+                                      - ENERGY_OPTIMIZATION
+                                      - UNKNOWN
+                                    firstCompletedAt:
+                                      description: Represents the date and time when the final wizard step was completed first time.
+                                      type: string
+                                      format: date-time
+                                      readOnly: true
+                                      example: '2025-06-22T00:00:00Z'
+                                    version:
+                                      description: Represents the version of wizard.
+                                      type: integer
+                                      x-extensible-enum:
+                                      - 1
+                                      - 2
+                                      - 3
+                                  x-readme-ref-name: MetadataWizard
+                                energy:
+                                  title: Energy Metadata
+                                  type: object
+                                  description: represents the metadata related to the energy use case.
+                                  properties:
+                                    installer:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: Installer is the person who has installed the systems.
+                                    norminalPower:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      minimum: 0
+                                      description: 'The system''s maximal power production in W (for historical reasons the word "norminal" is used instead of the correct term "nominal power").
+
+
+                                        *Deprecated* - Use `nominalPower` instead (in mW!).
+
+                                        '
+                                      deprecated: true
+                                    nominalPower:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      minimum: 0
+                                      description: The system's maximal power production in mW. 0 is used if unset.
+                                    curtailment:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: Curtailment is the percentage of system's nominal power at which the pv inverters should stop feeding into the grid. (0-1)
+                                    heatingSystem:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: HeatingSystem represents the type of the heating system.
+                                    agreedEMSTerms:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                      deprecated: true
+                                      description: 'AgreedEMSTerms indicates if the customers accepts the ems terms.
+
+
+                                        *Deprecated* - Use `MetadataEMS.agreedEMSTerms` instead.
+
+                                        '
+                                    ems:
+                                      title: MetadataEMS
+                                      type: object
+                                      description: MetadataEMS represents the energy management allowances.
+                                      properties:
+                                        agreedEMSTerms:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: AgreedEMSTerms indicates if the customers accepts the ems terms.
+                                        enabledEMS:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledEMS indicates if gridBox should activate the ems.
+                                        agreedDynamicPVControlTerms:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: AgreedDynamicPVControlTerms indicates if the customer accepts the dynamic pc control terms.
+                                        enabledDynamicPVControl:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledDynamicPVControl indicates if the gridBox should activate the dynamic pv control.
+                                        enabledInverterGCPControl:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: 'EnabledInverterGCPControl indicates if the gridBox should activate the inverter gcp control.
+
+
+                                            *Deprecated* - This is automatically detected by the gridbox. If this field is unset or false, the gridbox will determine inverter GCP control activation automatically.
+
+                                            '
+                                          deprecated: true
+                                        agreedForecastBasedEMSTerms:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: '*Deprecated* Feature is deprecated and will be removed in a future release.
+
+                                            '
+                                          deprecated: true
+                                        enabledForecastBasedEMS:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: '*Deprecated* Feature is deprecated and will be removed in a future release.
+
+                                            '
+                                          deprecated: true
+                                        agreedPriorityConfigurationTerms:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: AgreedPriorityConfigurationTerms indicates if the customer accepts the priority configuration terms.
+                                        enabledPriorityConfiguration:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledPriorityConfiguration indicates if the gridBox should activate the priority configuration.
+                                        agreedPowerManagementTerms:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: AgreedPowerManagementTerms indicates if the customer accepts the power management terms.
+                                        enabledPowerManagement:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledPowerManagement indicates if the gridBox should activate the power management.
+                                        enabledStaticPowerManagement:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledStaticPowerManagement indicates if the gridBox should activate the static power management.
+                                        enabledPowerImportPeakOptimization:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: EnabledPowerImportPeakOptimization indicates if the gridBox should activate the 15min avg. energy optimization algorithm.
+                                        powerImportPeakPerOptimizationInterval:
+                                          type:
+                                          - number
+                                          - 'null'
+                                          format: double
+                                          deprecated: true
+                                          description: 'Describes the amount of imported energy in a 15 minutes interval in VA.
+
+
+                                            Deprecated: Use powerImportPeakPerOptimizationIntervalmVA instead.
+
+                                            '
+                                        powerImportPeakPerOptimizationIntervalmVA:
+                                          type:
+                                          - number
+                                          - 'null'
+                                          format: double
+                                          description: Defines the average power in a 15 minute interval in mVA for peak shaving.
+                                        enabledBatteryFullGridCharge:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: '*Deprecated* Feature is deprecated and will be removed in a future release. The default behaviour is to always allow charging with full power and the setting is not required anymore.
+
+                                            '
+                                          deprecated: true
+                                        enabledLessConstrainingSOCLimits:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: '*Deprecated* Feature is deprecated and will be removed in a future release.
+
+                                            '
+                                          deprecated: true
+                                        derAPISettings:
+                                          title: DerAPISettings
+                                          type: object
+                                          description: DerAPISettings represents the metadata related to DER API configuration.
+                                          properties:
+                                            enabledCloudAPI:
+                                              type:
+                                              - boolean
+                                              - 'null'
+                                              description: EnabledCloudAPI enables assets control with cloud DER API.
+                                            constraints:
+                                              title: SyncEntitySettings
+                                              type: object
+                                              description: SyncEntitySettings configures entity synchronisation parameters.
+                                              properties:
+                                                syncInterval:
+                                                  type:
+                                                  - number
+                                                  - 'null'
+                                                  format: double
+                                                  description: SyncInterval defines the period in seconds for data to be synchronized between gridBox and cloud DER API.
+                                                ttl:
+                                                  type:
+                                                  - number
+                                                  - 'null'
+                                                  format: double
+                                                  description: TTL defines the time to live in seconds for entity.
+                                                disabled:
+                                                  type: boolean
+                                                  description: Disabled disables the sync of entities.
+                                              x-readme-ref-name: SyncEntitySettings
+                                            flexibilities:
+                                              title: SyncEntitySettings
+                                              type: object
+                                              description: SyncEntitySettings configures entity synchronisation parameters.
+                                              properties:
+                                                syncInterval:
+                                                  type:
+                                                  - number
+                                                  - 'null'
+                                                  format: double
+                                                  description: SyncInterval defines the period in seconds for data to be synchronized between gridBox and cloud DER API.
+                                                ttl:
+                                                  type:
+                                                  - number
+                                                  - 'null'
+                                                  format: double
+                                                  description: TTL defines the time to live in seconds for entity.
+                                                disabled:
+                                                  type: boolean
+                                                  description: Disabled disables the sync of entities.
+                                              x-readme-ref-name: SyncEntitySettings
+                                          x-readme-ref-name: DerAPISettings
+                                        enabledTimeOfUseOptimization:
+                                          deprecated: true
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: 'Indicates if time of use optimization is enabled for the system.
+
+                                            *Deprecated* - Use `systems/{systemID}/timeofuse/options` endpoint instead.
+
+                                            '
+                                        disableAveragePmaxCalculation:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: Disables the average pMax calculation. It means EMS will not calculate average pMax and will get the default value instead.
+                                        excludeApplianceTypes:
+                                          description: Appliance types to be ignored by the EMS. Updating this field to an empty array clears it. **Please note that this currently requires the box to be restarted to take effect**.
+                                          type:
+                                          - array
+                                          - 'null'
+                                          items:
+                                            type: string
+                                            x-extensible-enum:
+                                            - HEAT_PUMP
+                                        evChargingReallocationTolerance:
+                                          description: Specifies the maximum power in mW that can be drawn to charge an EV in case the PV surplus is not sufficient.
+                                          type:
+                                          - number
+                                          - 'null'
+                                          format: double
+                                          example: 500000
+                                        enabledPowerWindowHysteresis:
+                                          description: Configures the system to use the power window hysteresis feature. If unset, the system will behave as if this was activated. Set to false to deactivate.
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                      x-readme-ref-name: MetadataEMS
+                                    smartMeterInstallationTimestamp:
+                                      description: The time the smart meter has been installed (if any), in RFC3339 format.
+                                      type:
+                                      - string
+                                      - 'null'
+                                      format: date-time
+                                      example: '2020-09-21T00:00:00Z'
+                                  x-readme-ref-name: MetadataEnergy
+                                energySupplier:
+                                  title: Energy Supplier
+                                  type: object
+                                  description: MetadataEnergySupplier represents the metadata related to energy supplier.
+                                  properties:
+                                    type:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      deprecated: true
+                                      description: Type determines if gridX is the energy supplier. The value is either "GRIDX" or "OTHER".
+                                      enum:
+                                      - GRIDX
+                                      - OTHER
+                                    unitPrice:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: UnitPrice is unit price per kWh in EU cent. Deprecated - Use TariffV2 instead.
+                                      deprecated: true
+                                    installment:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: Installment is the monthly payment.
+                                    baseFee:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: BaseFee is the monthly base fee.
+                                    feedInTariff:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: FeedInTariff is the cost-based compensation in EUR cent for feeding in. Deprecated - Use TariffV2 instead.
+                                      deprecated: true
+                                    expectedConsumption:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: ExpectedConsumption is the expected annual consumption in kWh.
+                                  x-readme-ref-name: MetadataEnergySupplier
+                                smartMeter:
+                                  title: Smart Meter
+                                  description: Represents the metadata to report if a smart meter has been installed.
+                                  type: object
+                                  properties:
+                                    installed:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                      description: Reports if the smart meter has been installed.
+                                    hasInstallationDate:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                      description: Reports if the provider has sent us a installation date that can be found in energy metadata.
+                                  x-readme-ref-name: MetadataSmartMeter
+                              x-readme-ref-name: SystemMetadata
+                          x-readme-ref-name: AbstractSystem
+                        - properties:
+                            id:
+                              type: string
+                              format: uuid
+                              readOnly: true
+                              description: Unique identifier of a system.
+                              example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+                            createdAt:
+                              type: string
+                              format: date-time
+                              readOnly: true
+                              description: Date when the system was created in RFC3339 format.
+                              example: '2017-12-22T14:20:50Z'
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              readOnly: true
+                              description: Date when the system was last updated in RFC3339 format.
+                              example: '2017-12-24T08:33:00Z'
+                            chargingIntervals:
+                              type: array
+                              readOnly: true
+                              description: Displays charging intervals of the system's EV charging stations.
+                              items:
+                                title: EV Charging Schedule
+                                type: object
+                                allOf:
+                                - title: EV Charging Schedule
+                                  description: 'An Electric Vehicle charging schedule represents an interval in which
+
+                                    the electric vehicle is supposed to charge at a defined limit.
+
+                                    '
+                                  type: object
+                                  properties:
+                                    from:
+                                      type: string
+                                      format: date-time
+                                      example: '2021-11-04T00:00:00Z'
+                                      description: 'Specifies when the schedule should start in RFC3339 format.
+
+                                        '
+                                    to:
+                                      type: string
+                                      format: date-time
+                                      example: '2021-11-04T00:30:00Z'
+                                      description: 'Specifies when the schedule should end in RFC3339 format.
+
+                                        '
+                                    limit:
+                                      description: 'The maximum amount of power in Watts that will be used for scheduling charging in the interval [from, to].
+
+                                        '
+                                      example: 75000
+                                      title: Positive Power in Watt.
+                                      type: integer
+                                      format: int64
+                                      minimum: 0
+                                      x-readme-ref-name: PositivePower
+                                  x-readme-ref-name: AbstractEVChargingSchedule
+                                - properties:
+                                    id:
+                                      type: string
+                                      format: uuid
+                                      example: ec4d0c89-a604-49ac-82f0-427f9cb42204
+                                      readOnly: true
+                                    updatedAt:
+                                      type: string
+                                      format: date-time
+                                      readOnly: true
+                                      description: Specifies when the schedule was updated the last time.
+                                - required:
+                                  - id
+                                  - from
+                                  - to
+                                  - limit
+                                x-readme-ref-name: EVChargingSchedule
+                            gateways:
+                              description: The gateways of which this system is comprised.
+                              type: array
+                              readOnly: true
+                              items:
+                                allOf:
+                                - title: Gateway
+                                  description: 'A gateway used to monitor and control appliances.
+
+
+                                    For instance, our beloved gridbox is a gateway.
+
+                                    '
+                                  type: object
+                                  properties:
+                                    name:
+                                      deprecated: true
+                                      type: string
+                                      maxLength: 255
+                                      description: Name of the gateway.
+                                    debugModeUntil:
+                                      deprecated: true
+                                      type: string
+                                      format: date-time
+                                      description: 'Date until which debug messages are logged in RFC3339 format.
+
+                                        **Deprecated**: defaults to `createdAt` + 3 days.
+
+                                        '
+                                  x-readme-ref-name: AbstractGateway
+                                - properties:
+                                    id:
+                                      type: string
+                                      format: uuid
+                                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                                      description: Unique identifier of a gateway.
+                                      readOnly: true
+                                    type:
+                                      type: string
+                                      description: 'Type of the gateway.
+
+
+                                        **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                                        '
+                                      deprecated: true
+                                      enum:
+                                      - VIRTUAL
+                                      - PHYSICAL
+                                      - OTHER
+                                      x-readme-ref-name: GatewayType
+                                    createdAt:
+                                      type: string
+                                      format: date-time
+                                      readOnly: true
+                                      description: Date when the Gateway was created in RFC3339 format.
+                                    updatedAt:
+                                      type: string
+                                      format: date-time
+                                      readOnly: true
+                                      description: Date when the Gateway was last updated in RFC3339 format.
+                                    registeredAt:
+                                      deprecated: true
+                                      type: string
+                                      format: date-time
+                                      readOnly: true
+                                      description: 'Date when the Gateway was first registered in RFC3339 format.
+
+                                        **Deprecated**: defaults to `createdAt`.
+
+                                        '
+                                    connectionStatus:
+                                      title: Connection Status
+                                      type: object
+                                      readOnly: true
+                                      properties:
+                                        status:
+                                          type: string
+                                          description: "Indicates the connection status. Is one of:\n  * `AVAILABLE`: Gateway has sent data in the last 5 minutes\n  * `TEMPORARILY_UNAVAILABLE`: Gateway has not sent data in the last 5 minutes\n  * `UNAVAILABLE`: Gateway has not sent data in the last 24 hours\n  * `UNKNOWN`: Gateway was never online and never sent data or the connection status can't be determined."
+                                          enum:
+                                          - AVAILABLE
+                                          - TEMPORARILY_UNAVAILABLE
+                                          - UNAVAILABLE
+                                          - UNKNOWN
+                                        contactedAt:
+                                          type: string
+                                          format: date-time
+                                          deprecated: true
+                                          description: 'When the gateway/appliance has last contacted the gridX cloud.
+
+
+                                            In case the gateway was never online and never sent data, this field is null.
+
+
+                                            Deprecated: Gateway heartbeats will be removed in future versions and this will be only estimated. Use `statusChangedAt` instead.
+
+                                            '
+                                        statusChangedAt:
+                                          type: string
+                                          format: date-time
+                                          description: 'When the gateway status last changed. In case the gateway was never online this field is null.
+
+                                            '
+                                      required:
+                                      - status
+                                      x-readme-ref-name: ConnectionStatus
+                                    vendorID:
+                                      deprecated: true
+                                      description: 'ID of the vendor account to which the corresponding system is assigned.
+
+                                        **Deprecated**: omitted from responses by default.
+
+                                        '
+                                      type: string
+                                      format: uuid
+                                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                                    startcode:
+                                      description: Code used to register a new gateway.
+                                      type: string
+                                      example: 39FDDF7D85BAAD2D
+                                    manufacturer:
+                                      deprecated: true
+                                      description: 'Manufacturer of the gateway.
+
+                                        **Deprecated**: defaults to `gridX`.
+
+                                        '
+                                      type: string
+                                      example: gridX
+                                      readOnly: true
+                                    model:
+                                      description: Model of the gateway.
+                                      type: string
+                                      example: 2.00P-X
+                                      readOnly: true
+                                    serialnumber:
+                                      description: Serial number of the gateway.
+                                      type: string
+                                      example: C083-200-000-000-199-P-X
+                                      readOnly: true
+                                    additionalIdentifiers:
+                                      description: Additional identifiers used by the gateway.
+                                      type: array
+                                      items:
+                                        title: Additional identifiers of the gridBox.
+                                        description: Additional identifiers used by the gridBox.
+                                        type: object
+                                        properties:
+                                          service:
+                                            type: string
+                                            readOnly: true
+                                            description: The service this identifier is referring to, e.g the protocol used for the appliance-gridBox handshake
+                                            example: EEBUS
+                                          type:
+                                            type: string
+                                            readOnly: true
+                                            description: The type of the identifier.
+                                            example: SKI
+                                            enum:
+                                            - UNKNOWN
+                                            - SKI
+                                          identifier:
+                                            type: string
+                                            readOnly: true
+                                            description: The actual identifier, e.g "SKI" used in the TLS certificate for the communication. If type is "SKI", it is hexadecimal-encoded.
+                                        x-readme-ref-name: AdditionalIdentifier
+                                      readOnly: true
+                                    scanners:
+                                      type: array
+                                      readOnly: true
+                                      description: List of scanner names that are enabled for this gateway.
+                                      items:
+                                        type: string
+                                        description: The name of the scanner which searches for the appliance in the network.
+                                        example: SMA_INVERTER_IGMP_HOST_DISCOVERY
+                                        x-extensible-enum:
+                                        - SMA_INVERTER_IGMP_HOST_DISCOVERY
+                                        - SMA_INVERTER_ARP_HOST_DISCOVERY
+                                        - SMA_METER
+                                        - BCONTROL_METER
+                                        - SOLAREDGE_INVERTER_METER_MODBUS_TCP
+                                        - SOLAREDGE_INVERTER_METER_MODBUS_RTU
+                                        - SOLARLOG_MONITOR
+                                        - CUSTOMER_HOLFELDER_METER
+                                        - CUSTOMER_HOLFELDER_INVERTER
+                                        - E3DC_INVERTER_METER
+                                        - KOSTAL_INVERTER
+                                        - STUDER_INVERTER
+                                        - FRONIUS_INVERTER
+                                        - HUAWEI_INVERTER
+                                        - KEBA_CHARGING_STATION
+                                        - ECHARGE_CHARGING_STATION
+                                        - INNOGY_CHARGING_STATION
+                                        - ELECTRIS_METER
+                                        - SOLARWATT_INVERTER_METER
+                                        - ABL_CHARGING_STATION
+                                        - SIEMENS_PAC_METER
+                                        - JANITZA_METER
+                                        - JANITZA_METER_RTU
+                                        - EVTEC_CHARGING_STATION
+                                        - HIKING_METER_RTU
+                                        - EEBUS_FUEL_CELL_METER
+                                        - KOSTAL_INVERTER_PLENTICORE
+                                        - SONNENBATTERIE_UPNP
+                                        - VIRTUAL_METER
+                                        - MENNEKES_UPNP
+                                        - ANYBUS_MBUS_CONVERTER_METER
+                                        - EEBUS_GENERIC
+                                        - SIMULATION_GENERIC
+                                        - ALFEN_NG9XX_MODBUS_CHARGING_STATION
+                                        - ALPITRONIC_HYPERCHARGER_MODBUS_CHARGING_STATION
+                                        - MY_PV_AC_THOR_HEATER
+                                        - COMPLEO_MODBUS_CHARGING_STATION
+                                        - OCPP_CHARGING_STATION
+                                        - BENDER_CHARGING_STATION
+                                        - VOLTERION_REDOX_FLOW_BATTERY
+                                        - XNET_METER
+                                        - RSW_METER
+                                        - SCHNEIDER_METER
+                                        - INNOGY_MODBUS_CHARGING_STATION
+                                        - MENNEKES_PREMIUM_MODBUS_CHARGING_STATION
+                                        - PLPLANO_MODBUS_RTU_METER
+                                        - HEIDELBERG_ENERGY_CONTROL_MODBUS_RTU_CHARGING_STATION
+                                        - CARLO_GAVAZZI_MODBUS_RTU_METER
+                                        - VESTEL_CHARGING_STATION
+                                        - INNOTEC_HEAT_PUMP
+                                        - WALLBE_MODBUS_CHARGING_STATION
+                                        - EVBOX_MAX_CHARGING_STATION
+                                        - ISKRAEMECO_METER
+                                        - SUNGROW_MODBUS_INVERTER
+                                        - WAGO_IO_DEVICE
+                                        - GOE_CHARGING_STATION
+                                        - XNET_CLOUD_HEAT_PUMP
+                                        - XNET_CLOUD_GENERIC
+                                        - LANDIS_GYR_METER
+                                        - POWERDALE_CHARGING_STATION
+                                        - EASTRON_SDM230_METER
+                                        - EASTRON_SDM72DM_METER
+                                        - ZUCCHETTI_CONNEXT_BOX
+                                        - PLVARIO_ENERGY_METER_EM3
+                                        - ABB_OPC_UA_CHARGING_STATION
+                                        - DATA_LOGGER_DEVICE
+                                        - POWERSIDE_METER
+                                        - PPC_METER
+                                        - RUTENBECK_TCR_IP4_IO_DEVICE
+                                        - JEAN_MUELLER_PL_MULTI_METER
+                                        - ENPHASE_ENVOY_S_GATEWAY
+                                        - SOLAX_MODBUS_RTU_INVERTER
+                                        - ALPHA_ESS_HI10_HYBRID_INVERTER
+                                        - ZUCCHETTI_MODBUS_RTU_INVERTER
+                                        - STIEBEL_ELTRON_MODBUS_TCP_HEAT_PUMP
+                                        - MENNEKES_AMTRON_COMPACT_2S_MODBUS_RTU_CHARGING_STATION
+                                        - SAIA_PCD1_E_LINE_HEAT_PUMP
+                                        - SUNGROW_SG_MODBUS_INVERTER
+                                        - SOLAX_MODBUS_TCP_INVERTER
+                                        - PHOENIX_CONTACT_EM_PRO_METER
+                                        - DAIKIN_HOMEHUB_MODBUS_TCP_HEAT_PUMP
+                                        - SOLPLANET_MODBUS_TCP_INVERTER
+                                        - SUNGROW_SHXRS_SHXT_MODBUS_INVERTER
+                                        - KOSTAD_DC_CHARGING_STATION
+                                        - GIVENERGY_GIV_TCP_INVERTER
+                                        - FOX_ESS_MODBUS_TCP_INVERTER
+                                        - SHELLY_HTTP_METER
+                                        - PIXII_MODBUS_TCP_BESS
+                                        - GOODWE_MODBUS_TCP_INVERTER
+                                        - READY_FOR_GRIDX
+                                        - KOSTAL_ENECTOR_CHARGING_STATION
+                                        - MENNEKES_4YOU_CHARGING_STATION
+                                        - EKOENERGETYKA_CHARGING_STATION
+                                        - VIESSMANN_EEBUS_INVERTER_AND_HEAT_PUMP
+                                        - VAILLANT_EEBUS_HEAT_PUMP
+                                        - PROLAN_EEBUS_STB
+                                        - PPC_EEBUS_METER
+                                        - THEBEN_SE_EEBUS_METER
+                                        - DAIKIN_ALTHERMA4_MODBUS_TCP_HEAT_PUMP
+                                        - FOXESS_CHARGING_STATION
+                                        - BOSCH_BUDERUS_EEBUS_HEAT_PUMP
+                                        - KOSTAL_EBOX_DC_B11_EEBUS_CHARGING_STATION
+                                        - SOLPLANET_IBC_SOLAR_CHARGING_STATION
+                                        - ADS_TEC_CHARGING_STATION
+                                        - WOLF_EEBUS_HEAT_PUMP
+                                        - SHELLY_3EMPRO_HTTP_METER
+                                        - SHELLY_PRO2_HTTP_IO_DEVICE
+                                        - SWISTEC_EEBUS_METER
+                                        - BMW_DC_WALLBOX_EEBUS_CHARGING_STATION
+                                        - SUNGROW_CHARGING_STATION
+                                        - ETREL_INCH_DUO_CHARGING_STATION
+                                        - ALPHAESS_SMILE_G3_T4_T10
+                                        - SUNGROW_EMS300CP_BESS
+                                        - HUAWEI_SMART_LOGGER_BESS
+                                        - SOLAX_MODBUS_TCP_METER
+                                        x-readme-ref-name: ScannerName
+                                    applianceComposition:
+                                      type: array
+                                      readOnly: true
+                                      description: Appliance types that are connected to the gateway for overview purposes.
+                                      example:
+                                      - HEAT_PUMP
+                                      items:
+                                        type: string
+                                  required:
+                                  - id
+                                  - type
+                                  - connectionStatus
+                                  - createdAt
+                                  - updatedAt
+                                x-readme-ref-name: Gateway
+                            status:
+                              type: string
+                              readOnly: true
+                              deprecated: true
+                              enum:
+                              - UNDEFINED
+                              - OK
+                              - WARNING
+                              - ERROR
+                              description: "Status of the system: \n  * `OK`: If the attached gateway is reported as ONLINE.\n  * `WARNING`: If the attached gateway is reported as OFFLINE but less than 24h ago.\n  * `ERROR`: If the attached gateway is reported as OFFLINE for more than 24h ago. \n  * `UNDEFINED`: otherwise\n\n**Deprecated** - Use `gatewayStatus` instead.\n"
+                            gatewayStatus:
+                              type: string
+                              readOnly: true
+                              description: "Status of the system's gateway: \n  * `AVAILABLE` - The gateway is reported as ONLINE.\n  * `UNAVAILABLE` - The gateway is reported as OFFLINE.\n  * `UNKNOWN` - The system has no gateway, or the gateway status is not known.\n\nIf you need more granularity, you can use the `connectionStatus` in `gateways` instead.\n"
+                              enum:
+                              - AVAILABLE
+                              - UNAVAILABLE
+                              - UNKNOWN
+                            assetsStatus:
+                              type: object
+                              readOnly: true
+                              description: 'Provides information about the system''s health, such as the computed combined status of all of its assets
+
+                                as well as their respective counts.
+
+                                Only included in the response if filtered by using the `filterBy` parameter, or included via the `include` parameter.
+
+                                '
+                              properties:
+                                status:
+                                  type: string
+                                  description: 'The combined status of all of this system''s assets according to the following rules:
+
+                                    AVAILABLE → All the assets are successfully connected in the last 5 minutes.
+
+                                    UNHEALTHY → Only some assets are successfully connected in the last 5 minutes.
+
+                                    UNAVAILABLE  → No assets are successfully connected in the last 5 minutes.
+
+                                    UNKNOWN → Fallback, e.g. system without assets or all assets have an unknown status.
+
+                                    '
+                                  enum:
+                                  - UNKNOWN
+                                  - UNAVAILABLE
+                                  - UNHEALTHY
+                                  - AVAILABLE
+                                unknownCount:
+                                  readOnly: true
+                                  description: 'The total number of assets for which there is no status information.
+
+                                    '
+                                  type: integer
+                                  example: 321
+                                unavailableCount:
+                                  readOnly: true
+                                  description: 'The total number of assets which have connected in the past but not in the past 5 minutes.
+
+                                    '
+                                  type: integer
+                                  example: 321
+                                availableCount:
+                                  readOnly: true
+                                  description: 'The total number of assets which have connected in the past 5 minutes.
+
+                                    '
+                                  type: integer
+                                  example: 321
+                            assetsKinds:
+                              type: array
+                              readOnly: true
+                              description: 'Provides information about the distinct kinds of assets attached to a system.
+
+                                Only included in the response if filtered by using the `filterBy` parameter, or included via the `include` parameter.
+
+                                '
+                              items:
+                                type: string
+                                x-extensible-enum:
+                                - AIR_CONDITIONER
+                                - BATTERY
+                                - BTTP
+                                - CLUSTER
+                                - EV
+                                - EVSTATION
+                                - FUEL_CELL
+                                - GRID
+                                - HEAT_PUMP
+                                - HEAT_PUMP_EXTERNAL
+                                - HEATER
+                                - HEATING
+                                - HYBRID
+                                - IO_DEVICE
+                                - MISC
+                                - PV
+                                - PV_EXTERNAL
+                                - UNKNOWN
+                                - WIND_TURBINE
+                            assetsGatewayType:
+                              type: string
+                              readOnly: true
+                              description: 'Provides information about the gateway type of assets attached to a system.
+
+                                Returns HYBRID when both CLOUD and GRIDBOX assets are present.
+
+                                Omitted when the system has no assets.
+
+                                Only included in the response if filtered by using the `filterBy` parameter, or included via the `include` parameter.
+
+                                '
+                              enum:
+                              - CLOUD
+                              - GRIDBOX
+                              - HYBRID
+                            tags:
+                              type: array
+                              readOnly: true
+                              description: 'Provides information about the distinct tags attached to a system.
+
+                                Only included in the response if filtered by using the `filterBy` parameter, or included via the `include` parameter.
+
+                                '
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  value:
+                                    type: string
+                        x-readme-ref-name: SystemWithoutProductOption
+                      - title: Embedded accounts
+                        description: 'Hierarchy of accounts the system belongs to, from the authenticated account down to the end customer''s.
+
+                          '
+                        type: object
+                        properties:
+                          accounts:
+                            type: array
+                            items:
+                              title: Account
+                              description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                                '
+                              type: object
+                              readOnly: true
+                              allOf:
+                              - title: Account
+                                description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+
+                                  This is the base type for the more concrete usages and not used directly within operations.
+
+                                  '
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    example: John Doe
+                                    description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                                    minLength: 1
+                                    maxLength: 256
+                                  email:
+                                    type: string
+                                    example: john@doe.com
+                                    description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                                    maxLength: 256
+                                  solution:
+                                    type: string
+                                    description: 'Represents the supported solutions within the account:
+
+                                      - HOME if the account contains household-like systems.
+
+                                      - CHARGE if the account is used solely for charging station fleet management.
+
+                                      - GENERAL if unsure what the account should contain or if it''s a mix of multiple solutions.
+
+                                      - SMART_DISTRICT if the account is used solely for smart district management.
+
+                                      If not set, the parent account''s solution will be assumed.
+
+                                      '
+                                    enum:
+                                    - HOME
+                                    - CHARGE
+                                    - GENERAL
+                                    - SMART_DISTRICT
+                                    - MICROGRID
+                                    - HOME_VIRTUAL_METERING
+                                    - COMMERCIAL
+                                    - CUSTOM_P2P
+                                    x-readme-ref-name: InventoryAccountSolution
+                                x-readme-ref-name: InventoryAbstractAccount
+                              - properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                                    description: Uniquely identifies the account.
+                                  parentID:
+                                    type: string
+                                    format: uuid
+                                    example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                                    description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                                  createdAt:
+                                    type: string
+                                    format: date-time
+                                    description: Specifies when the account was created.
+                                  updatedAt:
+                                    type: string
+                                    format: date-time
+                                    description: Specifies when the account was updated.
+                                  systemsCount:
+                                    type: integer
+                                    description: SystemCount is the number of systems assigned to this account
+                                    example: 1
+                                  kind:
+                                    type: string
+                                    readOnly: true
+                                    enum:
+                                    - b2b
+                                    - end-user
+                                    description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                                    x-readme-ref-name: AccountKind
+                                  mainAddress:
+                                    title: Address
+                                    description: Represents a physical address of a customer.
+                                    allOf:
+                                    - type: object
+                                      properties:
+                                        city:
+                                          description: The city of the location.
+                                          type: string
+                                          example: Aachen
+                                        country:
+                                          description: The country of the location.
+                                          type: string
+                                          example: Germany
+                                        addressLine1:
+                                          description: 'First line of the location''s address, typically containing the
+
+                                            main information such as the street name and house number.
+
+                                            '
+                                          type: string
+                                          example: Oppenhoffallee 143
+                                        addressLine2:
+                                          description: 'Second line of the location''s address, typically containing additional
+
+                                            information such as apartment numbers, suite numbers, or other details
+
+                                            that can help in identifying the exact location of the address.
+
+                                            '
+                                          type: string
+                                        addressLine3:
+                                          description: 'Third line of the location''s address, typically containing any other
+
+                                            details that can help in identifying the exact location of the address.
+
+                                            '
+                                          type: string
+                                        addressLine4:
+                                          description: 'Fourth line of the location''s address, typically containing any other
+
+                                            details that can help in identifying the exact location of the address.
+
+                                            '
+                                          type: string
+                                        timeZone:
+                                          description: The TZ Identifier of the location's timezone.
+                                          type: string
+                                          example: Europe/Berlin
+                                          readOnly: true
+                                      x-readme-ref-name: InventoryAbstractLocation
+                                    - type: object
+                                      properties:
+                                        postalcode:
+                                          description: The postal code of the location.
+                                          type: string
+                                          example: '52062'
+                                        region:
+                                          description: The region of the address.
+                                          type: string
+                                        telephone:
+                                          description: The telephone number of the customer.
+                                          type: string
+                                    x-readme-ref-name: InventoryAddress
+                                  customization:
+                                    description: Customization can be used to store arbitrary data.
+                                required:
+                                - id
+                                - createdAt
+                                - updatedAt
+                              x-readme-ref-name: InventoryAccount
+                            readOnly: true
+                        x-readme-ref-name: EmbeddedAccounts
+                      - properties:
+                          productOption:
+                            type: object
+                            allOf:
+                            - title: Product Option
+                              description: 'A product option describes a set of features whose access should be restricted from or granted to users of a system.
+
+
+                                Systems can be assigned a product option to manage their access to these features.
+
+
+                                This is the base type for the more concrete usages and not used directly within operations.
+
+                                '
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the product option.
+                                  example: Default Product Option
+                                description:
+                                  type: string
+                                  description: Describes the purpose of the product option.
+                              x-readme-ref-name: AbstractProductOption
+                            - properties:
+                                id:
+                                  description: Unique identifier of the product option.
+                                  type: string
+                                  format: uuid
+                                  example: d5166f02-8b56-4200-90bd-35d3d17391b4
+                                accountID:
+                                  description: Unique identifier of the account that owns the product option.
+                                  type: string
+                                  format: uuid
+                                  example: d73b6749-2c32-4bca-ab73-50d8e3744edf
+                                isDefault:
+                                  type: boolean
+                                  description: Indicates whether the product option should be assigned by default to all systems of the owning account.
+                                functionalities:
+                                  description: The default functionalities that a product option restricts access to. Deprecated - Use `showFunctionalities` and `hideFunctionalities` instead.
+                                  type: array
+                                  readOnly: true
+                                  deprecated: true
+                                  items:
+                                    type: object
+                                    allOf:
+                                    - description: 'A product functionality describes a feature.
+
+
+                                        It is used to manage access to this feature via product options.
+
+
+                                        This is the base type for the more concrete usages and not used directly within operations.
+
+                                        '
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          maxLength: 256
+                                          description: Name of the product functionality.
+                                          example: EV Manager
+                                        hide:
+                                          type: boolean
+                                          description: Indicates whether the product functionality should be hidden or shown.
+                                        description:
+                                          type: string
+                                          description: Describes the purpose of the product functionality.
+                                      x-readme-ref-name: AbstractProductFunctionality
+                                    - properties:
+                                        id:
+                                          description: Unique identifier of the product functionality.
+                                          type: string
+                                          format: uuid
+                                          example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                                      required:
+                                      - id
+                                      - name
+                                      - hide
+                                    x-readme-ref-name: ProductFunctionality
+                                hideFunctionalities:
+                                  readOnly: true
+                                  description: The default functionalities that a product option restricts access to. Must be of type `hide=true`.
+                                  type: array
+                                  items:
+                                    type: object
+                                    allOf:
+                                    - description: 'A product functionality describes a feature.
+
+
+                                        It is used to manage access to this feature via product options.
+
+
+                                        This is the base type for the more concrete usages and not used directly within operations.
+
+                                        '
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          maxLength: 256
+                                          description: Name of the product functionality.
+                                          example: EV Manager
+                                        hide:
+                                          type: boolean
+                                          description: Indicates whether the product functionality should be hidden or shown.
+                                        description:
+                                          type: string
+                                          description: Describes the purpose of the product functionality.
+                                      x-readme-ref-name: AbstractProductFunctionality
+                                    - properties:
+                                        id:
+                                          description: Unique identifier of the product functionality.
+                                          type: string
+                                          format: uuid
+                                          example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                                      required:
+                                      - id
+                                      - name
+                                      - hide
+                                    x-readme-ref-name: ProductFunctionality
+                                showFunctionalities:
+                                  readOnly: true
+                                  description: The extra functionalities that a product option grants access to. Must be of type `hide=false`.
+                                  type: array
+                                  items:
+                                    type: object
+                                    allOf:
+                                    - description: 'A product functionality describes a feature.
+
+
+                                        It is used to manage access to this feature via product options.
+
+
+                                        This is the base type for the more concrete usages and not used directly within operations.
+
+                                        '
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          maxLength: 256
+                                          description: Name of the product functionality.
+                                          example: EV Manager
+                                        hide:
+                                          type: boolean
+                                          description: Indicates whether the product functionality should be hidden or shown.
+                                        description:
+                                          type: string
+                                          description: Describes the purpose of the product functionality.
+                                      x-readme-ref-name: AbstractProductFunctionality
+                                    - properties:
+                                        id:
+                                          description: Unique identifier of the product functionality.
+                                          type: string
+                                          format: uuid
+                                          example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                                      required:
+                                      - id
+                                      - name
+                                      - hide
+                                    x-readme-ref-name: ProductFunctionality
+                              required:
+                              - id
+                              - accountID
+                              - name
+                              - isDefault
+                              - functionalities
+                              - hideFunctionalities
+                              - showFunctionalities
+                            x-readme-ref-name: ProductOption
+                          productOptionUpdatedAt:
+                            description: Time at which the system's product option was last changed in RFC3339 format.
+                            type: string
+                            format: date-time
+                            readOnly: true
+                            example: '2009-11-10T23:20:50Z'
+                        required:
+                        - id
+                        - name
+                        - createdAt
+                        - updatedAt
+                      x-readme-ref-name: System
+                x-readme-ref-name: GatewayWithSystem
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Gateway not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - GatewaysRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways/gatewayID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteGateway
+      summary: Delete a Gateway
+      description: Deletes a Gateway.
+      tags:
+      - Gateway
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      responses:
+        '204':
+          description: Gateway has been deleted successfully.
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - GatewaysWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/gateways/gatewayID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /gateways/{gatewayID}/firmware:
+    get:
+      operationId: getGatewayFirmware
+      summary: Get a gateway's firmware information
+      description: 'Get information about the firmware that is selected to be run on a gateway.
+
+
+        For gateways with the CHARGE solution, the response also includes the
+
+        `releaseChannel` field indicating which release channel (alpha, stable,
+
+        checkpoint, or custom) the gateway is assigned to. This field is omitted
+
+        for gateways running other solutions.
+
+
+        Note: For offline gateways, this endpoint returns the firmware that is
+
+        scheduled for installation once the gateway reconnects to the cloud.
+
+
+        The firmware information is fetched on demand on a "best effort"
+
+        basis, which may intermittently report no firmware data for an
+
+        otherwise healthy gateway. In such cases this endpoint returns
+
+        `204 No Content` with an empty body.'
+      tags:
+      - Gateway
+      parameters:
+      - name: gatewayID
+        description: 'Unique identifier used to access a gateway.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 4ef41512-8445-4b90-aa53-8f8549b3f4bd
+      responses:
+        '200':
+          description: Returned firmware information for a gateway.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: Firmware
+                description: Represents information about a gateway's firmware.
+                type: object
+                properties:
+                  components:
+                    description: An application or component running on the gateway.
+                    type: array
+                    items:
+                      title: FirmwareComponent
+                      description: Represents a firmware component running on a gateway.
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the component.
+                          example: monitoring
+                        version:
+                          type: string
+                          description: Running firmware version.
+                          example: v0.1.26-weekly_2025-07-14-2025_07_21-012345-987654
+                      x-readme-ref-name: FirmwareComponent
+                x-readme-ref-name: Firmware
+        '204':
+          description: 'The gateway currently has no firmware information available.
+
+            '
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - GatewaysRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/gateways/gatewayID/firmware"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/gateways/gatewayID/firmware \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/gateways/gatewayID/firmware\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/gateways/gatewayID/firmware', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/firmware\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/gateways/gatewayID/firmware\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/gateways/gatewayID/firmware")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/gateways/gatewayID/firmware");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/gateways:
+    post:
+      operationId: createSystemGateway
+      summary: Create a System's Gateway
+      description: Creates a gateway.
+      tags:
+      - Gateway
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: Gateway to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                required:
+                - startcode
+                properties:
+                  startcode:
+                    description: Code used to register a new gateway.
+                    type: string
+                    example: 39FDDF7D85BAAD2D
+                    pattern: ^[A-Z0-9]{16}$
+                  vendorID:
+                    deprecated: true
+                    description: ID of the vendor account to which the corresponding system is assigned.
+                    type: string
+                    format: uuid
+                    example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                  type:
+                    type: string
+                    description: 'Type of the gateway.
+
+
+                      **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                      '
+                    deprecated: true
+                    enum:
+                    - VIRTUAL
+                    - PHYSICAL
+                    - OTHER
+                    x-readme-ref-name: GatewayType
+                  name:
+                    deprecated: true
+                    type: string
+                    maxLength: 255
+                    description: Name of the gateway.
+                  debugModeUntil:
+                    deprecated: true
+                    type: string
+                    format: date-time
+                    description: Date until which debug messages are logged in RFC3339 format.
+                x-readme-ref-name: GatewayCreate
+              - additionalProperties: false
+              x-readme-ref-name: GatewayCreateStrict
+      responses:
+        '201':
+          description: Created gateway.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Gateway
+                  description: 'A gateway used to monitor and control appliances.
+
+
+                    For instance, our beloved gridbox is a gateway.
+
+                    '
+                  type: object
+                  properties:
+                    name:
+                      deprecated: true
+                      type: string
+                      maxLength: 255
+                      description: Name of the gateway.
+                    debugModeUntil:
+                      deprecated: true
+                      type: string
+                      format: date-time
+                      description: 'Date until which debug messages are logged in RFC3339 format.
+
+                        **Deprecated**: defaults to `createdAt` + 3 days.
+
+                        '
+                  x-readme-ref-name: AbstractGateway
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                      description: Unique identifier of a gateway.
+                      readOnly: true
+                    type:
+                      type: string
+                      description: 'Type of the gateway.
+
+
+                        **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                        '
+                      deprecated: true
+                      enum:
+                      - VIRTUAL
+                      - PHYSICAL
+                      - OTHER
+                      x-readme-ref-name: GatewayType
+                    createdAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the Gateway was created in RFC3339 format.
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: Date when the Gateway was last updated in RFC3339 format.
+                    registeredAt:
+                      deprecated: true
+                      type: string
+                      format: date-time
+                      readOnly: true
+                      description: 'Date when the Gateway was first registered in RFC3339 format.
+
+                        **Deprecated**: defaults to `createdAt`.
+
+                        '
+                    connectionStatus:
+                      title: Connection Status
+                      type: object
+                      readOnly: true
+                      properties:
+                        status:
+                          type: string
+                          description: "Indicates the connection status. Is one of:\n  * `AVAILABLE`: Gateway has sent data in the last 5 minutes\n  * `TEMPORARILY_UNAVAILABLE`: Gateway has not sent data in the last 5 minutes\n  * `UNAVAILABLE`: Gateway has not sent data in the last 24 hours\n  * `UNKNOWN`: Gateway was never online and never sent data or the connection status can't be determined."
+                          enum:
+                          - AVAILABLE
+                          - TEMPORARILY_UNAVAILABLE
+                          - UNAVAILABLE
+                          - UNKNOWN
+                        contactedAt:
+                          type: string
+                          format: date-time
+                          deprecated: true
+                          description: 'When the gateway/appliance has last contacted the gridX cloud.
+
+
+                            In case the gateway was never online and never sent data, this field is null.
+
+
+                            Deprecated: Gateway heartbeats will be removed in future versions and this will be only estimated. Use `statusChangedAt` instead.
+
+                            '
+                        statusChangedAt:
+                          type: string
+                          format: date-time
+                          description: 'When the gateway status last changed. In case the gateway was never online this field is null.
+
+                            '
+                      required:
+                      - status
+                      x-readme-ref-name: ConnectionStatus
+                    vendorID:
+                      deprecated: true
+                      description: 'ID of the vendor account to which the corresponding system is assigned.
+
+                        **Deprecated**: omitted from responses by default.
+
+                        '
+                      type: string
+                      format: uuid
+                      example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                    startcode:
+                      description: Code used to register a new gateway.
+                      type: string
+                      example: 39FDDF7D85BAAD2D
+                    manufacturer:
+                      deprecated: true
+                      description: 'Manufacturer of the gateway.
+
+                        **Deprecated**: defaults to `gridX`.
+
+                        '
+                      type: string
+                      example: gridX
+                      readOnly: true
+                    model:
+                      description: Model of the gateway.
+                      type: string
+                      example: 2.00P-X
+                      readOnly: true
+                    serialnumber:
+                      description: Serial number of the gateway.
+                      type: string
+                      example: C083-200-000-000-199-P-X
+                      readOnly: true
+                    additionalIdentifiers:
+                      description: Additional identifiers used by the gateway.
+                      type: array
+                      items:
+                        title: Additional identifiers of the gridBox.
+                        description: Additional identifiers used by the gridBox.
+                        type: object
+                        properties:
+                          service:
+                            type: string
+                            readOnly: true
+                            description: The service this identifier is referring to, e.g the protocol used for the appliance-gridBox handshake
+                            example: EEBUS
+                          type:
+                            type: string
+                            readOnly: true
+                            description: The type of the identifier.
+                            example: SKI
+                            enum:
+                            - UNKNOWN
+                            - SKI
+                          identifier:
+                            type: string
+                            readOnly: true
+                            description: The actual identifier, e.g "SKI" used in the TLS certificate for the communication. If type is "SKI", it is hexadecimal-encoded.
+                        x-readme-ref-name: AdditionalIdentifier
+                      readOnly: true
+                    scanners:
+                      type: array
+                      readOnly: true
+                      description: List of scanner names that are enabled for this gateway.
+                      items:
+                        type: string
+                        description: The name of the scanner which searches for the appliance in the network.
+                        example: SMA_INVERTER_IGMP_HOST_DISCOVERY
+                        x-extensible-enum:
+                        - SMA_INVERTER_IGMP_HOST_DISCOVERY
+                        - SMA_INVERTER_ARP_HOST_DISCOVERY
+                        - SMA_METER
+                        - BCONTROL_METER
+                        - SOLAREDGE_INVERTER_METER_MODBUS_TCP
+                        - SOLAREDGE_INVERTER_METER_MODBUS_RTU
+                        - SOLARLOG_MONITOR
+                        - CUSTOMER_HOLFELDER_METER
+                        - CUSTOMER_HOLFELDER_INVERTER
+                        - E3DC_INVERTER_METER
+                        - KOSTAL_INVERTER
+                        - STUDER_INVERTER
+                        - FRONIUS_INVERTER
+                        - HUAWEI_INVERTER
+                        - KEBA_CHARGING_STATION
+                        - ECHARGE_CHARGING_STATION
+                        - INNOGY_CHARGING_STATION
+                        - ELECTRIS_METER
+                        - SOLARWATT_INVERTER_METER
+                        - ABL_CHARGING_STATION
+                        - SIEMENS_PAC_METER
+                        - JANITZA_METER
+                        - JANITZA_METER_RTU
+                        - EVTEC_CHARGING_STATION
+                        - HIKING_METER_RTU
+                        - EEBUS_FUEL_CELL_METER
+                        - KOSTAL_INVERTER_PLENTICORE
+                        - SONNENBATTERIE_UPNP
+                        - VIRTUAL_METER
+                        - MENNEKES_UPNP
+                        - ANYBUS_MBUS_CONVERTER_METER
+                        - EEBUS_GENERIC
+                        - SIMULATION_GENERIC
+                        - ALFEN_NG9XX_MODBUS_CHARGING_STATION
+                        - ALPITRONIC_HYPERCHARGER_MODBUS_CHARGING_STATION
+                        - MY_PV_AC_THOR_HEATER
+                        - COMPLEO_MODBUS_CHARGING_STATION
+                        - OCPP_CHARGING_STATION
+                        - BENDER_CHARGING_STATION
+                        - VOLTERION_REDOX_FLOW_BATTERY
+                        - XNET_METER
+                        - RSW_METER
+                        - SCHNEIDER_METER
+                        - INNOGY_MODBUS_CHARGING_STATION
+                        - MENNEKES_PREMIUM_MODBUS_CHARGING_STATION
+                        - PLPLANO_MODBUS_RTU_METER
+                        - HEIDELBERG_ENERGY_CONTROL_MODBUS_RTU_CHARGING_STATION
+                        - CARLO_GAVAZZI_MODBUS_RTU_METER
+                        - VESTEL_CHARGING_STATION
+                        - INNOTEC_HEAT_PUMP
+                        - WALLBE_MODBUS_CHARGING_STATION
+                        - EVBOX_MAX_CHARGING_STATION
+                        - ISKRAEMECO_METER
+                        - SUNGROW_MODBUS_INVERTER
+                        - WAGO_IO_DEVICE
+                        - GOE_CHARGING_STATION
+                        - XNET_CLOUD_HEAT_PUMP
+                        - XNET_CLOUD_GENERIC
+                        - LANDIS_GYR_METER
+                        - POWERDALE_CHARGING_STATION
+                        - EASTRON_SDM230_METER
+                        - EASTRON_SDM72DM_METER
+                        - ZUCCHETTI_CONNEXT_BOX
+                        - PLVARIO_ENERGY_METER_EM3
+                        - ABB_OPC_UA_CHARGING_STATION
+                        - DATA_LOGGER_DEVICE
+                        - POWERSIDE_METER
+                        - PPC_METER
+                        - RUTENBECK_TCR_IP4_IO_DEVICE
+                        - JEAN_MUELLER_PL_MULTI_METER
+                        - ENPHASE_ENVOY_S_GATEWAY
+                        - SOLAX_MODBUS_RTU_INVERTER
+                        - ALPHA_ESS_HI10_HYBRID_INVERTER
+                        - ZUCCHETTI_MODBUS_RTU_INVERTER
+                        - STIEBEL_ELTRON_MODBUS_TCP_HEAT_PUMP
+                        - MENNEKES_AMTRON_COMPACT_2S_MODBUS_RTU_CHARGING_STATION
+                        - SAIA_PCD1_E_LINE_HEAT_PUMP
+                        - SUNGROW_SG_MODBUS_INVERTER
+                        - SOLAX_MODBUS_TCP_INVERTER
+                        - PHOENIX_CONTACT_EM_PRO_METER
+                        - DAIKIN_HOMEHUB_MODBUS_TCP_HEAT_PUMP
+                        - SOLPLANET_MODBUS_TCP_INVERTER
+                        - SUNGROW_SHXRS_SHXT_MODBUS_INVERTER
+                        - KOSTAD_DC_CHARGING_STATION
+                        - GIVENERGY_GIV_TCP_INVERTER
+                        - FOX_ESS_MODBUS_TCP_INVERTER
+                        - SHELLY_HTTP_METER
+                        - PIXII_MODBUS_TCP_BESS
+                        - GOODWE_MODBUS_TCP_INVERTER
+                        - READY_FOR_GRIDX
+                        - KOSTAL_ENECTOR_CHARGING_STATION
+                        - MENNEKES_4YOU_CHARGING_STATION
+                        - EKOENERGETYKA_CHARGING_STATION
+                        - VIESSMANN_EEBUS_INVERTER_AND_HEAT_PUMP
+                        - VAILLANT_EEBUS_HEAT_PUMP
+                        - PROLAN_EEBUS_STB
+                        - PPC_EEBUS_METER
+                        - THEBEN_SE_EEBUS_METER
+                        - DAIKIN_ALTHERMA4_MODBUS_TCP_HEAT_PUMP
+                        - FOXESS_CHARGING_STATION
+                        - BOSCH_BUDERUS_EEBUS_HEAT_PUMP
+                        - KOSTAL_EBOX_DC_B11_EEBUS_CHARGING_STATION
+                        - SOLPLANET_IBC_SOLAR_CHARGING_STATION
+                        - ADS_TEC_CHARGING_STATION
+                        - WOLF_EEBUS_HEAT_PUMP
+                        - SHELLY_3EMPRO_HTTP_METER
+                        - SHELLY_PRO2_HTTP_IO_DEVICE
+                        - SWISTEC_EEBUS_METER
+                        - BMW_DC_WALLBOX_EEBUS_CHARGING_STATION
+                        - SUNGROW_CHARGING_STATION
+                        - ETREL_INCH_DUO_CHARGING_STATION
+                        - ALPHAESS_SMILE_G3_T4_T10
+                        - SUNGROW_EMS300CP_BESS
+                        - HUAWEI_SMART_LOGGER_BESS
+                        - SOLAX_MODBUS_TCP_METER
+                        x-readme-ref-name: ScannerName
+                    applianceComposition:
+                      type: array
+                      readOnly: true
+                      description: Appliance types that are connected to the gateway for overview purposes.
+                      example:
+                      - HEAT_PUMP
+                      items:
+                        type: string
+                  required:
+                  - id
+                  - type
+                  - connectionStatus
+                  - createdAt
+                  - updatedAt
+                x-readme-ref-name: Gateway
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '409':
+          description: Resource already exists
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Conflict
+                  description: 'Conflict indicates that the client is attempting to create a resource that already exists.
+
+                    '
+                  type: object
+                  example:
+                    message: Resource already exists
+                x-readme-ref-name: ConflictException
+        '422':
+          description: The payload for creating the gateway contains invalid data.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - properties:
+                    type:
+                      type: string
+                      x-extensible-enum:
+                      - GENERAL
+                      - STARTCODE_NOT_FOUND
+                      - STARTCODE_ALREADY_REGISTERED
+                  required:
+                  - type
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - GatewaysWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/gateways\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/systems/systemID/gateways \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/gateways\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/gateways', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/gateways\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/gateways\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/gateways");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

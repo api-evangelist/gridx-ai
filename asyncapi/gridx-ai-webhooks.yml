@@ -1,0 +1,20 @@
+generated: '2026-10-09'
+method: derived
+generator: derive-webhooks.py
+source:
+- openapi/gridx-ai-openapi.yml
+description: 'Event surface derived from the provider''s own OpenAPI: callbacks. No AsyncAPI document is published by the provider; this catalog
+  lists the events the contract names.'
+management_operations:
+- listWebhookSubscriptions
+- createWebhookSubscription
+- getWebhookSubscription
+- deleteWebhookSubscription
+- updateWebhookSubscription
+- pingWebhookSubscription
+- rotateWebhookSubscriptionSecret
+- updateWebhookSubscriptionSecret
+events:
+- event: WebhookEvent
+  description: callback declared on createWebhookSubscription
+  declared_in: callbacks

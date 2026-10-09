@@ -1,0 +1,259 @@
+# gridX Help Center
+
+> Welcome to our Help Center
+
+## English
+
+### XENON - Operator Dashboard
+
+- [XENON Operator Dashboard 2.0: Product Documentation](https://support.gridx.ai/en/articles/739599-xenon-operator-dashboard-2-0-product-documentation.md): For everyone who already knows and loves XENON Operator Dashboard, and for everyone just getting started
+- [gridBox Factory Reset](https://support.gridx.ai/en/articles/590115-gridbox-factory-reset.md): Step-by-step instructions on how to safely reset your gridBox to factory settings and what to consider before performing a full system wipe
+- [EEG9 Configuration via the XENON Dashboard](https://support.gridx.ai/en/articles/661627-eeg9-configuration-via-the-xenon-dashboard.md): Configuration instructions for static and dynamic feed-in limitation to meet the regulatory requirements for new PV installations in Germany
+- [Grid Signal Processor – §14a EnWG Configuration](https://support.gridx.ai/en/articles/590104-grid-signal-processor-14a-enwg-configuration.md): Configure and monitor §14a EnWG compliance settings, controllable assets, and active grid limitations
+- [Setpoints: what the EMS asked the charging station to do](https://support.gridx.ai/en/articles/822317-setpoints-what-the-ems-asked-the-charging-station-to-do.md): See the power the energy management system requested next to the power the charging station actually delivered, in the Historical view of a system.
+
+### Web App - User Dashboard
+
+- [§14a transparency information in Mobile/Web App](https://support.gridx.ai/en/articles/590106-14a-transparency-information-in-mobile-web-app.md): The Mobile/Web App displays information for the user in case of an active limitation of power consumption as well as the info about the assets that are relevant in accordance with §14a.
+
+### gridBox - IoT Gateway
+
+- [Infrastructure Requirements for the gridBox Gateway](https://support.gridx.ai/en/articles/590117-infrastructure-requirements-for-the-gridbox-gateway.md): This guide outlines the hardware and network specifications required for a successful gridBox installation. Following these requirements ensures system stability and reliable energy management.
+- [gridBox Endpoint List](https://support.gridx.ai/en/articles/590121-gridbox-endpoint-list.md): Complete list of required network endpoints, protocols, and ports for secure gridBox-to-XENON cloud connectivity
+- [Understanding your system and device connection status](https://support.gridx.ai/en/articles/837706-understanding-your-system-and-device-connection-status.md)
+- [gridBox v4.5](https://support.gridx.ai/en/articles/611664-gridbox-v4-5.md): All specifications, documents, images and information about our gridBox version 4.5
+- [gridBox v4.5s](https://support.gridx.ai/en/articles/611711-gridbox-v4-5s.md): All specifications, documents, images and information about our gridBox version 4.5s
+- [gridBox v5.0](https://support.gridx.ai/en/articles/611611-gridbox-v5-0.md): All specifications, documents, images and information about our gridBox version 5.0
+- [gridBox v5.1](https://support.gridx.ai/en/articles/569846-gridbox-v5-1.md): All specifications, documents, images and information about our gridBox version 5.1
+- [gridBox v6.0](https://support.gridx.ai/en/articles/611729-gridbox-v6-0.md): All specifications, documents, images and information regarding our latest gridBox version 6.0
+- [gridBox Edge](https://support.gridx.ai/en/articles/611740-gridbox-edge.md): All specifications, documents, images and information regarding our industrial gridBox version
+- [gridBox Edge Atom](https://support.gridx.ai/en/articles/611751-gridbox-edge-atom.md): All specifications, documents, images and information regarding our smallest industrial gridBox version
+- [Commissioning of the gridBox gateway](https://support.gridx.ai/en/articles/653612-commissioning-of-the-gridbox-gateway.md): Step-by-step guide to commissioning a gridBox gateway using the commissioning wizard, covering system setup, device discovery, and system configuration.
+- [How to check if your asset is reachable on the local network](https://support.gridx.ai/en/articles/761823-how-to-check-if-your-asset-is-reachable-on-the-local-network.md): Use this guide to verify that your asset is reachable on the network — a requirement for the scanner to find it and for commissioning to succeed.
+- [The gridBox Gateway LED](https://support.gridx.ai/en/articles/518237-the-gridbox-gateway-led.md): How to interpret gridBox LED indicators to troubleshoot power, connection, and configuration issues.
+- [The gridBox Serial Number](https://support.gridx.ai/en/articles/533888-the-gridbox-serial-number.md): A guide to decoding the serial number format to identify production dates, hardware versions, and device types
+
+### Integrations - Supported Assets
+
+- [How do I configure the 60% feed-in limitation for §9 EEG \(2025\)?](https://support.gridx.ai/en/articles/598194-how-do-i-configure-the-60-feed-in-limitation-for-9-eeg-2025.md): Step-by-step instructions for new PV installations in Germany to meet the regulatory requirement.
+- [Common installation issues](https://support.gridx.ai/en/articles/568904-common-installation-issues.md): Malfunctions caused by incorrect installation and how to fix
+- [Common EEBus issues](https://support.gridx.ai/en/articles/568836-common-eebus-issues.md): Malfunctions caused by using EEBUS assets and how to fix
+- [Supported Assets List](https://support.gridx.ai/en/articles/604948-supported-assets-list.md): Get an overview of all supported assets, their maturity stages, feature compatibility and much more via our Supported Assets List \(SAL\)
+- [How do I configure controllable consumption units for §14a EnWG?](https://support.gridx.ai/en/articles/590105-how-do-i-configure-controllable-consumption-units-for-14a-enwg.md): How to configure assets relevant to §14a and connect the HEMS gateway to the control box.
+- [a-TroniX - AX Plus](https://support.gridx.ai/en/articles/724442-a-tronix-ax-plus.md): Hybrid Inverter Connection Guide for the a-TroniX AX Plus Series
+- [Alfen - Eve](https://support.gridx.ai/en/articles/645759-alfen-eve.md): Charging Station Connection Guide for the Alfen Eve Series
+- [Bosch - Compress](https://support.gridx.ai/en/articles/638174-bosch-compress.md): Heat Pump Connection Guide for the Bosch Compress Series
+- [Buderus - Logatherm WLW and Logatherm WSW](https://support.gridx.ai/en/articles/640354-buderus-logatherm-wlw-and-logatherm-wsw.md): Heat Pump Connection Guide for the Buderus Logatherm WLW Series and Logatherm WSW Series
+- [Compleo - eBOX smart and eBOX touch](https://support.gridx.ai/en/articles/852989-compleo-ebox-smart-and-ebox-touch.md): Charging Station Connection Guide for the Compleo eBOX smart and eBOX touch
+- [Daikin - Altherma 3 and Altherma 4](https://support.gridx.ai/en/articles/640356-daikin-altherma-3-and-altherma-4.md): Heat Pump Connection Guide for the Daikin Altherma 3 and Altherma 4
+- [Eastron - SDM-Series](https://support.gridx.ai/en/articles/636001-eastron-sdm-series.md): Meter Connection Guide for the Eastron SDM-Series
+- [Enphase - IQ micro inverter](https://support.gridx.ai/en/articles/625733-enphase-iq-micro-inverter.md): Hybrid Inverter Connection Guide for the Enphase IQ micro inverter series
+- [FoxESS - AC1-G2-WL-SERIES and H1-G2-WL-SERIES](https://support.gridx.ai/en/articles/622989-foxess-ac1-g2-wl-series-and-h1-g2-wl-series.md): Hybrid Inverter Connection Guide for the FoxESS AC1-G2-WL-SERIES and H1-G2-WL-SERIES
+- [FoxESS - H3 Smart](https://support.gridx.ai/en/articles/623006-foxess-h3-smart.md): Hybrid Inverter Connection Guide for the FoxESS H3 Smart
+- [FoxESS - H3 Pro](https://support.gridx.ai/en/articles/659217-foxess-h3-pro.md): Hybrid Inverter Connection Guide for the FoxESS H3 Pro
+- [FoxESS - L-Series](https://support.gridx.ai/en/articles/669551-foxess-l-series.md): Charging Station Connection Guide for the FoxESS L-Series
+- [Fronius - Primo and Symo](https://support.gridx.ai/en/articles/624374-fronius-primo-and-symo.md): Inverter Connection Guide for the Fronius Primo Series and Symo Series
+- [Fronius - Symo GEN24 and Symo GEN24 Plus](https://support.gridx.ai/en/articles/624384-fronius-symo-gen24-and-symo-gen24-plus.md): Hybrid Inverter Connection Guide for the Fronius Symo GEN24 and Symo GEN24 Plus
+- [go-e - Charger CORE and Pro](https://support.gridx.ai/en/articles/645748-go-e-charger-core-and-pro.md): Charging Station Connection Guide for the go-e Charger CORE and Pro series
+- [go-e - Charger Gemini and HOMEfix](https://support.gridx.ai/en/articles/645758-go-e-charger-gemini-and-homefix.md): Charging Station Connection Guide for the go-e Charger Gemini and HOMEfix series
+- [GoodWe - ET \(Plus+\)](https://support.gridx.ai/en/articles/624364-goodwe-et-plus.md): Hybrid Inverter Connection Guide for the GoodWe ET \(Plus+\) Series
+- [Huawei - SUN2000](https://support.gridx.ai/en/articles/711402-huawei-sun2000.md): Hybrid Inverter Connection Guide for the Huawei SUN2000 with Communication Gateway Huawei SmartAssistant \(SA4H-A02\)
+- [What are the limitations of dynamic tariff optimization with the Huawei SUN2000 MAP0/M1?](https://support.gridx.ai/en/articles/852059-what-are-the-limitations-of-dynamic-tariff-optimization-with-the-huawei-sun2000-map0-m1.md): During battery discharge into the grid and battery charging from the grid, the Huawei SUN2000 MAP0/M1 curtails PV production more than necessary until a firmware update is released.
+- [IBC Solar - AS-21 and AS-H31](https://support.gridx.ai/en/articles/622626-ibc-solar-as-21-and-as-h31.md): Hybrid Inverter Connection Guide for the IBC Solar AS-21 Series and AS-H31 Series
+- [IVT - AirX, AirSplit and Geo](https://support.gridx.ai/en/articles/640573-ivt-airx-airsplit-and-geo.md): Heat Pump Connection Guide for the IVT AirX Series, AirSplit Series and Geo Series
+- [Janitza - UMG-Series](https://support.gridx.ai/en/articles/627408-janitza-umg-series.md): Meter Connection Guide for the Janitza UMG-Series
+- [Keba - P30 Basis-Series and P30 X-series](https://support.gridx.ai/en/articles/636292-keba-p30-basis-series-and-p30-x-series.md): Charging Station Connection Guide for the Keba P30 Basis-Series and P30 X-series
+- [Kostal - Plenticore plus and Plenticore G3](https://support.gridx.ai/en/articles/624561-kostal-plenticore-plus-and-plenticore-g3.md): Hybrid Inverter Connection Guide for the Kostal Plenticore plus Series and Plenticore G3 Series
+- [Landis+Gyr - E650 Series 3](https://support.gridx.ai/en/articles/636003-landis-gyr-e650-series-3.md): Meter Connection Guide for the Landis+Gyr E650 Series 3
+- [Mennekes - AMEDIO Professional](https://support.gridx.ai/en/articles/639714-mennekes-amedio-professional.md): Charging Station Connection Guide for the Mennekes AMEDIO Professional
+- [Mennekes - AMTRON Professional](https://support.gridx.ai/en/articles/642919-mennekes-amtron-professional.md): Charging Station Connection Guide for the Mennekes AMTRON Professional
+- [Mennekes - AMTRON Compact 2.0](https://support.gridx.ai/en/articles/643074-mennekes-amtron-compact-2-0.md): Charging Station Connection Guide for the Mennekes AMTRON Compact 2.0
+- [Mennekes - AMTRON Charge Control](https://support.gridx.ai/en/articles/644488-mennekes-amtron-charge-control.md): Charging Station Connection Guide for the Mennekes AMTRON Charge Control
+- [Mennekes - AMTRON 4You Serie](https://support.gridx.ai/en/articles/645380-mennekes-amtron-4you-serie.md): Charging Station Connection Guide for the Mennekes AMTRON 4You Serie
+- [my-PV - AC ELWA 2](https://support.gridx.ai/en/articles/640574-my-pv-ac-elwa-2.md): Connection Guide for the my-PV AC ELWA 2 Series
+- [my-PV - AC ELWA](https://support.gridx.ai/en/articles/640575-my-pv-ac-elwa.md): Connection Guide for the my-PV AC ELWA Series
+- [my-PV - AC-THOR \(3kW\)](https://support.gridx.ai/en/articles/640576-my-pv-ac-thor-3kw.md): Connection Guide for AC-Thor
+- [my-PV - AC-THOR 9s \(9kW\)](https://support.gridx.ai/en/articles/640578-my-pv-ac-thor-9s-9kw.md): Connection Guide for AC-Thor 9s
+- [Phoenix Contact - EMPro](https://support.gridx.ai/en/articles/636004-phoenix-contact-empro.md): Meter Connection Guide for the Phoenix Contact MA Series, MB Series and MA770 \(DIN-Rail, CT\) Series
+- [Rutenbeck - TCR-Series](https://support.gridx.ai/en/articles/626043-rutenbeck-tcr-series.md): I/O device Connection Guide for the Rutenbeck TCR-Series
+- [Shelly - Pro 2](https://support.gridx.ai/en/articles/634732-shelly-pro-2.md): I/O device Connection Guide for the Shelly Pro Series
+- [Shelly - Pro 3EM](https://support.gridx.ai/en/articles/636006-shelly-pro-3em.md): Meter Connection Guide for the Shelly Pro Series
+- [Siemens - PAC](https://support.gridx.ai/en/articles/629164-siemens-pac.md): Meter Connection Guide for the Siemens PAC Series
+- [SMA - Sunny Boy, Sunny Tripower, TL-10, TL-20, TL-30 and TL / TLST-21](https://support.gridx.ai/en/articles/627225-sma-sunny-boy-sunny-tripower-tl-10-tl-20-tl-30-and-tl-tlst-21.md): Inverter Connection Guide for the SMA Sunny Boy Series, Sunny Tripower Series, TL-10 Series, TL-20 Series, TL-30 Series and TL / TLST-21 Series
+- [SMA - Sunny Boy Storage and Sunny Island](https://support.gridx.ai/en/articles/627227-sma-sunny-boy-storage-and-sunny-island.md): Battery Inverter Connection Guide for the SMA Sunny Boy Storage Series and Sunny Island Series
+- [SMA - Sunny Tripower Smart Energy and Sunny Boy Smart Energy](https://support.gridx.ai/en/articles/621385-sma-sunny-tripower-smart-energy-and-sunny-boy-smart-energy.md): Hybrid Inverter Connection Guide for the SMA Sunny Tripower Smart Energy Series and Sunny Boy Smart Energy Series
+- [P1 Smart Meters](https://support.gridx.ai/en/articles/629163-p1-smart-meters.md): Connection Guide for AM550, T1210-D
+- [SolarEdge - SE](https://support.gridx.ai/en/articles/622332-solaredge-se.md): Hybrid Inverter Connection Guide for the SolarEdge SE Series
+- [SolaX - X3 ULTRA](https://support.gridx.ai/en/articles/623029-solax-x3-ultra.md): Hybrid Inverter Connection Guide for the SolaX X3 ULTRA Series
+- [SolaX - X3 Hybrid G4 and X3-HYB G4 PRO](https://support.gridx.ai/en/articles/621901-solax-x3-hybrid-g4-and-x3-hyb-g4-pro.md): Hybrid Inverter Connection Guide for the SolaX X3 Hybrid G4 and X3-HYB G4 PRO series
+- [SolaX - X3-IES](https://support.gridx.ai/en/articles/623025-solax-x3-ies.md): Hybrid Inverter Connection Guide for the SolaX X3-IES Series
+- [SolaX - X1-HAC and X3-HAC](https://support.gridx.ai/en/articles/853898-solax-x1-hac-and-x3-hac.md): Charging Station Connection Guide for the SolaX X1-HAC and X3-HAC
+- [Sonnen - sonnenBatterie](https://support.gridx.ai/en/articles/624437-sonnen-sonnenbatterie.md): Battery Connection Guide for the Sonnen sonnenBatterie Series
+- [Stiebel Eltron - WPL-A Plus](https://support.gridx.ai/en/articles/640580-stiebel-eltron-wpl-a-plus.md): Heat Pump Connection Guide for the Stiebel Eltron WPL-A Plus Series
+- [Sungrow - Hybrid SH](https://support.gridx.ai/en/articles/621966-sungrow-hybrid-sh.md): Hybrid Inverter Connection Guide for the Sungrow Hybrid SH
+- [Sungrow - SGxxRT](https://support.gridx.ai/en/articles/634311-sungrow-sgxxrt.md): Inverter Connection Guide for the Sungrow SGxxRT Series
+- [TQ-Systems GmbH \(B-Control\) - EM](https://support.gridx.ai/en/articles/636007-tq-systems-gmbh-b-control-em.md): Meter Connection Guide for the TQ-Systems GmbH \(B-Control\) EM Series
+- [TQ-Systems GmbH - EM](https://support.gridx.ai/en/articles/636008-tq-systems-gmbh-em.md): Meter Connection Guide for the TQ-Systems GmbH EM Series
+- [Vaillant - aroTHERM and other heat pumps](https://support.gridx.ai/en/articles/640581-vaillant-arotherm-and-other-heat-pumps.md): Heat Pump Connection Guide for the Vaillant aroTHERM Series, recoCOMPACT, versoTHERM, flexoTHERM, flexoCOMPACT exclusive, eloBLOCK and geoTHERM
+- [Vestel - eCharger/EVC04 Serie](https://support.gridx.ai/en/articles/636448-vestel-echarger-evc04-serie.md): Charging Station Connection Guide for the Vestel eCharger/EVC04 Serie
+- [Viessmann - Vitotronic 200](https://support.gridx.ai/en/articles/640582-viessmann-vitotronic-200.md): Heat Pump Connection Guide for the Viessmann Vitotronic 200 Series
+- [Viessmann - OneBase](https://support.gridx.ai/en/articles/668948-viessmann-onebase.md): Heat Pump Connection Guide for the Viessmann OneBase
+- [Viessmann - Vitocharge VX3](https://support.gridx.ai/en/articles/669473-viessmann-vitocharge-vx3.md): Hybrid Inverter Connection Guide for the Viessmann Vitocharge VX3
+- [WAGO - 750-362 Fieldbus Coupler](https://support.gridx.ai/en/articles/626047-wago-750-362-fieldbus-coupler.md): Configuration Guide for 750-362
+- [Wallbox - Commander 2](https://support.gridx.ai/en/articles/636780-wallbox-commander-2.md): Charging Station Connection Guide for the Wallbox Commander 2 Series
+- [Wolf - CHA, CHC and FHA](https://support.gridx.ai/en/articles/640583-wolf-cha-chc-and-fha.md): Heat Pump Connection Guide for the Wolf CHA Series, CHC Series and FHA Series
+
+### HEMS - Home Energy Management
+
+- [Dynamic Tariff Optimization](https://support.gridx.ai/en/articles/590084-dynamic-tariff-optimization.md): Learn how Tariff Timer intelligently optimizes batteries, EVs, PV surplus, and heat pumps using dynamic electricity prices and feed-in tariffs to reduce energy costs and maximize economic benefit
+- [Dynamic Tariff Optimization: Charging the battery from the grid](https://support.gridx.ai/en/articles/590088-dynamic-tariff-optimization-charging-the-battery-from-the-grid.md): Learn how Tariff Timer optimizes costs by charging your battery during low-price grid periods to cover future household demand or for profitable grid discharge.
+- [Dynamic Tariff Optimization: Charging the EV from the grid](https://support.gridx.ai/en/articles/590090-dynamic-tariff-optimization-charging-the-ev-from-the-grid.md): Learn how Tariff-Timer optimizes EV charging costs by intelligently combining solar surplus and low-price grid charging while ensuring the user’s mobility requirements are met.
+- [Dynamic Tariff Optimization: Discharging the battery into grid](https://support.gridx.ai/en/articles/590089-dynamic-tariff-optimization-discharging-the-battery-into-grid.md): Learn how Tariff Timer intelligently discharges battery energy to the grid during favorable feed-in price periods when the expected financial benefit exceeds configured profitability thresholds.
+- [Dynamic Tariff Optimization: EV Charging Prevention](https://support.gridx.ai/en/articles/590092-dynamic-tariff-optimization-ev-charging-prevention.md): Learn how Tariff-Timer may temporarily prevent EV charging during Program Charge mode when exporting energy to the grid is economically more beneficial than immediate vehicle charging.
+- [Dynamic Tariff Optimization: Optimized Heat Pump Operation](https://support.gridx.ai/en/articles/590093-dynamic-tariff-optimization-optimized-heat-pump-operation.md): Learn how Tariff Timer shifts the heat pump energy consumption to low-cost periods without sacrificing comfort.
+- [Dynamic Tariff Optimization: PV Curtailment for Negative Feed-in Prices](https://support.gridx.ai/en/articles/590086-dynamic-tariff-optimization-pv-curtailment-for-negative-feed-in-prices.md): Learn how Tariff Timer protects you from negative feed-in prices by limiting PV production and how to configure your inverter for curtailment.
+- [Dynamic Tariff Optimization: Saving Battery Power for Later](https://support.gridx.ai/en/articles/590087-dynamic-tariff-optimization-saving-battery-power-for-later.md): Learn how Tariff Timer decides whether to save battery power for later to cover a future energy demand or for profitable grid discharge
+- [Dynamic Tariff Optimization: Surplus Feed-in](https://support.gridx.ai/en/articles/590085-dynamic-tariff-optimization-surplus-feed-in.md): Learn how Tariff Timer decides whether to charge the battery or export PV surplus to the grid based on dynamic feed-in prices.
+- [Electricity Tariffs for Time-of-Use Optimization](https://support.gridx.ai/en/articles/590095-electricity-tariffs-for-time-of-use-optimization.md): Description: Learn about the configuration of dynamic electricity tariffs to enable Time-of-Use optimization in XENON.
+- [Dynamic Tariff Optimization: Delayed EV Charging](https://support.gridx.ai/en/articles/590091-dynamic-tariff-optimization-delayed-ev-charging.md): Learn how Tariff Timer delays EV charging during Program Charge mode to shift charging to forecasted lower-price electricity periods while ensuring the user’s mobility requirements are met.
+- [General Overview: Dynamic Tariff Optimization](https://support.gridx.ai/en/articles/590083-general-overview-dynamic-tariff-optimization.md): Learn how Tariff Timer uses optimization to lower HEMS electricity costs through smart asset steering.
+- [Grid Connection Point \(GCP\) Import and Export Power Forecast](https://support.gridx.ai/en/articles/590098-grid-connection-point-gcp-import-and-export-power-forecast.md): Learn how Tariff Timer provides 48-hour power import and export forecasts at the grid connection point
+- [Time-variable import limits](https://support.gridx.ai/en/articles/590099-time-variable-import-limits.md): Learn how to schedule custom grid import limits to reduce peak-load costs and understand how they interact with Fuse Protection.
+- [Visualizing Optimizations and Cost Savings](https://support.gridx.ai/en/articles/590101-visualizing-optimizations-and-cost-savings.md): Learn how to use the Savings and Decision tiles to monitor the financial benefits of your HEMS and understand the logic of the cost-optimal control.
+- [ToU internal errors: INTERNAL BATTERY](https://support.gridx.ai/en/articles/590161-tou-internal-errors-internal-battery.md)
+- [ToU internal errors: INTERNAL EXTRACT](https://support.gridx.ai/en/articles/590162-tou-internal-errors-internal-extract.md)
+- [ToU internal errors: INTERNAL GET FLEXIBILITY](https://support.gridx.ai/en/articles/590163-tou-internal-errors-internal-get-flexibility.md)
+- [ToU internal errors: INTERNAL MAP NODE](https://support.gridx.ai/en/articles/590164-tou-internal-errors-internal-map-node.md)
+- [ToU internal errors: INTERNAL OPTIMIZATION SOLVER](https://support.gridx.ai/en/articles/590165-tou-internal-errors-internal-optimization-solver.md)
+- [General](https://support.gridx.ai/en/articles/590103-general.md)
+- [§14a EnWG compliance for HEMS systems](https://support.gridx.ai/en/articles/590107-14a-enwg-compliance-for-hems-systems.md)
+
+### EVCI - EV Charging Infrastructure
+
+- [Product Overview & Requirements](https://support.gridx.ai/en/articles/590054-product-overview-requirements.md): Discover our EV Charging Infrastructure products and core technical system requirements at a glance.
+- [Software Releases](https://support.gridx.ai/en/articles/756680-software-releases.md)
+- [General](https://support.gridx.ai/en/articles/676099-general.md)
+- [Dynamic load management \(DLM\)](https://support.gridx.ai/en/articles/676085-dynamic-load-management-dlm.md)
+- [Static load management \(SLM\)](https://support.gridx.ai/en/articles/676121-static-load-management-slm.md)
+- [Peak shaver](https://support.gridx.ai/en/articles/676075-peak-shaver.md)
+- [Phase allocation per charging point](https://support.gridx.ai/en/articles/676101-phase-allocation-per-charging-point.md)
+- [Clustering and multifuse](https://support.gridx.ai/en/articles/676077-clustering-and-multifuse.md)
+- [EVCS Specific Configuration](https://support.gridx.ai/en/articles/676668-evcs-specific-configuration.md)
+- [Zero-curtailment protection](https://support.gridx.ai/en/articles/809279-zero-curtailment-protection.md)
+- [General](https://support.gridx.ai/en/articles/681609-general.md)
+- [Power Limit Schedules](https://support.gridx.ai/en/articles/680599-power-limit-schedules.md)
+- [IO-Devices](https://support.gridx.ai/en/articles/680598-io-devices.md)
+- [DSO signalling in Germany](https://support.gridx.ai/en/articles/676088-dso-signalling-in-germany.md)
+- [§14a EnWG Compliance](https://support.gridx.ai/en/articles/680595-14a-enwg-compliance.md)
+- [General](https://support.gridx.ai/en/articles/682696-general.md)
+- [Time-of-Use Optimization](https://support.gridx.ai/en/articles/676127-time-of-use-optimization.md)
+- [Battery \(BESS\) Optimization](https://support.gridx.ai/en/articles/676125-battery-bess-optimization.md)
+- [User-based Prioritization](https://support.gridx.ai/en/articles/682694-user-based-prioritization.md)
+- [Flexibility Services](https://support.gridx.ai/en/articles/676123-flexibility-services.md)
+- [Alpitronic Hypercharger](https://support.gridx.ai/en/articles/604932-alpitronic-hypercharger.md)
+- [Etrel - INCH Duo](https://support.gridx.ai/en/articles/742503-etrel-inch-duo.md): Charging Station Configuration Guide for the Etrel INCH Duo Series
+
+### Customer Support
+
+- [The Return Process \(RMA\)](https://support.gridx.ai/en/articles/590116-the-return-process-rma.md): This article describes the process for handling warranty claims relating to the gridBox IoT Gateway
+
+## Deutsch
+
+### XENON - Admin Dashboard
+
+- [XENON Operator Dashboard 2.0: Produktdokumentation](https://support.gridx.ai/de/articles/739599-xenon-operator-dashboard-2-0-produktdokumentation.md): Für alle, die das XENON Operator Dashboard bereits kennen und schätzen, und für alle, die gerade erst einsteigen
+- [gridBox auf Werkseinstellungen zurücksetzen](https://support.gridx.ai/de/articles/590115-gridbox-auf-werkseinstellungen-zurucksetzen.md): Schritt-für-Schritt-Anleitung zum sicheren Zurücksetzen einer gridBox auf Werkseinstellungen sowie wichtige Hinweise vor dem vollständigen Zurücksetzen des Systems
+- [EEG9 Konfiguration mit Hilfe von XENON Dashboard](https://support.gridx.ai/de/articles/661627-eeg9-konfiguration-mit-hilfe-von-xenon-dashboard.md): Konfigurationsanleitung für statische und dynamische Einspeisebegrenzung gemäß den regulatorischen Anforderungen für neue PV-Anlagen in Deutschland
+- [Grid Signal Processor – §14a-EnWG-Konfiguration](https://support.gridx.ai/de/articles/590104-grid-signal-processor-14a-enwg-konfiguration.md): Konfiguration und Überwachung der §14a-EnWG-Einstellungen, steuerbarer Verbraucher sowie aktiver Netzbegrenzungen
+- [Sollwerte: was das EMS von der Ladestation angefordert hat](https://support.gridx.ai/de/articles/822317-sollwerte-was-das-ems-von-der-ladestation-angefordert-hat.md): Die vom Energiemanagementsystem angeforderte Leistung direkt neben der tatsächlich gelieferten Leistung sehen, in der Verlaufsansicht eines Systems
+
+### gridBox - IoT Gateway
+
+- [Infrastrukturanforderungen für das gridBox-Gateway](https://support.gridx.ai/de/articles/590117-infrastrukturanforderungen-fur-das-gridbox-gateway.md): Diese Anleitung beschreibt die Hardware- und Netzwerkanforderungen für eine erfolgreiche gridBox-Installation. Die Einhaltung dieser Anforderungen gewährleistet Systemstabilität und zuverlässiges E...
+- [Gateway- und Geräte-Verbindungsstatus verstehen](https://support.gridx.ai/de/articles/837706-gateway-und-gerate-verbindungsstatus-verstehen.md)
+- [gridBox v4.5](https://support.gridx.ai/de/articles/611664-gridbox-v4-5.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur gridBox v4.5
+- [gridBox v4.5s](https://support.gridx.ai/de/articles/611711-gridbox-v4-5s.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur gridBox v4.5s
+- [gridBox v5.0](https://support.gridx.ai/de/articles/611611-gridbox-v5-0.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur gridBox v5.0
+- [gridBox v5.1](https://support.gridx.ai/de/articles/569846-gridbox-v5-1.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur gridBox v5.1
+- [gridBox v6.0](https://support.gridx.ai/de/articles/611729-gridbox-v6-0.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur gridBox v6.0
+- [gridBox Edge](https://support.gridx.ai/de/articles/611740-gridbox-edge.md): gridBox Edge Datenblatt
+- [gridBox Edge Atom](https://support.gridx.ai/de/articles/611751-gridbox-edge-atom.md): Alle Spezifikationen, Dokumente, Bilder und Informationen zur industriellen gridBox Edge Atom-Version
+- [Inbetriebnahme der gridBox](https://support.gridx.ai/de/articles/653612-inbetriebnahme-der-gridbox.md): Schritt-für-Schritt-Anleitung zur Inbetriebnahme einer gridBox mithilfe des Inbetriebnahme-Assistenten, von der Systemeinrichtung über die Geräteerkennung bis zur Systemkonfiguration.
+- [Erreichbarkeit des Geräts im lokalen Netzwerk prüfen](https://support.gridx.ai/de/articles/761823-erreichbarkeit-des-gerats-im-lokalen-netzwerk-prufen.md): Mit dieser Anleitung überprüfst du, ob dein Gerät im Netzwerk erreichbar ist – notwendig, damit der Scanner es findet und die Inbetriebnahme funktioniert.
+- [Die gridBox Gateway LED](https://support.gridx.ai/de/articles/518237-die-gridbox-gateway-led.md): Anleitung zur Interpretation der gridBox LED-Anzeigen zur Fehlerbehebung bei Strom-, Verbindungs- und Konfigurationsproblemen.
+- [Die gridBox Seriennummer](https://support.gridx.ai/de/articles/533888-die-gridbox-seriennummer.md): Eine Anleitung zum Entschlüsseln des Seriennummernformats zur Identifizierung von Produktionsdaten, Hardware-Versionen und Gerätetypen.
+
+### Kompatible Geräte
+
+- [Wie konfiguriere ich die 60%-Einspeisebegrenzung nach §9 EEG \(2025\)?](https://support.gridx.ai/de/articles/598194-wie-konfiguriere-ich-die-60-einspeisebegrenzung-nach-9-eeg-2025.md): Schritt-für-Schritt-Anleitung für neue PV-Anlagen in Deutschland zur Erfüllung der gesetzlichen Anforderung.
+- [Unterstützte Geräte Liste](https://support.gridx.ai/de/articles/604948-unterstutzte-gerate-liste.md): Überblick über alle unterstützten Geräte, ihre Reifegrade, Feature-Kompatibilität und mehr über unsere Unterstützte Geräte Liste \(SAL\)
+- [Wie konfiguriere ich steuerbare Verbrauchseinrichtungen nach § 14a EnWG?](https://support.gridx.ai/de/articles/590105-wie-konfiguriere-ich-steuerbare-verbrauchseinrichtungen-nach-14a-enwg.md): So richtest du steuerbare Verbrauchseinrichtungen nach § 14a ein und verbindest das HEMS-Gateway mit der Steuerbox.
+- [a-TroniX - AX Plus](https://support.gridx.ai/de/articles/724442-a-tronix-ax-plus.md): Hybridwechselrichter Konfigurationsanleitung für die a-TroniX AX Plus-Serie
+- [Alfen - Eve](https://support.gridx.ai/de/articles/645759-alfen-eve.md): Ladestation Konfigurationsanleitung für die Alfen Eve-Serie
+- [Bosch - Compress](https://support.gridx.ai/de/articles/638174-bosch-compress.md): Wärmepumpe Konfigurationsanleitung für die Bosch Compress-Serie
+- [Buderus - Logatherm WLW und Logatherm WSW](https://support.gridx.ai/de/articles/640354-buderus-logatherm-wlw-und-logatherm-wsw.md): Wärmepumpe Konfigurationsanleitung für die Buderus Logatherm WLW und Logatherm WSW-Serie
+- [Compleo - eBOX smart und eBOX touch](https://support.gridx.ai/de/articles/852989-compleo-ebox-smart-und-ebox-touch.md): Ladestation Konfigurationsanleitung für die Compleo eBOX smart und eBOX touch-Serie
+- [Daikin - Altherma 3 und Altherma 4](https://support.gridx.ai/de/articles/640356-daikin-altherma-3-und-altherma-4.md): Wärmepumpe Konfigurationsanleitung für die Daikin Altherma 3 und Altherma 4-Serie
+- [Eastron - SDM-Series](https://support.gridx.ai/de/articles/636001-eastron-sdm-series.md): Zähler Konfigurationsanleitung für die Eastron SDM-Serie
+- [Enphase - IQ micro inverter](https://support.gridx.ai/de/articles/625733-enphase-iq-micro-inverter.md): Hybridwechselrichter Konfigurationsanleitung für die Enphase IQ micro inverter-Serie
+- [FoxESS - AC1-G2-WL-SERIES und H1-G2-WL-SERIES](https://support.gridx.ai/de/articles/622989-foxess-ac1-g2-wl-series-und-h1-g2-wl-series.md): Hybridwechselrichter Konfigurationsanleitung für die FoxESS AC1-G2-WL-SERIES und H1-G2-WL-SERIES-Serie
+- [FoxESS - H3 Smart](https://support.gridx.ai/de/articles/623006-foxess-h3-smart.md): Hybridwechselrichter Konfigurationsanleitung für die FoxESS H3 Smart-Serie
+- [FoxESS - H3 Pro](https://support.gridx.ai/de/articles/659217-foxess-h3-pro.md): Hybridwechselrichter Konfigurationsanleitung für die FoxESS H3 Pro-Serie
+- [FoxESS - L-Series](https://support.gridx.ai/de/articles/669551-foxess-l-series.md): Ladestation Konfigurationsanleitung für die FoxESS L-Series-Serie
+- [Fronius - Primo und Symo](https://support.gridx.ai/de/articles/624374-fronius-primo-und-symo.md): Wechselrichter Konfigurationsanleitung für die Fronius Primo und Symo-Serie
+- [Fronius - Symo GEN24 und Symo GEN24 Plus](https://support.gridx.ai/de/articles/624384-fronius-symo-gen24-und-symo-gen24-plus.md): Hybridwechselrichter Konfigurationsanleitung für die Fronius Symo GEN24 und Symo GEN24 Plus-Serie
+- [go-e - Charger CORE und Pro](https://support.gridx.ai/de/articles/645748-go-e-charger-core-und-pro.md): Ladestation Konfigurationsanleitung für die go-e Charger CORE und Pro-Serie
+- [go-e - Charger Gemini und HOMEfix](https://support.gridx.ai/de/articles/645758-go-e-charger-gemini-und-homefix.md): Ladestation Konfigurationsanleitung für die go-e Charger Gemini und HOMEfix-Serie
+- [GoodWe - ET \(Plus+\)](https://support.gridx.ai/de/articles/624364-goodwe-et-plus.md): Hybridwechselrichter Konfigurationsanleitung für die GoodWe ET \(Plus+\)-Serie
+- [Huawei - SUN2000](https://support.gridx.ai/de/articles/711402-huawei-sun2000.md): Hybridwechselrichter Konfigurationsanleitung für die Huawei SUN2000-Serie mit dem Huawei SmartAssistant \(SA4H-A02\) Kommunikationsgateway
+- [Welche Einschränkungen hat die Optimierung nach dynamischen Stromtarifen beim Huawei SUN2000 MAP0/M1?](https://support.gridx.ai/de/articles/852059-welche-einschrankungen-hat-die-optimierung-nach-dynamischen-stromtarifen-beim-huawei-sun2000-map0-m1.md): Bei der Entladung des Batteriespeichers ins Netz und beim Aufladen des Batteriespeichers aus dem Netz regelt der Huawei SUN2000 MAP0/M1 die PV-Erzeugung stärker als nötig ab, bis eine neue Firmware...
+- [IBC Solar - AS-21 und AS-H31](https://support.gridx.ai/de/articles/622626-ibc-solar-as-21-und-as-h31.md): Hybridwechselrichter Konfigurationsanleitung für die IBC Solar AS-21 und AS-H31-Serie
+- [IVT - AirX, AirSplit und Geo](https://support.gridx.ai/de/articles/640573-ivt-airx-airsplit-und-geo.md): Wärmepumpe Konfigurationsanleitung für die IVT AirX, AirSplit und Geo-Serie
+- [Janitza - UMG-Series](https://support.gridx.ai/de/articles/627408-janitza-umg-series.md): Zähler Konfigurationsanleitung für die Janitza UMG-Serie
+- [Keba - P30 Basis-Series und P30 X-series](https://support.gridx.ai/de/articles/636292-keba-p30-basis-series-und-p30-x-series.md): Ladestation Konfigurationsanleitung für die Keba P30 Basis-Series und P30 X-series-Serie
+- [Kostal - Plenticore plus und Plenticore G3](https://support.gridx.ai/de/articles/624561-kostal-plenticore-plus-und-plenticore-g3.md): Hybridwechselrichter Konfigurationsanleitung für die Kostal Plenticore plus und Plenticore G3-Serie
+- [Landis+Gyr - E650 Series 3](https://support.gridx.ai/de/articles/636003-landis-gyr-e650-series-3.md): Zähler Konfigurationsanleitung für die Landis+Gyr E650 Series 3-Serie
+- [Mennekes - AMEDIO Professional](https://support.gridx.ai/de/articles/639714-mennekes-amedio-professional.md): Ladestation Konfigurationsanleitung für die Mennekes AMEDIO Professional-Serie
+- [Mennekes - AMTRON Professional](https://support.gridx.ai/de/articles/642919-mennekes-amtron-professional.md): Ladestation Konfigurationsanleitung für die Mennekes AMTRON Professional-Serie
+- [Mennekes - AMTRON Compact 2.0](https://support.gridx.ai/de/articles/643074-mennekes-amtron-compact-2-0.md): Ladestation Konfigurationsanleitung für die Mennekes AMTRON Compact 2.0-Serie
+- [Mennekes - AMTRON Charge Control](https://support.gridx.ai/de/articles/644488-mennekes-amtron-charge-control.md): Ladestation Konfigurationsanleitung für die Mennekes AMTRON Charge Control-Serie
+- [Mennekes - AMTRON 4You Serie](https://support.gridx.ai/de/articles/645380-mennekes-amtron-4you-serie.md): Ladestation Konfigurationsanleitung für die Mennekes AMTRON 4You Serie-Serie
+- [my-PV - AC ELWA 2](https://support.gridx.ai/de/articles/640574-my-pv-ac-elwa-2.md): Konfigurationsanleitung für die my-PV AC ELWA 2-Serie
+- [my-PV - AC ELWA](https://support.gridx.ai/de/articles/640575-my-pv-ac-elwa.md): Konfigurationsanleitung für die my-PV AC ELWA-Serie
+- [my-PV - AC-THOR \(3kW\)](https://support.gridx.ai/de/articles/640576-my-pv-ac-thor-3kw.md): Konfigurationsanleitung für die my-PV AC-THOR-Serie
+- [my-PV - AC-THOR 9s \(9kW\)](https://support.gridx.ai/de/articles/640578-my-pv-ac-thor-9s-9kw.md): Konfigurationsanleitung für die my-PV AC-THOR-Serie
+- [Phoenix Contact - EMPro](https://support.gridx.ai/de/articles/636004-phoenix-contact-empro.md): Zähler Konfigurationsanleitung für die Phoenix Contact MA, MB und MA770 \(DIN-Rail, CT\)-Serie
+- [Rutenbeck - TCR-Series](https://support.gridx.ai/de/articles/626043-rutenbeck-tcr-series.md): I/O-Gerät Konfigurationsanleitung für die Rutenbeck TCR-Serie
+- [Shelly - Pro 2](https://support.gridx.ai/de/articles/634732-shelly-pro-2.md): I/O-Gerät Konfigurationsanleitung für die Shelly Pro-Serie
+- [Shelly - Pro 3EM](https://support.gridx.ai/de/articles/636006-shelly-pro-3em.md): Zähler Konfigurationsanleitung für die Shelly Pro-Serie
+- [Siemens - PAC](https://support.gridx.ai/de/articles/629164-siemens-pac.md): Zähler Konfigurationsanleitung für die Siemens PAC-Serie
+- [SMA - Sunny Boy, Sunny Tripower, TL-10, TL-20, TL-30 und TL / TLST-21](https://support.gridx.ai/de/articles/627225-sma-sunny-boy-sunny-tripower-tl-10-tl-20-tl-30-und-tl-tlst-21.md): Wechselrichter Konfigurationsanleitung für die SMA Sunny Boy, Sunny Tripower, TL-10, TL-20, TL-30 und TL / TLST-21-Serie
+- [SMA - Sunny Boy Storage und Sunny Island](https://support.gridx.ai/de/articles/627227-sma-sunny-boy-storage-und-sunny-island.md): Batterie-Wechselrichter Konfigurationsanleitung für die SMA Sunny Boy Storage und Sunny Island-Serie
+- [SMA - Sunny Tripower Smart Energy und Sunny Boy Smart Energy](https://support.gridx.ai/de/articles/621385-sma-sunny-tripower-smart-energy-und-sunny-boy-smart-energy.md): Hybridwechselrichter Konfigurationsanleitung für die SMA Sunny Tripower Smart Energy und Sunny Boy Smart Energy-Serie
+- [P1 Smart Meters](https://support.gridx.ai/de/articles/629163-p1-smart-meters.md): Konfigurationsanleitung für AM550, T1210-D
+- [SolarEdge - SE](https://support.gridx.ai/de/articles/622332-solaredge-se.md): Hybridwechselrichter Konfigurationsanleitung für die SolarEdge SE-Serie
+- [SolaX - X3 ULTRA](https://support.gridx.ai/de/articles/623029-solax-x3-ultra.md): Hybridwechselrichter Konfigurationsanleitung für die SolaX X3 ULTRA-Serie
+- [SolaX - X3 Hybrid G4 und X3-HYB G4 PRO](https://support.gridx.ai/de/articles/621901-solax-x3-hybrid-g4-und-x3-hyb-g4-pro.md): Hybridwechselrichter Konfigurationsanleitung für die SolaX X3 Hybrid G4 und X3-HYB G4 PRO-Serie
+- [SolaX - X3-IES](https://support.gridx.ai/de/articles/623025-solax-x3-ies.md): Hybridwechselrichter Konfigurationsanleitung für die SolaX X3-IES-Serie
+- [SolaX - X1-HAC und X3-HAC](https://support.gridx.ai/de/articles/853898-solax-x1-hac-und-x3-hac.md): Ladestation Konfigurationsanleitung für die SolaX X1-HAC und X3-HAC-Serie
+- [Sonnen - sonnenBatterie](https://support.gridx.ai/de/articles/624437-sonnen-sonnenbatterie.md): Batterie Konfigurationsanleitung für die Sonnen sonnenBatterie-Serie
+- [Stiebel Eltron - WPL-A Plus](https://support.gridx.ai/de/articles/640580-stiebel-eltron-wpl-a-plus.md): Wärmepumpe Konfigurationsanleitung für die Stiebel Eltron WPL-A Plus-Serie
+- [Sungrow - Hybrid SH](https://support.gridx.ai/de/articles/621966-sungrow-hybrid-sh.md): Hybridwechselrichter Konfigurationsanleitung für die Sungrow Hybrid SH-Serie
+- [Sungrow - SGxxRT](https://support.gridx.ai/de/articles/634311-sungrow-sgxxrt.md): Wechselrichter Konfigurationsanleitung für die Sungrow SGxxRT-Serie
+- [TQ-Systems GmbH \(B-Control\) - EM](https://support.gridx.ai/de/articles/636007-tq-systems-gmbh-b-control-em.md): Zähler Konfigurationsanleitung für die TQ-Systems GmbH \(B-Control\) EM-Serie
+- [TQ-Systems GmbH - EM](https://support.gridx.ai/de/articles/636008-tq-systems-gmbh-em.md): Zähler Konfigurationsanleitung für die TQ-Systems GmbH EM-Serie
+- [Vaillant - aroTHERM und andere Wärmepumpen](https://support.gridx.ai/de/articles/640581-vaillant-arotherm-und-andere-warmepumpen.md): Wärmepumpe Konfigurationsanleitung für die Vaillant aroTHERM, recoCOMPACT, versoTHERM, flexoTHERM, flexoCOMPACT exclusive, eloBLOCK und geoTHERM-Serie
+- [Vestel - eCharger/EVC04 Serie](https://support.gridx.ai/de/articles/636448-vestel-echarger-evc04-serie.md): Ladestation Konfigurationsanleitung für die Vestel eCharger/EVC04 Serie-Serie
+- [Viessmann - Vitotronic 200](https://support.gridx.ai/de/articles/640582-viessmann-vitotronic-200.md): Wärmepumpe Konfigurationsanleitung für die Viessmann Vitotronic 200-Serie
+- [Viessmann - OneBase](https://support.gridx.ai/de/articles/668948-viessmann-onebase.md): Wärmepumpe Konfigurationsanleitung für die Viessmann OneBase-Serie
+- [Viessmann - Vitocharge VX3](https://support.gridx.ai/de/articles/669473-viessmann-vitocharge-vx3.md): Hybridwechselrichter Konfigurationsanleitung für die Viessmann Vitocharge VX3-Serie
+- [Wallbox - Commander 2](https://support.gridx.ai/de/articles/636780-wallbox-commander-2.md): Ladestation Konfigurationsanleitung für die Wallbox Commander 2-Serie
+- [Wolf - CHA, CHC und FHA](https://support.gridx.ai/de/articles/640583-wolf-cha-chc-und-fha.md): Wärmepumpe Konfigurationsanleitung für die Wolf CHA, CHC und FHA-Serie
+
+### EVCI - EV Charging Infrastructure
+
+- [Produktübersicht & Anforderungen](https://support.gridx.ai/de/articles/590054-produktubersicht-anforderungen.md): Entdecken Sie unsere EV Charging Infrastructure Produkte und die wichtigsten technischen Systemanforderungen auf einen Blick.
+
+### Kundendienst
+
+- [Der Rückgabeprozess \(RMA\)](https://support.gridx.ai/de/articles/590116-der-ruckgabeprozess-rma.md): Dieser Artikel beschreibt den Prozess zur Bearbeitung von Garantieansprüchen für das gridBox IoT-Gateway.

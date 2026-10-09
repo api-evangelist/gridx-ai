@@ -1,0 +1,3719 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Tariff V2 API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged TariffV2 across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: TariffV2
+  x-displayName: TariffV2
+paths:
+  /systems/{systemID}/tariff:
+    get:
+      operationId: getSystemTariff
+      summary: Retrieve the tariff v2 of a system
+      description: Retrieves the tariff v2 of the system.
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '200':
+          description: Tariff of the system. Empty if there is none.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'The tariff contains settings which specify where to take prices from and how
+
+                  the end prices will be calculated.'
+                type: object
+                allOf:
+                - title: Energy TariffV2
+                  type: object
+                  description: 'Represents an energy tariff.
+
+
+                    The tariff contains settings which specify where to take prices from and how
+
+                    the end prices will be calculated.
+
+
+
+                    If `feedinType` or `offtakeType` is `MARKET_DATA`, `marketDataSettings` is
+
+                    required.
+
+
+                    If `feedinType` or `offtakeType` is `STATIC` `staticPeriods` is required.
+
+
+
+                    For **external tariffs**, `feedinType` and `offtakeType` **both** have to
+
+                    be set to `EXTERNAL`.
+
+
+                    External tariffs are tariffs where the prices are sent directly via API and
+
+                    not calculated.
+
+
+                    The price periods are sent with the `/systems/{systemID}/tariff/prices` endpoint.'
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the energy tariff, to be chosen freely.
+                      example: E.ON Strom
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217).
+                      example: EUR
+                    feedinType:
+                      type: string
+                      description: Type of feed-in tariff.
+                      example: STATIC
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: FeedinTariffType
+                    offtakeType:
+                      type: string
+                      description: Type of off-take tariff.
+                      example: MARKET_DATA
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: OfftakeTariffType
+                    gridFeeType:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the grid fee type.
+                      readOnly: true
+                      enum:
+                      - STANDARD
+                      - MODULE2
+                      - MODULE3
+                    energyProvider:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                      description: 'Identifier of the energy provider. The end prices for off-take will be fetched for the
+
+                        corresponding energy provider.
+
+
+                        If not defined, the end prices will be determined based on the raw market prices and grid fees,
+
+                        without considering the margin of the energy provider.
+
+
+                        Only valid for tariffs with `offtakeType` set to `DYNAMIC`.'
+                    staticPeriods:
+                      description: 'Weekly recurring periods with static prices. Used for example
+
+                        for completely static, day/night and weekend tariffs.
+
+
+
+                        Static periods have to form a closed loop. The loop must cover the whole
+
+                        week:
+
+
+                        A period has to end at the start of the next period. The end of the last
+
+                        period has to be the start of the first period.'
+                      type: array
+                      items:
+                        title: TariffV2 Static period
+                        description: 'Contains the tariff periods for a tariff with either OfftakeType
+
+                          or FeedinType `STATIC`.
+
+
+
+                          The period is active between `from` and `to`. `from` is included in the interval,
+
+                          `to` is excluded.'
+                        type: object
+                        properties:
+                          from:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          to:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          feedinPrice:
+                            description: Price per kWh fed into the grid in the currency of the tariff.
+                            type: number
+                            example: 0.09
+                            default: 0
+                          offtakePrice:
+                            description: Price per kWh consumed from the grid in the currency of the tariff.
+                            type: number
+                            example: 0.4
+                            default: 0
+                        required:
+                        - from
+                        - to
+                        x-readme-ref-name: TariffV2StaticPeriod
+                    marketDataSettings:
+                      title: Market Data Settings
+                      type: object
+                      description: Settings specific to market-data-based tariffs.
+                      properties:
+                        feedinOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                          example: 2.5
+                        offtakeOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                          example: 2.5
+                        providerFee:
+                          type: number
+                          description: Additional fee per kWh on top, after applying VAT.
+                          example: 10
+                        vat:
+                          type: number
+                          description: The VAT is the value-added tax rate expressed as a decimal number.
+                          example: 0.12
+                      x-readme-ref-name: AbstractMarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                  x-readme-ref-name: AbstractTariffV2
+                - properties:
+                    systemID:
+                      type: string
+                      description: ID of the system the tariff is assigned to
+                      format: uuid
+                      example: 3a07b17f-da57-4d61-b9e4-17c4fcd861c4
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the tariff was created using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      description: Time at which the tariff was updated using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    currency:
+                      default: EUR
+                    marketDataSettings:
+                      description: Market data settings specific to market-data-based tariffs.
+                      allOf:
+                      - title: Market Data Settings
+                        type: object
+                        description: Settings specific to market-data-based tariffs.
+                        properties:
+                          feedinOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                            example: 2.5
+                          offtakeOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                            example: 2.5
+                          providerFee:
+                            type: number
+                            description: Additional fee per kWh on top, after applying VAT.
+                            example: 10
+                          vat:
+                            type: number
+                            description: The VAT is the value-added tax rate expressed as a decimal number.
+                            example: 0.12
+                        x-readme-ref-name: AbstractMarketDataSettings
+                      - required:
+                        - feedinOffset
+                        - offtakeOffset
+                        - providerFee
+                        - vat
+                      x-readme-ref-name: MarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                    biddingZone:
+                      type: string
+                      description: 'Electricity market bidding zone the tariff is in.
+
+                        Automatically calculated on tariff creation and update based on the biddingzone of the account the system belongs to.'
+                      example: 10Y1001A1001A44P
+                  required:
+                  - name
+                  - feedinType
+                  - offtakeType
+                  - systemID
+                  - createdAt
+                  - updatedAt
+                  - currency
+                x-readme-ref-name: TariffV2
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tariff"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/tariff \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tariff', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tariff")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: setSystemTariff
+      summary: Set the tariff v2 of a system
+      description: 'Sets the tariff v2 of the system if no tariff settings have been set yet.
+
+
+        If the tariff settings had already been set, no changes would be made.
+
+
+        See the response bodies description which fields have to be set for which
+
+        `feedinType`/`offtakeType`.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: 'The tariff contains settings which specify where to take prices from and how
+
+                the end prices will be calculated.'
+              allOf:
+              - description: 'The tariff contains settings which specify where to take prices from and how
+
+                  the end prices will be calculated.'
+                type: object
+                allOf:
+                - title: Energy TariffV2
+                  type: object
+                  description: 'Represents an energy tariff.
+
+
+                    The tariff contains settings which specify where to take prices from and how
+
+                    the end prices will be calculated.
+
+
+
+                    If `feedinType` or `offtakeType` is `MARKET_DATA`, `marketDataSettings` is
+
+                    required.
+
+
+                    If `feedinType` or `offtakeType` is `STATIC` `staticPeriods` is required.
+
+
+
+                    For **external tariffs**, `feedinType` and `offtakeType` **both** have to
+
+                    be set to `EXTERNAL`.
+
+
+                    External tariffs are tariffs where the prices are sent directly via API and
+
+                    not calculated.
+
+
+                    The price periods are sent with the `/systems/{systemID}/tariff/prices` endpoint.'
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the energy tariff, to be chosen freely.
+                      example: E.ON Strom
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217).
+                      example: EUR
+                    feedinType:
+                      type: string
+                      description: Type of feed-in tariff.
+                      example: STATIC
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: FeedinTariffType
+                    offtakeType:
+                      type: string
+                      description: Type of off-take tariff.
+                      example: MARKET_DATA
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: OfftakeTariffType
+                    gridFeeType:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the grid fee type.
+                      readOnly: true
+                      enum:
+                      - STANDARD
+                      - MODULE2
+                      - MODULE3
+                    energyProvider:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                      description: 'Identifier of the energy provider. The end prices for off-take will be fetched for the
+
+                        corresponding energy provider.
+
+
+                        If not defined, the end prices will be determined based on the raw market prices and grid fees,
+
+                        without considering the margin of the energy provider.
+
+
+                        Only valid for tariffs with `offtakeType` set to `DYNAMIC`.'
+                    staticPeriods:
+                      description: 'Weekly recurring periods with static prices. Used for example
+
+                        for completely static, day/night and weekend tariffs.
+
+
+
+                        Static periods have to form a closed loop. The loop must cover the whole
+
+                        week:
+
+
+                        A period has to end at the start of the next period. The end of the last
+
+                        period has to be the start of the first period.'
+                      type: array
+                      items:
+                        title: TariffV2 Static period
+                        description: 'Contains the tariff periods for a tariff with either OfftakeType
+
+                          or FeedinType `STATIC`.
+
+
+
+                          The period is active between `from` and `to`. `from` is included in the interval,
+
+                          `to` is excluded.'
+                        type: object
+                        properties:
+                          from:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          to:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          feedinPrice:
+                            description: Price per kWh fed into the grid in the currency of the tariff.
+                            type: number
+                            example: 0.09
+                            default: 0
+                          offtakePrice:
+                            description: Price per kWh consumed from the grid in the currency of the tariff.
+                            type: number
+                            example: 0.4
+                            default: 0
+                        required:
+                        - from
+                        - to
+                        x-readme-ref-name: TariffV2StaticPeriod
+                    marketDataSettings:
+                      title: Market Data Settings
+                      type: object
+                      description: Settings specific to market-data-based tariffs.
+                      properties:
+                        feedinOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                          example: 2.5
+                        offtakeOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                          example: 2.5
+                        providerFee:
+                          type: number
+                          description: Additional fee per kWh on top, after applying VAT.
+                          example: 10
+                        vat:
+                          type: number
+                          description: The VAT is the value-added tax rate expressed as a decimal number.
+                          example: 0.12
+                      x-readme-ref-name: AbstractMarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                  x-readme-ref-name: AbstractTariffV2
+                - type: object
+                  properties:
+                    marketDataSettings:
+                      description: Market data settings specific to market-data-based tariffs.
+                      allOf:
+                      - title: Market Data Settings
+                        type: object
+                        description: Settings specific to market-data-based tariffs.
+                        properties:
+                          feedinOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                            example: 2.5
+                          offtakeOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                            example: 2.5
+                          providerFee:
+                            type: number
+                            description: Additional fee per kWh on top, after applying VAT.
+                            example: 10
+                          vat:
+                            type: number
+                            description: The VAT is the value-added tax rate expressed as a decimal number.
+                            example: 0.12
+                        x-readme-ref-name: AbstractMarketDataSettings
+                      - required:
+                        - feedinOffset
+                        - offtakeOffset
+                        - providerFee
+                        - vat
+                      x-readme-ref-name: MarketDataSettings
+                  required:
+                  - feedinType
+                  - offtakeType
+                x-readme-ref-name: TariffV2Creation
+              - additionalProperties: false
+              x-readme-ref-name: TariffV2CreationStrict
+      responses:
+        '201':
+          description: The newly-set tariff v2.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'The tariff contains settings which specify where to take prices from and how
+
+                  the end prices will be calculated.'
+                type: object
+                allOf:
+                - title: Energy TariffV2
+                  type: object
+                  description: 'Represents an energy tariff.
+
+
+                    The tariff contains settings which specify where to take prices from and how
+
+                    the end prices will be calculated.
+
+
+
+                    If `feedinType` or `offtakeType` is `MARKET_DATA`, `marketDataSettings` is
+
+                    required.
+
+
+                    If `feedinType` or `offtakeType` is `STATIC` `staticPeriods` is required.
+
+
+
+                    For **external tariffs**, `feedinType` and `offtakeType` **both** have to
+
+                    be set to `EXTERNAL`.
+
+
+                    External tariffs are tariffs where the prices are sent directly via API and
+
+                    not calculated.
+
+
+                    The price periods are sent with the `/systems/{systemID}/tariff/prices` endpoint.'
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the energy tariff, to be chosen freely.
+                      example: E.ON Strom
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217).
+                      example: EUR
+                    feedinType:
+                      type: string
+                      description: Type of feed-in tariff.
+                      example: STATIC
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: FeedinTariffType
+                    offtakeType:
+                      type: string
+                      description: Type of off-take tariff.
+                      example: MARKET_DATA
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: OfftakeTariffType
+                    gridFeeType:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the grid fee type.
+                      readOnly: true
+                      enum:
+                      - STANDARD
+                      - MODULE2
+                      - MODULE3
+                    energyProvider:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                      description: 'Identifier of the energy provider. The end prices for off-take will be fetched for the
+
+                        corresponding energy provider.
+
+
+                        If not defined, the end prices will be determined based on the raw market prices and grid fees,
+
+                        without considering the margin of the energy provider.
+
+
+                        Only valid for tariffs with `offtakeType` set to `DYNAMIC`.'
+                    staticPeriods:
+                      description: 'Weekly recurring periods with static prices. Used for example
+
+                        for completely static, day/night and weekend tariffs.
+
+
+
+                        Static periods have to form a closed loop. The loop must cover the whole
+
+                        week:
+
+
+                        A period has to end at the start of the next period. The end of the last
+
+                        period has to be the start of the first period.'
+                      type: array
+                      items:
+                        title: TariffV2 Static period
+                        description: 'Contains the tariff periods for a tariff with either OfftakeType
+
+                          or FeedinType `STATIC`.
+
+
+
+                          The period is active between `from` and `to`. `from` is included in the interval,
+
+                          `to` is excluded.'
+                        type: object
+                        properties:
+                          from:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          to:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          feedinPrice:
+                            description: Price per kWh fed into the grid in the currency of the tariff.
+                            type: number
+                            example: 0.09
+                            default: 0
+                          offtakePrice:
+                            description: Price per kWh consumed from the grid in the currency of the tariff.
+                            type: number
+                            example: 0.4
+                            default: 0
+                        required:
+                        - from
+                        - to
+                        x-readme-ref-name: TariffV2StaticPeriod
+                    marketDataSettings:
+                      title: Market Data Settings
+                      type: object
+                      description: Settings specific to market-data-based tariffs.
+                      properties:
+                        feedinOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                          example: 2.5
+                        offtakeOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                          example: 2.5
+                        providerFee:
+                          type: number
+                          description: Additional fee per kWh on top, after applying VAT.
+                          example: 10
+                        vat:
+                          type: number
+                          description: The VAT is the value-added tax rate expressed as a decimal number.
+                          example: 0.12
+                      x-readme-ref-name: AbstractMarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                  x-readme-ref-name: AbstractTariffV2
+                - properties:
+                    systemID:
+                      type: string
+                      description: ID of the system the tariff is assigned to
+                      format: uuid
+                      example: 3a07b17f-da57-4d61-b9e4-17c4fcd861c4
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the tariff was created using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      description: Time at which the tariff was updated using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    currency:
+                      default: EUR
+                    marketDataSettings:
+                      description: Market data settings specific to market-data-based tariffs.
+                      allOf:
+                      - title: Market Data Settings
+                        type: object
+                        description: Settings specific to market-data-based tariffs.
+                        properties:
+                          feedinOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                            example: 2.5
+                          offtakeOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                            example: 2.5
+                          providerFee:
+                            type: number
+                            description: Additional fee per kWh on top, after applying VAT.
+                            example: 10
+                          vat:
+                            type: number
+                            description: The VAT is the value-added tax rate expressed as a decimal number.
+                            example: 0.12
+                        x-readme-ref-name: AbstractMarketDataSettings
+                      - required:
+                        - feedinOffset
+                        - offtakeOffset
+                        - providerFee
+                        - vat
+                      x-readme-ref-name: MarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                    biddingZone:
+                      type: string
+                      description: 'Electricity market bidding zone the tariff is in.
+
+                        Automatically calculated on tariff creation and update based on the biddingzone of the account the system belongs to.'
+                      example: 10Y1001A1001A44P
+                  required:
+                  - name
+                  - feedinType
+                  - offtakeType
+                  - systemID
+                  - createdAt
+                  - updatedAt
+                  - currency
+                x-readme-ref-name: TariffV2
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '409':
+          description: Resource already exists
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Conflict
+                  description: 'Conflict indicates that the client is attempting to create a resource that already exists.
+
+                    '
+                  type: object
+                  example:
+                    message: Resource already exists
+                x-readme-ref-name: ConflictException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tariff\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/systems/systemID/tariff \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tariff', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tariff\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateSystemTariff
+      summary: Update the tariff v2 of a system
+      description: 'Updates the tariff v2 of the system if the tariff settings have already been set and need to be modified.
+
+
+        See the response bodies description which fields have to be set for which
+
+        `feedinType`/`offtakeType`.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: 'The tariff contains settings which specify where to take prices from and how
+
+                the end prices will be calculated.'
+              allOf:
+              - description: 'The tariff contains settings which specify where to take prices from and how
+
+                  the end prices will be calculated.'
+                type: object
+                allOf:
+                - title: Energy TariffV2
+                  type: object
+                  description: 'Represents an energy tariff.
+
+
+                    The tariff contains settings which specify where to take prices from and how
+
+                    the end prices will be calculated.
+
+
+
+                    If `feedinType` or `offtakeType` is `MARKET_DATA`, `marketDataSettings` is
+
+                    required.
+
+
+                    If `feedinType` or `offtakeType` is `STATIC` `staticPeriods` is required.
+
+
+
+                    For **external tariffs**, `feedinType` and `offtakeType` **both** have to
+
+                    be set to `EXTERNAL`.
+
+
+                    External tariffs are tariffs where the prices are sent directly via API and
+
+                    not calculated.
+
+
+                    The price periods are sent with the `/systems/{systemID}/tariff/prices` endpoint.'
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the energy tariff, to be chosen freely.
+                      example: E.ON Strom
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217).
+                      example: EUR
+                    feedinType:
+                      type: string
+                      description: Type of feed-in tariff.
+                      example: STATIC
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: FeedinTariffType
+                    offtakeType:
+                      type: string
+                      description: Type of off-take tariff.
+                      example: MARKET_DATA
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: OfftakeTariffType
+                    gridFeeType:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the grid fee type.
+                      readOnly: true
+                      enum:
+                      - STANDARD
+                      - MODULE2
+                      - MODULE3
+                    energyProvider:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                      description: 'Identifier of the energy provider. The end prices for off-take will be fetched for the
+
+                        corresponding energy provider.
+
+
+                        If not defined, the end prices will be determined based on the raw market prices and grid fees,
+
+                        without considering the margin of the energy provider.
+
+
+                        Only valid for tariffs with `offtakeType` set to `DYNAMIC`.'
+                    staticPeriods:
+                      description: 'Weekly recurring periods with static prices. Used for example
+
+                        for completely static, day/night and weekend tariffs.
+
+
+
+                        Static periods have to form a closed loop. The loop must cover the whole
+
+                        week:
+
+
+                        A period has to end at the start of the next period. The end of the last
+
+                        period has to be the start of the first period.'
+                      type: array
+                      items:
+                        title: TariffV2 Static period
+                        description: 'Contains the tariff periods for a tariff with either OfftakeType
+
+                          or FeedinType `STATIC`.
+
+
+
+                          The period is active between `from` and `to`. `from` is included in the interval,
+
+                          `to` is excluded.'
+                        type: object
+                        properties:
+                          from:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          to:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          feedinPrice:
+                            description: Price per kWh fed into the grid in the currency of the tariff.
+                            type: number
+                            example: 0.09
+                            default: 0
+                          offtakePrice:
+                            description: Price per kWh consumed from the grid in the currency of the tariff.
+                            type: number
+                            example: 0.4
+                            default: 0
+                        required:
+                        - from
+                        - to
+                        x-readme-ref-name: TariffV2StaticPeriod
+                    marketDataSettings:
+                      title: Market Data Settings
+                      type: object
+                      description: Settings specific to market-data-based tariffs.
+                      properties:
+                        feedinOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                          example: 2.5
+                        offtakeOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                          example: 2.5
+                        providerFee:
+                          type: number
+                          description: Additional fee per kWh on top, after applying VAT.
+                          example: 10
+                        vat:
+                          type: number
+                          description: The VAT is the value-added tax rate expressed as a decimal number.
+                          example: 0.12
+                      x-readme-ref-name: AbstractMarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                  x-readme-ref-name: AbstractTariffV2
+                x-readme-ref-name: TariffV2Update
+              - additionalProperties: false
+              x-readme-ref-name: TariffV2UpdateStrict
+      responses:
+        '200':
+          description: The updated TariffV2.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'The tariff contains settings which specify where to take prices from and how
+
+                  the end prices will be calculated.'
+                type: object
+                allOf:
+                - title: Energy TariffV2
+                  type: object
+                  description: 'Represents an energy tariff.
+
+
+                    The tariff contains settings which specify where to take prices from and how
+
+                    the end prices will be calculated.
+
+
+
+                    If `feedinType` or `offtakeType` is `MARKET_DATA`, `marketDataSettings` is
+
+                    required.
+
+
+                    If `feedinType` or `offtakeType` is `STATIC` `staticPeriods` is required.
+
+
+
+                    For **external tariffs**, `feedinType` and `offtakeType` **both** have to
+
+                    be set to `EXTERNAL`.
+
+
+                    External tariffs are tariffs where the prices are sent directly via API and
+
+                    not calculated.
+
+
+                    The price periods are sent with the `/systems/{systemID}/tariff/prices` endpoint.'
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the energy tariff, to be chosen freely.
+                      example: E.ON Strom
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217).
+                      example: EUR
+                    feedinType:
+                      type: string
+                      description: Type of feed-in tariff.
+                      example: STATIC
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: FeedinTariffType
+                    offtakeType:
+                      type: string
+                      description: Type of off-take tariff.
+                      example: MARKET_DATA
+                      enum:
+                      - MARKET_DATA
+                      - STATIC
+                      - EXTERNAL
+                      - DYNAMIC
+                      x-readme-ref-name: OfftakeTariffType
+                    gridFeeType:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the grid fee type.
+                      readOnly: true
+                      enum:
+                      - STANDARD
+                      - MODULE2
+                      - MODULE3
+                    energyProvider:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                      description: 'Identifier of the energy provider. The end prices for off-take will be fetched for the
+
+                        corresponding energy provider.
+
+
+                        If not defined, the end prices will be determined based on the raw market prices and grid fees,
+
+                        without considering the margin of the energy provider.
+
+
+                        Only valid for tariffs with `offtakeType` set to `DYNAMIC`.'
+                    staticPeriods:
+                      description: 'Weekly recurring periods with static prices. Used for example
+
+                        for completely static, day/night and weekend tariffs.
+
+
+
+                        Static periods have to form a closed loop. The loop must cover the whole
+
+                        week:
+
+
+                        A period has to end at the start of the next period. The end of the last
+
+                        period has to be the start of the first period.'
+                      type: array
+                      items:
+                        title: TariffV2 Static period
+                        description: 'Contains the tariff periods for a tariff with either OfftakeType
+
+                          or FeedinType `STATIC`.
+
+
+
+                          The period is active between `from` and `to`. `from` is included in the interval,
+
+                          `to` is excluded.'
+                        type: object
+                        properties:
+                          from:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          to:
+                            title: TariffV2 static period time
+                            description: 'Contains the information when a static period of a TariffV2 starts
+
+                              or ends.
+
+
+                              Described by the weekday and the seconds of this day."'
+                            type: object
+                            properties:
+                              weekday:
+                                description: The weekdays index (Sunday=0, ...)
+                                type: integer
+                                minimum: 0
+                                maximum: 6
+                                example: 0
+                              secondsOfDay:
+                                description: The second of the weekday until the period is valid/which the period is valid from
+                                type: integer
+                                minimum: 0
+                                maximum: 86399
+                                example: 0
+                            required:
+                            - weekday
+                            - secondsOfDay
+                            x-readme-ref-name: TariffV2StaticPeriodTime
+                          feedinPrice:
+                            description: Price per kWh fed into the grid in the currency of the tariff.
+                            type: number
+                            example: 0.09
+                            default: 0
+                          offtakePrice:
+                            description: Price per kWh consumed from the grid in the currency of the tariff.
+                            type: number
+                            example: 0.4
+                            default: 0
+                        required:
+                        - from
+                        - to
+                        x-readme-ref-name: TariffV2StaticPeriod
+                    marketDataSettings:
+                      title: Market Data Settings
+                      type: object
+                      description: Settings specific to market-data-based tariffs.
+                      properties:
+                        feedinOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                          example: 2.5
+                        offtakeOffset:
+                          type: number
+                          description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                          example: 2.5
+                        providerFee:
+                          type: number
+                          description: Additional fee per kWh on top, after applying VAT.
+                          example: 10
+                        vat:
+                          type: number
+                          description: The VAT is the value-added tax rate expressed as a decimal number.
+                          example: 0.12
+                      x-readme-ref-name: AbstractMarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                  x-readme-ref-name: AbstractTariffV2
+                - properties:
+                    systemID:
+                      type: string
+                      description: ID of the system the tariff is assigned to
+                      format: uuid
+                      example: 3a07b17f-da57-4d61-b9e4-17c4fcd861c4
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the tariff was created using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    updatedAt:
+                      type: string
+                      description: Time at which the tariff was updated using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                    currency:
+                      default: EUR
+                    marketDataSettings:
+                      description: Market data settings specific to market-data-based tariffs.
+                      allOf:
+                      - title: Market Data Settings
+                        type: object
+                        description: Settings specific to market-data-based tariffs.
+                        properties:
+                          feedinOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for feed-in tariffs.
+                            example: 2.5
+                          offtakeOffset:
+                            type: number
+                            description: Sets the fee per kWh on top of market prices for off-take tariffs.
+                            example: 2.5
+                          providerFee:
+                            type: number
+                            description: Additional fee per kWh on top, after applying VAT.
+                            example: 10
+                          vat:
+                            type: number
+                            description: The VAT is the value-added tax rate expressed as a decimal number.
+                            example: 0.12
+                        x-readme-ref-name: AbstractMarketDataSettings
+                      - required:
+                        - feedinOffset
+                        - offtakeOffset
+                        - providerFee
+                        - vat
+                      x-readme-ref-name: MarketDataSettings
+                    dynamicSettings:
+                      title: Dynamic Settings
+                      type: object
+                      description: Optional settings for DYNAMIC tariffs to apply additional offsets to base dynamic prices.
+                      properties:
+                        offtakeOffset:
+                          type:
+                          - number
+                          - 'null'
+                          description: Additional offset per kWh on top of dynamic base prices for off-take. Can be positive or negative.
+                          example: 0.05
+                      x-readme-ref-name: AbstractDynamicSettings
+                    biddingZone:
+                      type: string
+                      description: 'Electricity market bidding zone the tariff is in.
+
+                        Automatically calculated on tariff creation and update based on the biddingzone of the account the system belongs to.'
+                      example: 10Y1001A1001A44P
+                  required:
+                  - name
+                  - feedinType
+                  - offtakeType
+                  - systemID
+                  - createdAt
+                  - updatedAt
+                  - currency
+                x-readme-ref-name: TariffV2
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tariff\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/systems/systemID/tariff \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tariff', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tariff\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteSystemTariff
+      summary: Delete the tariff of a system
+      description: 'Deletes the tariff of the system. This allows the user to deselect a currently
+
+        chosen tariff (dynamic or static) to none.
+
+
+        This operation is idempotent: if no tariff exists, it still returns 204.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '204':
+          description: Tariff successfully deleted (or did not exist).
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tariff"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/tariff \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tariff', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tariff")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/tariff/prices:
+    get:
+      operationId: listSystemTariffPrices
+      summary: Retrieve the tariff end prices of a system
+      description: 'Retrieves the end-price tariff for the system in the specified
+
+        resolution (15-minute by default if not specified).
+
+
+        The end-price is the price the customer is billed for (for market data tariffs
+
+        for example after offset, VAT and provider fee are applied).
+
+
+        Depending on the tariff settings, the tariff data might have been directly
+
+        posted through the API, originate from market data, external provider
+
+
+        or is extrapolated from static data.
+
+
+        If the resolution of the underlying data doesn''t correspond to the requested
+
+        resolution the data will be up- or down-sampled.
+
+
+        For example the market prices used by market data tariffs have a 1 hour resolution.
+
+        If you request 15min resolution you will
+
+
+        get 4 equal periods per hour. If you request daily resolution, the average
+
+        prices of 24 hourly periods will be returned per period.
+
+
+        For EXTERNAL tariffs: if there are missing price periods over the requested interval,
+
+        the end-price tariff will start after the
+
+        last period gap, aligned with the requested resolution.
+
+
+        That is, if the requested interval for a given day is from 00:00 to 12:00
+
+        and no prices were sent from at 02:15 to 03:45, the first period returned
+
+        will be from 03:45 to 04:00 for a 15-min resolution or from 04:00 to 05:00
+
+        for an hourly resolution.
+
+
+        However for all other tariff types like DYNAMIC and MARKET_DATA,
+
+        if there are missing price periods over the requested interval,
+
+        the end-price tariff will start at the first valid period available (ignoring a leading gap) and
+
+        end at the beginning of the next gap.
+
+
+        That is, if the requested interval for a given day is from 00:00 to 12:00
+
+        and no prices were sent from at 02:15 to 03:45, the first period returned
+
+        will be from the 00:00 to 00:15 period until the 02:00 to 02:15 period for a 15-min resolution.
+
+
+        Once calculated the prices won''t change anymore for the requested period.
+
+
+        Even if the tariff is reconfigured the returned price will stay the same.
+
+
+        This is due to the fact that historical prices can not be changed anymore.
+
+
+        Changes in the tariff will only have an effect in the future.
+
+
+        Also, `EXTERNAL` prices can be retrieved for as long as they are posted.
+
+
+        The returned currency is determined by the currency of the underlying tariff
+
+        if not specified otherwise.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        description: 'Requested time interval for fetching end-price tariff in the
+
+          RFC3339 format.
+
+
+          If the available tariff data does not cover the full interval, the largest
+
+          available subset will still be returned.
+
+
+          If the lower bound of the interval is not a multiple of the resolution,
+
+          it will be truncated.
+
+
+          If the upper bound of the interval is not a multiple of the resolution,
+
+          it will be rounded up.'
+        required: true
+        example: 2020-09-21T00:00:00Z/2022-09-23T00:00:00Z
+        schema:
+          type: string
+          format: datetime
+      - name: resolution
+        in: query
+        description: 'Resolution of the end-price tariff periods as ISO8601 duration.
+
+
+          If not specified it will be a 15-min resolution.
+
+
+
+          Possible resolutions are:
+
+
+          - PT15M - 15 minutes
+
+
+          - PT1H - 1 hour
+
+
+          - P1D - 1 day'
+        required: false
+        example: PT1H
+        schema:
+          type: string
+          format: iso8601
+      - name: currency
+        in: query
+        description: 'Currency in which the end prices should be returned.
+
+
+
+          If the underlying data isn''t already in the requested currency, the prices
+
+          will be converted.
+
+
+          This uses exchange rates with a daily resolution.'
+        example: EUR
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 'End-price tariff of the system for the interval requested.
+
+
+            If the system has no tariff and therefore no end prices can be calculated
+
+            the returned periods will be empty.'
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: Represent a TariffV2 with price periods.
+                allOf:
+                - title: End-price Tariff V2
+                  description: 'Represent a TariffV2 with end price periods.
+
+                    End prices are prices with applied offset, VAT and provider fee.
+
+                    In contrast to normal "TariffV2" EndpriceTariffV2 always is for a particular interval
+
+                    and contains all periods for this interval.
+
+                    '
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217)
+                      example: EUR
+                    periods:
+                      description: 'List of periods containing end prices over non-overlapping
+
+                        periods.
+
+
+                        The periods are sorted chronologically.'
+                      type: array
+                      items:
+                        title: End-price Tariff V2 Period
+                        type: object
+                        description: 'Represents a period of a TariffV2 with end prices.
+
+
+                          End prices are prices with applied offset, VAT and provider fee.'
+                        properties:
+                          from:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:00:00Z'
+                            description: Time at which the period starts in the RFC3339 format.
+                          to:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:15:00Z'
+                            description: Time at which the period ends in the RFC3339 format.
+                          feedinPrice:
+                            type: number
+                            format: double
+                            example: 0.09
+                            description: Price including offset, VAT and provider fee per kWh for fed in energy in the period [from, to).
+                          offtakePrice:
+                            type: number
+                            format: double
+                            example: 0.4
+                            description: Price including offset, VAT and provider fee per kWh for consumed energy in the period [from, to).
+                          marketPrice:
+                            type:
+                            - number
+                            - 'null'
+                            format: double
+                            example: 0.15
+                            description: 'Raw market price (Day-Ahead EPEX Spot price with 60min resolution)
+
+                              per kWh at the time of this period in the bidding zone of the system.
+
+
+                              Returned regardless if underlying tariff has a market data type or not
+
+                              (if available).
+
+
+
+                              For static tariffs (both offtake & feedin =STATIC) this can be `null`,
+
+                              when there is no market price for the requested period.'
+                        required:
+                        - from
+                        - to
+                        - feedinPrice
+                        - offtakePrice
+                        x-readme-ref-name: AbstractEndpriceTariffV2Period
+                  x-readme-ref-name: AbstractEndpriceTariffV2
+                - type: object
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the underlying TariffV2.
+                    from:
+                      type: string
+                      format: date-time
+                      example: '2018-04-01T00:00:00Z'
+                      description: 'Time at which the contained periods starts in the RFC3339
+
+                        format.'
+                    to:
+                      type: string
+                      format: date-time
+                      example: '2018-04-01T00:15:00Z'
+                      description: Time at which the contained period ends in the RFC3339 format.
+                    periods:
+                      items:
+                        description: Represents a period of a TariffV2 prices.
+                        allOf:
+                        - title: End-price Tariff V2 Period
+                          type: object
+                          description: 'Represents a period of a TariffV2 with end prices.
+
+
+                            End prices are prices with applied offset, VAT and provider fee.'
+                          properties:
+                            from:
+                              type: string
+                              format: date-time
+                              example: '2018-04-01T00:00:00Z'
+                              description: Time at which the period starts in the RFC3339 format.
+                            to:
+                              type: string
+                              format: date-time
+                              example: '2018-04-01T00:15:00Z'
+                              description: Time at which the period ends in the RFC3339 format.
+                            feedinPrice:
+                              type: number
+                              format: double
+                              example: 0.09
+                              description: Price including offset, VAT and provider fee per kWh for fed in energy in the period [from, to).
+                            offtakePrice:
+                              type: number
+                              format: double
+                              example: 0.4
+                              description: Price including offset, VAT and provider fee per kWh for consumed energy in the period [from, to).
+                            marketPrice:
+                              type:
+                              - number
+                              - 'null'
+                              format: double
+                              example: 0.15
+                              description: 'Raw market price (Day-Ahead EPEX Spot price with 60min resolution)
+
+                                per kWh at the time of this period in the bidding zone of the system.
+
+
+                                Returned regardless if underlying tariff has a market data type or not
+
+                                (if available).
+
+
+
+                                For static tariffs (both offtake & feedin =STATIC) this can be `null`,
+
+                                when there is no market price for the requested period.'
+                          required:
+                          - from
+                          - to
+                          - feedinPrice
+                          - offtakePrice
+                          x-readme-ref-name: AbstractEndpriceTariffV2Period
+                        - type: object
+                          required:
+                          - marketPrice
+                        x-readme-ref-name: EndpriceTariffV2Period
+                  required:
+                  - name
+                  - currency
+                  - from
+                  - to
+                  - periods
+                x-readme-ref-name: EndpriceTariffV2
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tariff/prices"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/tariff/prices \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff/prices\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tariff/prices', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/prices\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/prices\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tariff/prices")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff/prices");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: setSystemTariffPrices
+      summary: Set tariff end prices of a system
+      description: 'Sets the tariff end prices for **external tariffs**.
+
+
+        The sent price periods have a few restrictions:
+
+
+        - They must have a 15 minute resolution.
+
+
+        - They must not have gaps for current and future prices (gaps in the past
+
+        are allowed).
+
+
+        The prices can be sent in all supported currencies and will be converted by
+
+        the `GET /tariff/prices` endpoint accordingly.
+
+
+        You don''t have to send your prices in all the currencies you want to support.
+
+
+        Internally they always will be converted to Euro, therefore sending the same
+
+        price periods in different currencies will overwrite
+
+
+        the previously sent price periods.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Represent a TariffV2 with price periods.
+              allOf:
+              - description: Represent a TariffV2 with price periods.
+                allOf:
+                - title: End-price Tariff V2
+                  description: 'Represent a TariffV2 with end price periods.
+
+                    End prices are prices with applied offset, VAT and provider fee.
+
+                    In contrast to normal "TariffV2" EndpriceTariffV2 always is for a particular interval
+
+                    and contains all periods for this interval.
+
+                    '
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217)
+                      example: EUR
+                    periods:
+                      description: 'List of periods containing end prices over non-overlapping
+
+                        periods.
+
+
+                        The periods are sorted chronologically.'
+                      type: array
+                      items:
+                        title: End-price Tariff V2 Period
+                        type: object
+                        description: 'Represents a period of a TariffV2 with end prices.
+
+
+                          End prices are prices with applied offset, VAT and provider fee.'
+                        properties:
+                          from:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:00:00Z'
+                            description: Time at which the period starts in the RFC3339 format.
+                          to:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:15:00Z'
+                            description: Time at which the period ends in the RFC3339 format.
+                          feedinPrice:
+                            type: number
+                            format: double
+                            example: 0.09
+                            description: Price including offset, VAT and provider fee per kWh for fed in energy in the period [from, to).
+                          offtakePrice:
+                            type: number
+                            format: double
+                            example: 0.4
+                            description: Price including offset, VAT and provider fee per kWh for consumed energy in the period [from, to).
+                          marketPrice:
+                            type:
+                            - number
+                            - 'null'
+                            format: double
+                            example: 0.15
+                            description: 'Raw market price (Day-Ahead EPEX Spot price with 60min resolution)
+
+                              per kWh at the time of this period in the bidding zone of the system.
+
+
+                              Returned regardless if underlying tariff has a market data type or not
+
+                              (if available).
+
+
+
+                              For static tariffs (both offtake & feedin =STATIC) this can be `null`,
+
+                              when there is no market price for the requested period.'
+                        required:
+                        - from
+                        - to
+                        - feedinPrice
+                        - offtakePrice
+                        x-readme-ref-name: AbstractEndpriceTariffV2Period
+                  x-readme-ref-name: AbstractEndpriceTariffV2
+                - type: object
+                  properties:
+                    currency:
+                      description: 'Currency code (ISO 4217)
+
+
+                        If not set, the currency of the tariff is used.'
+                    periods:
+                      minItems: 1
+                  required:
+                  - periods
+                x-readme-ref-name: EndPriceTariffV2Set
+              - additionalProperties: false
+              x-readme-ref-name: EndPriceTariffV2SetStrict
+      responses:
+        '201':
+          description: 'Price periods successfully inserted.
+
+
+
+            Returns an end-price tariff with all inserted price periods.'
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: Represent a TariffV2 with price periods.
+                allOf:
+                - title: End-price Tariff V2
+                  description: 'Represent a TariffV2 with end price periods.
+
+                    End prices are prices with applied offset, VAT and provider fee.
+
+                    In contrast to normal "TariffV2" EndpriceTariffV2 always is for a particular interval
+
+                    and contains all periods for this interval.
+
+                    '
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217)
+                      example: EUR
+                    periods:
+                      description: 'List of periods containing end prices over non-overlapping
+
+                        periods.
+
+
+                        The periods are sorted chronologically.'
+                      type: array
+                      items:
+                        title: End-price Tariff V2 Period
+                        type: object
+                        description: 'Represents a period of a TariffV2 with end prices.
+
+
+                          End prices are prices with applied offset, VAT and provider fee.'
+                        properties:
+                          from:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:00:00Z'
+                            description: Time at which the period starts in the RFC3339 format.
+                          to:
+                            type: string
+                            format: date-time
+                            example: '2018-04-01T00:15:00Z'
+                            description: Time at which the period ends in the RFC3339 format.
+                          feedinPrice:
+                            type: number
+                            format: double
+                            example: 0.09
+                            description: Price including offset, VAT and provider fee per kWh for fed in energy in the period [from, to).
+                          offtakePrice:
+                            type: number
+                            format: double
+                            example: 0.4
+                            description: Price including offset, VAT and provider fee per kWh for consumed energy in the period [from, to).
+                          marketPrice:
+                            type:
+                            - number
+                            - 'null'
+                            format: double
+                            example: 0.15
+                            description: 'Raw market price (Day-Ahead EPEX Spot price with 60min resolution)
+
+                              per kWh at the time of this period in the bidding zone of the system.
+
+
+                              Returned regardless if underlying tariff has a market data type or not
+
+                              (if available).
+
+
+
+                              For static tariffs (both offtake & feedin =STATIC) this can be `null`,
+
+                              when there is no market price for the requested period.'
+                        required:
+                        - from
+                        - to
+                        - feedinPrice
+                        - offtakePrice
+                        x-readme-ref-name: AbstractEndpriceTariffV2Period
+                  x-readme-ref-name: AbstractEndpriceTariffV2
+                - type: object
+                  properties:
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: Name of the underlying TariffV2.
+                    from:
+                      type: string
+                      format: date-time
+                      example: '2018-04-01T00:00:00Z'
+                      description: 'Time at which the contained periods starts in the RFC3339
+
+                        format.'
+                    to:
+                      type: string
+                      format: date-time
+                      example: '2018-04-01T00:15:00Z'
+                      description: Time at which the contained period ends in the RFC3339 format.
+                    periods:
+                      items:
+                        description: Represents a period of a TariffV2 prices.
+                        allOf:
+                        - title: End-price Tariff V2 Period
+                          type: object
+                          description: 'Represents a period of a TariffV2 with end prices.
+
+
+                            End prices are prices with applied offset, VAT and provider fee.'
+                          properties:
+                            from:
+                              type: string
+                              format: date-time
+                              example: '2018-04-01T00:00:00Z'
+                              description: Time at which the period starts in the RFC3339 format.
+                            to:
+                              type: string
+                              format: date-time
+                              example: '2018-04-01T00:15:00Z'
+                              description: Time at which the period ends in the RFC3339 format.
+                            feedinPrice:
+                              type: number
+                              format: double
+                              example: 0.09
+                              description: Price including offset, VAT and provider fee per kWh for fed in energy in the period [from, to).
+                            offtakePrice:
+                              type: number
+                              format: double
+                              example: 0.4
+                              description: Price including offset, VAT and provider fee per kWh for consumed energy in the period [from, to).
+                            marketPrice:
+                              type:
+                              - number
+                              - 'null'
+                              format: double
+                              example: 0.15
+                              description: 'Raw market price (Day-Ahead EPEX Spot price with 60min resolution)
+
+                                per kWh at the time of this period in the bidding zone of the system.
+
+
+                                Returned regardless if underlying tariff has a market data type or not
+
+                                (if available).
+
+
+
+                                For static tariffs (both offtake & feedin =STATIC) this can be `null`,
+
+                                when there is no market price for the requested period.'
+                          required:
+                          - from
+                          - to
+                          - feedinPrice
+                          - offtakePrice
+                          x-readme-ref-name: AbstractEndpriceTariffV2Period
+                        - type: object
+                          required:
+                          - marketPrice
+                        x-readme-ref-name: EndpriceTariffV2Period
+                  required:
+                  - name
+                  - currency
+                  - from
+                  - to
+                  - periods
+                x-readme-ref-name: EndpriceTariffV2
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/tariff/prices\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/systems/systemID/tariff/prices \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff/prices\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/tariff/prices', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/prices\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/prices\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/tariff/prices\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff/prices");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/tariff/grid-fees:
+    get:
+      operationId: listSystemGridFees
+      x-badges:
+      - label: draft
+        color: red
+      summary: Retrieve grid fees for systems with dynamic tariff
+      description: 'Returns the grid fees for the specified system over a time interval,
+
+        but **only if the system''s tariff type is `DYNAMIC`**.
+
+
+        - If the offtake tariff is not DYNAMIC, the request will result in a 400 Bad Request.
+
+        - If the system is not found, a 404 will be returned.
+
+        - If no grid fee data is available for the requested interval, an empty `periods` array will be returned.'
+      tags:
+      - TariffV2
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        description: 'Requested time interval for fetching end-price tariff in the
+
+          RFC3339 format.
+
+
+          If the available grid fee data does not fully cover the interval, the largest available subset will still be returned.
+
+
+
+          If the lower bound of the interval is not a multiple of the resolution,
+
+          it will be truncated.
+
+
+          If the upper bound of the interval is not a multiple of the resolution,
+
+          it will be rounded up.'
+        required: true
+        example: 2020-09-21T00:00:00Z/2022-09-23T00:00:00Z
+        schema:
+          type: string
+          format: datetime
+      - name: resolution
+        in: query
+        description: 'Resolution of the grid fee periods as ISO8601 duration.
+
+
+          If not specified it will be a 15-min resolution.
+
+
+
+          Possible resolutions are:
+
+
+          - PT15M - 15 minutes
+
+
+          - PT1H - 1 hour
+
+
+          - P1D - 1 day'
+        required: false
+        example: PT1H
+        schema:
+          type: string
+          format: iso8601
+      responses:
+        '200':
+          description: 'Grid fees of the system for the interval requested.
+
+            If no grid fees are available, `periods` will be an empty array.
+
+            "'
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: Represents TariffV2 grid fees.
+                type: object
+                properties:
+                  currency:
+                    type: string
+                    example: EUR
+                    description: Currency in which the grid fees are expressed.
+                  gridFeeType:
+                    type: string
+                    enum:
+                    - STANDARD
+                    - MODULE2
+                    - MODULE3
+                    example: STANDARD
+                  from:
+                    type: string
+                    format: date-time
+                    example: '2018-04-01T00:00:00Z'
+                    description: Time at which the contained periods start (inclusive), in RFC3339 format.
+                  to:
+                    type: string
+                    format: date-time
+                    example: '2018-04-01T00:15:00Z'
+                    description: Time at which the contained periods end (exclusive), in RFC3339 format.
+                  periods:
+                    type: array
+                    items:
+                      description: Represents a TariffV2 grid fee entry.
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          example: '2018-04-01T00:00:00Z'
+                          description: Start of the period (inclusive), in RFC3339 format.
+                        to:
+                          type: string
+                          format: date-time
+                          example: '2018-04-01T00:15:00Z'
+                          description: End of the period (exclusive), in RFC3339 format.
+                        gridFee:
+                          type: number
+                          format: float
+                          example: 0.09
+                          description: Grid fee value in EUR per kWh for this time period.
+                      required:
+                      - from
+                      - to
+                      - gridFee
+                      x-readme-ref-name: GridFeeTariffV2Period
+                required:
+                - name
+                - currency
+                - gridFeeType
+                - from
+                - to
+                - periods
+                x-readme-ref-name: GridFeeTariffV2
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/tariff/grid-fees"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/tariff/grid-fees \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/tariff/grid-fees\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/tariff/grid-fees', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/grid-fees\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/tariff/grid-fees\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/tariff/grid-fees")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/tariff/grid-fees");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

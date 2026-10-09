@@ -1,0 +1,445 @@
+generated: '2026-10-09'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/gridx-ai-openapi.yml
+vocabulary:
+  name: gridX Domain Vocabulary
+  description: 'Terms declared by gridX''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-09'
+  terms:
+  - term: emobility-time-of-use
+    definition: Manages the Time of Use implementation for eMobility.
+    tags:
+    - Resource Group
+    source: openapi/gridx-ai-openapi.yml
+  - term: draft
+    definition: API that is being evaluated, may change on short notice.
+    tags:
+    - Resource Group
+    source: openapi/gridx-ai-openapi.yml
+  - term: evcs-user-prioritization
+    definition: Manages temporary priority per EV supply equipment / charging station.
+    tags:
+    - Resource Group
+    source: openapi/gridx-ai-openapi.yml
+  - term: AccountSolution
+    definition: 'Represents the supported solutions within the account: - HOME if the account contains household-like systems. - CHARGE if the
+      account is used solely for charging station fleet management. - GENERAL if unsure what the account should contain or if it''s a mix of multiple
+      solutions. - SMART_DISTRICT if the account is used solely for smart district management. If not set, the parent account''s solution '
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountSolution
+  - term: AccountKind
+    definition: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountKind
+  - term: AbstractLocation
+    definition: 'Object declared by the contract with fields: city, country, addressLine1, addressLine2, addressLine3, addressLine4, timeZone.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractLocation
+  - term: Address
+    definition: Represents a physical address of a customer.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Address
+  - term: ProductBundle
+    definition: Represents an active product bundle on a B2B account. - CONNECT is always active and present on every B2B account. - CONTROL,
+      OPTIMIZE, and FLEX can additionally be active. Non-B2B accounts expose no product bundles.
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ProductBundle
+  - term: Account
+    definition: An account describes an organizational unit to manage access to systems for one or multiple users.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Account
+  - term: General Exception
+    definition: Represents a general error structure returned by our REST API.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/GeneralException
+  - term: AccountUpdate
+    definition: 'Object declared by the contract with fields: name, email, kind, solution, customization, mainAddress, productBundles.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountUpdate
+  - term: APIToken
+    definition: API Tokens can be used as an alternative to Bearer Authentication for making requests. They are instead used as an in-header API
+      Key.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractAPIToken
+  - term: Policy Group
+    definition: A policy group describes the permissions of a group. This is the base type for the more concrete usages and not used directly
+      within operations.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractPolicyGroup
+  - term: Language
+    definition: The language information of the user.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Language
+  - term: User
+    definition: Represents a user of the Xenon platform.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/User
+  - term: AccountKindWithDefault
+    definition: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountKindWithDefault
+  - term: AccountCreate
+    definition: 'Object declared by the contract with fields: name, email, solution, parentID, kind, groups, customization, mainAddress, productBundles.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountCreate
+  - term: AccountTreeNode
+    definition: Account tree node.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AccountTreeNode
+  - term: StarredAccount
+    definition: Represents a starred account which holds an additional starredAt timestamp.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/StarredAccount
+  - term: Customer Account
+    definition: Represents an end-customer account.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CustomerAccount
+  - term: CustomerAccountUpdate
+    definition: 'Object declared by the contract with fields: name, email, solution, customization, mainAddress.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CustomerAccountUpdate
+  - term: EV Charging Station Configuration
+    definition: Configure the charge mode and other settings considered by the EMS and applied to the EV charging station.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractEVChargingStationConfiguration
+  - term: ElectricVehicleProfile
+    definition: Represents data related to an EV Profile.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractElectricVehicleProfile
+  - term: EV Charging Schedule
+    definition: An Electric Vehicle charging schedule represents an interval in which the electric vehicle is supposed to charge at a defined
+      limit.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractEVChargingSchedule
+  - term: Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, grid, gridL1, gridL2, gridL3, gridSupplyLimit, photovoltaic, photovoltaicExternal,
+      blockTypeThermalPowerStation, fuelCell, production, battery. (35 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Measurement
+  - term: Measurements
+    definition: 'Object declared by the contract with fields: total, data.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Measurements
+  - term: Extended Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, gridL1, gridL2, gridL3, gridSupplyLimit, photovoltaic, photovoltaicExternal,
+      blockTypeThermalPowerStation, fuelCell, production, batteries, heatPump. (34 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementExtended
+  - term: Extended Battery Measurement
+    definition: 'Object declared by the contract with fields: charge, discharge, stateOfCharge, capacity, nominalCapacity.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementBatteryExtended
+  - term: Extended EV Station Measurement
+    definition: 'Object declared by the contract with fields: charge, discharge, stateOfCharge, currentL1, currentL2, currentL3.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementEVStationExtended
+  - term: Measurement Grid
+    definition: 'Object declared by the contract with fields: measuredAt, feedIn, supply, supplyLimit, meterReading.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementGrid
+  - term: Measurement Grid Meter Reading
+    definition: 'Object declared by the contract with fields: feedIn, supply.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementGridMeterReading
+  - term: ApplianceMeasurement
+    definition: Raw measurement of an appliance.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ApplianceMeasurement
+  - term: ApplianceMeasurements
+    definition: List of raw measurements of an appliance.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ApplianceMeasurements
+  - term: CombinedMeasurement
+    definition: Combined appliance and energy management measurement.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CombinedMeasurement
+  - term: Inverter's Measurements
+    definition: 'Object declared by the contract with fields: measuredAt, gridFrequency, acCurrent, l1ACCurrent, l2ACCurrent, l3ACCurrent, l1ACVoltage,
+      l2ACVoltage, l3ACVoltage, acActivePower, acReactivePower, acApparentPower. (4 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/InverterMeasurement
+  - term: Meter's Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, l1ActivePower, l1ActivePowerReadingPositive, l1ActivePowerReadingNegative,
+      l1ReactivePower, l1ReactivePowerReadingPositive, l1ReactivePowerReadingNegative, l1ApparentPower, l1ApparentPowerReadingPositive, l1ApparentPowerReadingNegative,
+      l1Current, l1Voltage. (36 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AUXMeterMeasurement
+  - term: Energy Management Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, strategyID, dynamicFeedInCurtailment, prognosisBasedBatteryCharging,
+      activePowerSetpoint, activePowerSetpointSystemicError, l1CurrentSetpoint, l2CurrentSetpoint, l3CurrentSetpoint, maxStateOfChargeAfterMaxFeedIn,
+      predictedEnergyOutput, energyOverFeedInCumulatedDaily.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EnergyManagementMeasurement
+  - term: EV Charging Station's Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, l1Voltage, l2Voltage, l3Voltage, l1Current, l2Current, l3Current, realPower,
+      powerFactor, l1RealPower, l2RealPower, l3RealPower. (10 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EVChargingStationMeasurement
+  - term: Heat pump measurement
+    definition: 'Object declared by the contract with fields: applianceID, power, sgReadyState.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HeatPumpMeasurement
+  - term: Heater Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, applianceID, power, powerL1, powerL2, powerL3, temperature, minTemperature,
+      maxTemperature.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementHeating
+  - term: Additional meter appliances
+    definition: Used in installations that have multiple grid meters, e.g. for multi family homes which a central PV but multiple meters.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/MeasurementAppliance
+  - term: A measurement produced by a battery (inverter).
+    definition: 'Object declared by the contract with fields: measuredAt, capacity, nominalCapacity, stateOfCharge, stateOfHealth, temperature,
+      presentCharge, presentDischarge.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/BatteryMeasurementRaw
+  - term: A measurement produced by a heatpump appliance.
+    definition: 'Object declared by the contract with fields: measuredAt, power, powerL1, powerL2, powerL3, minPower, maxPower, readyState, averageTemperature,
+      controlledTemperature, baseLineTemperature, heatSourceTemperature. (4 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HeatPumpMeasurementRaw
+  - term: Battery Measurement
+    definition: MeasurementBattery represents the aggregated power or energy the gateway measured from a battery.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/BatteryMeasurement
+  - term: 'MeasurementEVStation represents the power or energy the gateway measured
+
+      from a ev charging station
+
+      '
+    definition: 'Object declared by the contract with fields: applianceID, power, charge, discharge, stateOfCharge, readingTotal, readingTariff1,
+      readingTariff2, plugState, stationState, currentL1, currentL2. (1 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EVStationMeasurement
+  - term: Power Limit Schedule
+    definition: A Power Limit Schedule is a schedule that defines recurring import power limits, which should be applied to the grid meter. The
+      schedule is recurring inside the interval bounds defined by `from` and `to`. There can be only one active timeframe for every point in time.
+      Schedules can overlap, but they must not have overlapping timeframes.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractPowerLimitSchedule
+  - term: PowerLimitIntervals
+    definition: Ascending ordered list of intervals in which a scheduled power limit was applied.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/PowerLimitIntervals
+  - term: AbstractProductFunctionality
+    definition: A product functionality describes a feature. It is used to manage access to this feature via product options. This is the base
+      type for the more concrete usages and not used directly within operations.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractProductFunctionality
+  - term: Product Option
+    definition: A product option describes a set of features whose access should be restricted from or granted to users of a system. Systems can
+      be assigned a product option to manage their access to these features. This is the base type for the more concrete usages and not used directly
+      within operations.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AbstractProductOption
+  - term: LoginEvent
+    definition: Represents a user login event that can occur either on login success or failure.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/LoginEvent
+  - term: UserCreationRequest
+    definition: 'Object declared by the contract with fields: email, fullName, mfaEnabled, language, groups.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/UserCreationRequest
+  - term: UserSelfUpdateRequest
+    definition: Fields that the authenticated user can update on their own profile.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/UserSelfUpdateRequest
+  - term: UserPartialUpdateRequest
+    definition: 'Object declared by the contract with fields: email, fullName, language, mfaEnabled, newPassword.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/UserPartialUpdateRequest
+  - term: LanguageUpdateRequest
+    definition: 'Object declared by the contract with fields: tag.'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/LanguageUpdateRequest
+  - term: Measurement
+    definition: 'Object declared by the contract with fields: measuredAt, grid, gridL1, gridL2, gridL3, gridSupplyLimit, photovoltaic, photovoltaicExternal,
+      blockTypeThermalPowerStation, fuelCell, production, battery. (35 more)'
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ClusterMeasurement
+  - term: EMobilityTimeOfUseSettings
+    definition: All options available to set the eMobility ToU settings.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EMobilityTimeOfUseSettings
+  - term: EMobilityTimeOfUseSettingsUpdate
+    definition: Update options for the eMobility ToU settings.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EMobilityTimeOfUseSettingsUpdate
+  - term: EnergyGuarantee
+    definition: Minimum amount of energy that should be transferred per charging session and the minimum duration the EV will remain connected,
+      allowing for flexibility in the use of energy.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/EnergyGuarantee
+  - term: OptimizationParameters
+    definition: Describes the time-window during the day to consider for tariff optimization as well as the percentile to consider low prices
+      for. `parkedUntil` must be strictly after `parkedFrom`; overnight parking periods spanning midnight are not supported and are rejected with
+      an HTTP 400.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/OptimizationParameters
+  - term: TimeOfDay
+    definition: A 24-hour wall-clock time of the day, with leading zeros.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/TimeOfDay
+  - term: ChargingPriority
+    definition: Describes the priority of an EV charging session. Larger values of the priority value indicate a higher importance. The default
+      priority value is 0.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ChargingPriority
+  - term: ChargingPriorityList
+    definition: A list of EV charging sessions and their assigned priority values. Larger values of the priority value indicate a higher importance.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ChargingPriorityList
+  - term: AssetIdentification
+    definition: There are different identifiers, we can use to uniquely identify an asset. For EV charging stations with multiple connectors,
+      each individual connector is a dedicated asset.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AssetIdentification
+  - term: AssetBySerialNumber
+    definition: Find an asset by serial number and, if the charging station has multiple EVSE, connector number. The first connector carries number
+      1.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/AssetBySerialNumber
+  - term: FullAssetIdenfication
+    definition: Representation of an asset with both system and asset IDs.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/FullAssetIdenfication
+  - term: Priority
+    definition: Describes a priority value. A larger value represents a higher priority.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/Priority
+  - term: ApplianceAuthenticatedCheckRequest
+    definition: Configuration for Appliance Authenticated Production Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ApplianceAuthenticatedCheckRequest
+  - term: BatteryChargedCheckRequest
+    definition: Configuration for Battery Charged Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/BatteryChargedCheckRequest
+  - term: BatteryDischargedCheckRequest
+    definition: Configuration for Battery DisCharged Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/BatteryDischargedCheckRequest
+  - term: CheckProfile
+    definition: Enumeration of available check run profiles.
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CheckProfile
+  - term: CheckResult
+    definition: Result of an individual Health Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CheckResult
+  - term: CheckResultState
+    definition: Possible states that a check can have. `PASSED` indicates that there are no issues for this check. `FAILED` means that the check
+      has found some issues with the system. `SKIPPED` checks weren't run due to technical issues.
+    tags:
+    - Enumeration
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CheckResultState
+  - term: ConnectionIssueCheckRequest
+    definition: Configuration for Connection Issue Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ConnectionIssueCheckRequest
+  - term: ConsumptionProductionCorrelationCheckRequest
+    definition: Configuration for Consumption Production Correlation Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/ConsumptionProductionCorrelationCheckRequest
+  - term: CosPhiCheckRequest
+    definition: Configuration for Cosine Phi Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/CosPhiCheckRequest
+  - term: GridFeedInMissingCheckRequest
+    definition: Configuration for Grid FeedIn Missing Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/GridFeedInMissingCheckRequest
+  - term: HealthCheckError
+    definition: Error object.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HealthCheckError
+  - term: HealthCheckMetaData
+    definition: Information about an individual Health Check.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HealthCheckMetaData
+  - term: HealthCheckMetaDataResult
+    definition: List of available Health Checks.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HealthCheckMetaDataResult
+  - term: HealthCheckRequest
+    definition: Request to run the configured checks on all Systems.
+    tags:
+    - Object
+    source: openapi/gridx-ai-openapi.yml#/components/schemas/HealthCheckRequest

@@ -1,0 +1,49 @@
+generated: '2026-10-09'
+method: searched
+source: https://community.developer.gridx.de/t/good-practice-using-organizational-tokens/152
+docs: https://community.developer.gridx.de/t/good-practice-using-organizational-tokens/152
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: HeaderAuth
+  type: apiKey
+  in: header
+  parameter: Authorization
+  description: Enter either the JWT token with the prefix `Bearer ` or an API token with the
+    prefix `Token `
+  sources:
+  - openapi/gridx-ai-openapi.yml
+  - https://community.developer.gridx.de/t/good-practice-using-organizational-tokens/152
+  credential_types:
+  - name: Bearer token (JWT)
+    prefix: 'Bearer '
+    description: A short-lived JSON Web Token generated after you log into Xenon; it serves as an
+      API token for the duration of your browsing session. Copied from the Xenon User Settings tab.
+    issuer: https://gridx.eu.auth0.com
+    issuer_source: https://community.developer.gridx.de/t/auth0-sni-announcement/606
+  - name: Organizational token
+    prefix: 'Token '
+    description: Preferred authentication method for any production application; meant for
+      backend-to-backend integrations, tied to a Xenon account, permissions set as any subset of
+      the account's policy groups. Created via POST /account/tokens; the token string is returned
+      only once. By default the token has no permissions unless groups are supplied.
+    create_operation: POST /account/tokens
+    rotate_operation: POST /account/tokens/{tokenID}/rotate
+    expiry: optional expiresAt; docs strongly recommend setting an expiry date and rotating frequently
+  - name: Personal token
+    prefix: 'Token '
+    description: Convenience tool for developers testing locally; permissions always identical to
+      those of the user that created it.
+permissions:
+  model: Xenon policy groups; operations declare required permission names (e.g. SystemsRead,
+    AssetWrite, WebhooksWrite) as scope lists on the HeaderAuth apiKey scheme in the OpenAPI.
+  creating_tokens_requires:
+  - AccountTokenWrite
+  - AccountsUsersWrite (to set policy groups on an organizational token)
+  note: These are platform permissions, not OAuth 2.0 scopes; the API declares no oauth2
+    securityScheme.
+headers:
+  accept: application/vnd.gridx.v2+json

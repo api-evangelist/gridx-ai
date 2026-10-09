@@ -1,0 +1,11 @@
+name: gridX plans and pricing
+generated: '2026-10-09'
+method: none
+audience: unclear
+pricing_basis: none
+published: false
+plan_count: 0
+plans: []
+delivery:
+  model: managed
+note: No pricing or plans page is linked from www.gridx.ai or the developer community (no Pricing link among the site links found by pre-flight; community search for "pricing" returned only tariff/market-price API topics). XENON is sold B2B as a white-label platform; access to the API comes with a Xenon account.

@@ -1,0 +1,5 @@
+generated: '2026-10-09'
+method: none
+source: https://github.com/grid-x
+packages: []
+note: No first-party client SDK for the gridX API was found. The developer community (search for "SDK" on 2026-10-09 returned no topics) points integrators to the downloadable OpenAPI file and to importing it into Postman (https://community.developer.gridx.de/t/good-practice-using-the-gridx-api-with-postman/221). The grid-x GitHub org publishes the spec repo (github.com/grid-x/api, "gridX API specification files and partials"), an example webhook receiver, and general-purpose open-source libraries (e.g. grid-x/modbus, grid-x/ocpp-go) that are not API clients. npm "gridx" and PyPI "gridx" are unrelated third-party packages (a React flex-grid library and "a simple tool for grids").

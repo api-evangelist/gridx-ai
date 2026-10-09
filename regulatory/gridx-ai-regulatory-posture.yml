@@ -1,0 +1,77 @@
+generated: '2026-10-09'
+method: searched
+source:
+- https://www.gridx.ai/privacy-notice
+- https://www.gridx.ai/terms-of-use
+notes: >-
+  Signals read from gridX's own privacy notice (fetched 2026-10-09, HTTP 200). The notice is a
+  composite of several GDPR notices (applicants, business contacts/customers, events, website).
+  The terms of use (HTTP 200) carried no candidate language for any regulatory signal. The
+  "exit_assistance" and "training_data_summary" candidates were reviewed and NOT recorded: the
+  first is the GDPR Art. 20 portability right of data subjects (recorded under
+  data_subject_request), not a service-exit commitment; the second is marketing quality-assurance
+  surveys, not an AI training-data disclosure.
+signals:
+  data_subject_request:
+    url: https://www.gridx.ai/privacy-notice
+    section: '2. Rigths of the data subject'
+    channel: datenschutz@dataguard.de
+    stated_sla: within one month at the latest
+    evidence:
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'If you wish to exercise the above rights, please send an email to the following email address: datenschutz@dataguard.de We will generally respond to your request or requests to exercise your rights free of charge and within one month at the latest.'
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'If you have consented to data processing or if a contract for data processing exists and the data processing is carried out using automated procedures, you may have the right to data portability (Art. 20 GDPR).'
+    note: >-
+      Data subject requests go by email to the external data protection officer (DataCo GmbH /
+      DataGuard), free of charge, with a stated response time of one month. Portability is offered
+      as the GDPR Art. 20 right.
+  data_retention:
+    url: https://www.gridx.ai/privacy-notice
+    section: '4.4 Duration of storage of personal data'
+    evidence:
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'We do not store your personal data for longer than is necessary for the purpose for which it was collected. This means that data in our systems is destroyed or deleted as soon as it is no longer needed.'
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'After a decision not to fill a position: 6-month retention period for application documents (Section 15 (4) of the General Equal Treatment Act (AGG), Section 224 of the Code of Civil Procedure (ZPO)).'
+    note: >-
+      Purpose-limited retention, with statutory exceptions (HGB, StGB, AO). The only concrete
+      period stated is 6 months for rejected applicants' documents (section 3.6); no retention
+      period is given for platform/API customer data.
+  data_residency:
+    url: https://www.gridx.ai/privacy-notice
+    section: 'VI. Data transfer to a third country'
+    evidence:
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'This is achieved in particular through the implementation of so-called standard data protection clauses in accordance with Article 46(2)(c) of the GDPR.'
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'Your personal data will not be transferred to third countries outside the European Union or the European Economic Area, nor are there any plans to do so.'
+    note: >-
+      No EU-only residency commitment for customers: section VI states transfers to the USA occur
+      via third-party providers under standard contractual clauses (section 4.3 says the same).
+      The "no third-country transfer" sentence is in section 3.5 and applies to the applicant
+      notice only.
+  subprocessors:
+    url: https://www.gridx.ai/privacy-notice
+    section: '6.1 Processing of your personal data — d. Recipients or categories of recipients of personal data'
+    evidence:
+    - source: https://www.gridx.ai/privacy-notice
+      http_status: 200
+      fetched: '2026-10-09'
+      quote: 'In the case of processors and service providers outside the EU/EEA, your above-mentioned personal data will only be processed to the extent that this is the subject of our data processing agreement with these recipients in accordance with Art. 28 GDPR.'
+    note: >-
+      The notice lists named non-EU/EEA service providers (e.g. HubSpot Inc., Apple Inc.) in a
+      table for marketing/event processing, bound by Art. 28 data processing agreements. This is
+      a privacy-notice recipient list, not a published subprocessor list for the gridX platform/API.

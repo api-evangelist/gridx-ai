@@ -1,0 +1,67 @@
+generated: '2026-10-09'
+method: searched
+source: https://community.developer.gridx.de/t/gridx-api-documentation/213
+sources:
+- openapi/gridx-ai-openapi.yml
+- https://community.developer.gridx.de/t/good-practice-using-organizational-tokens/152
+- https://community.developer.gridx.de/t/good-practice-set-a-user-agent-for-api-requests/86
+- https://community.developer.gridx.de/t/update-api-stability-levels/585
+base_url: https://api.gridx.de
+auth:
+  style: Authorization header; `Bearer <JWT>` or `Token <organizational/personal token>`
+  see: authentication/gridx-ai-authentication.yml
+versioning:
+  style: vendor media type in Accept header
+  value: application/vnd.gridx.v2+json
+  stability_levels: [draft, beta, stable]
+  see: lifecycle/gridx-ai-lifecycle.yml
+pagination:
+  style: page-number (most list endpoints); limit/offset on a few
+  params:
+  - page
+  - per_page
+  - limit
+  - offset
+  sorting_params: [sort, order, sortBy]
+  response_headers:
+  - Link
+  - X-Total-Count
+  source: openapi/gridx-ai-openapi.yml (page/per_page on 14 operations, limit/offset on 3, Link and X-Total-Count response headers on 7)
+expansion:
+  params: [include, embed]
+  note: include is an enum-typed query parameter on 17 operations (e.g. GET /accounts/{accountID}/systems); embed on 3.
+idempotency:
+  coverage: none
+  note: No Idempotency-Key header or replay protection is documented in the OpenAPI or the developer community (community search for "idempotency" returned no topics on 2026-10-09).
+request_tracing:
+  user_agent: 'Not enforced, but requested as `<company>/<app>/<app version>`, e.g. `user-agent: gridx/xenon/1.8.2`, using only 0-9, a-z, /, -, _, .'
+  request_id_header: not documented
+errors:
+  envelope: '{"message": string (required), "details": [string]}'
+  schema: components.schemas.Error (GeneralException)
+  example_text: '{ "message": "Failed to list systems", "details": [ "Lacking user-level permissions to access resource accounts:<account id>:systems." ]}'
+  statuses_in_spec: [400, 401, 403, 404, 409, 422, 500, 502]
+  problem_json: false
+rate_limit_signaling:
+  documented: false
+  note: No 429 response or rate-limit headers in the OpenAPI; no rate-limit page found in the developer community.
+  see: rate-limits/gridx-ai-rate-limits.yml
+webhooks:
+  docs: https://community.developer.gridx.de/t/webhook-receivers-example-project-published/31
+  receiver_spec: https://community.developer.gridx.de/t/webhook-receiver-api-specification/377
+  example_project: https://github.com/grid-x/example-webhook-receiver
+  secret_rotation_operation: rotateWebhookSubscriptionSecret
+reversibility:
+  write_surface: 79 mutating operations (POST/PUT/PATCH/DELETE) in the OpenAPI
+  status: documented
+  reversals:
+  - surface: gateway jobs
+    operation: cancelGatewayJob
+    method_path: DELETE /gateways/{gatewayID}/jobs/{jobID}
+    window: not stated
+  - surface: organizational API tokens
+    operation: rotateOrganizationalApiToken
+    method_path: POST /account/tokens/{tokenID}/rotate
+    window: not stated
+    note: Rotation "does not change the existing token, but generates a new one with the extended lifetime" (https://community.developer.gridx.de/t/good-practice-using-organizational-tokens/152).
+  note: Most configuration writes are PUT/PATCH on settings resources that can be re-set, and creates have matching DELETE operations, but no undo/restore operation or reversal window is documented. No window is asserted here.

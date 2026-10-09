@@ -1,0 +1,55 @@
+generated: '2026-10-09'
+method: searched
+source: https://community.developer.gridx.de/t/update-api-stability-levels/585
+versioning:
+  scheme: media-type
+  current_version: 2.0.0
+  media_type: application/vnd.gridx.v2+json
+  description: 'Requests send `Accept: application/vnd.gridx.v2+json`; the OpenAPI info.version is 2.0.0. Changes are published continuously to the changelog topic, which states "We constantly evolve our APIs in a non-breaking manner."'
+  changelog: https://community.developer.gridx.de/t/gridx-api-changelog/324
+stability_levels:
+- level: draft
+  change_policy: breaking changes allowed any time
+  minimum_deprecation_period: n/a
+- level: beta
+  change_policy: breaking changes discouraged, but allowed with 2 weeks notification
+  minimum_deprecation_period: 2 weeks
+- level: stable
+  change_policy: no breaking changes allowed
+  minimum_deprecation_period: 6 months
+deprecation:
+  policy: Stable APIs carry a 6 months minimum deprecation period; beta 2 weeks; draft none.
+    "Sometimes we might chose to make breaking changes without respecting the deprecation period.
+    This can become neccessary for security reasons or when we see (very) limited usage of the
+    feature in question. In these cases, we will reach out to each consumer individually to work
+    out an exception together."
+  docs: https://community.developer.gridx.de/t/update-api-stability-levels/585
+  sunset_headers: not documented
+  notices:
+  - title: Deprecation notice for vehicles endpoints
+    url: https://community.developer.gridx.de/t/deprecation-notice-for-vehicles-endpoints/655
+    published: '2026-01-15'
+    deadline_text: Effective January 28th, the legacy Enode like endpoints and events will be fully deprecated.
+    endpoints:
+    - /systems/{systemID}/vehicles
+    - /systems/{systemID}/vehicles/{vehicleID}
+    - /systems/{systemID}/vehicles/link
+    - /systems/{systemID}/vehicles/control
+    - /systems/{systemID}/vehicles/start-boost
+    - /systems/{systemID}/vehicles/stop-boost
+    events:
+    - /ev/create
+    - /ev/update
+    - /ev/delete
+  deprecated_operations:
+    source: openapi/gridx-ai-openapi.yml
+    operations:
+    - GET /accounts/{accountID}/tree
+    - listSystemEVChargingSchedules
+    - createSystemEVChargingSchedule
+    - createGatewayJob
+    - listMarketPrices
+status_page: https://status.gridx.de/
+status_page_source: https://community.developer.gridx.de/t/good-practice-subscribe-to-the-gridx-status-page/226
+incident_history: https://status.gridx.de/history
+sla: not published in the developer community

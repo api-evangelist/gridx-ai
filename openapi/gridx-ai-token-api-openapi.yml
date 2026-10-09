@@ -1,0 +1,3162 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Token API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Token across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Token
+  x-displayName: Token
+paths:
+  /account/tokens:
+    get:
+      operationId: listOrganizationalApiTokens
+      summary: List API tokens
+      description: Retrieve all the organizational API tokens for the currently authenticated account.
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - GetAPITokens
+      parameters:
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: sort
+        description: Sort results based on a key.
+        in: query
+        schema:
+          type: string
+        example: created_at
+      - name: include
+        description: 'This query param allows requesting optional pagination metadata.
+
+
+          If `totalCount` is included, the response will contain an `X-Total-Count` header with
+
+          the total number of elements matching the query, regardless of pagination.
+
+          '
+        in: query
+        example:
+        - totalCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - totalCount
+      responses:
+        '200':
+          description: All the organizational API tokens of the current account.
+          headers:
+            Link:
+              description: 'Pagination links following RFC 5988. Contains `rel="first"`, `rel="next"`, and `rel="prev"`
+
+                relations as applicable based on the current page.
+
+
+                Example: `</accounts?page=1&per_page=20>; rel="first", </accounts?page=3&per_page=20>; rel="next"`
+
+                '
+              schema:
+                type: string
+            X-Total-Count:
+              description: 'Total number of elements matching the query, regardless of pagination.
+
+
+                Only present when `totalCount` is included in the `include` query parameter.
+
+                '
+              schema:
+                type: integer
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  title: OrganizationalAPIToken
+                  allOf:
+                  - allOf:
+                    - title: APIToken
+                      description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                        They are instead used as an in-header API Key.
+
+                        '
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                          example: My api token
+                        expiresAt:
+                          type: string
+                          format: date-time
+                          description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                            **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                            that you set an expiration date to help keep your account and information secure.
+
+                            '
+                          example: '2021-11-10T23:00:00Z'
+                      x-readme-ref-name: AbstractAPIToken
+                    - properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                          readOnly: true
+                        createdAt:
+                          type: string
+                          description: Time at which the token was created in UTC using the RFC3339 format.
+                          example: '2021-10-10T23:20:50Z'
+                          format: date-time
+                          readOnly: true
+                      required:
+                      - id
+                      - createdAt
+                    x-readme-ref-name: APIToken
+                  - properties:
+                      user:
+                        title: User
+                        description: Represents a user of the Xenon platform.
+                        type: object
+                        properties:
+                          id:
+                            description: Unique identifier of the user.
+                            type: string
+                            format: uuid
+                            example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                            readOnly: true
+                          accountID:
+                            description: Unique identifier of the account that the user belongs to.
+                            type: string
+                            format: uuid
+                            example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                            readOnly: true
+                          newPassword:
+                            description: Used to set a new password for the user.
+                            type: string
+                            writeOnly: true
+                          loginsCount:
+                            description: Number of user logins.
+                            type: integer
+                            readOnly: true
+                          mfaEnabled:
+                            description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                            type: boolean
+                            readOnly: true
+                          mfaReset:
+                            description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                            type: boolean
+                            writeOnly: true
+                          createdAt:
+                            description: Time at which the user was created in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the user was last updated in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          fullName:
+                            description: Full name of the user typically consisting of first name and last name.
+                            type: string
+                            example: John Doe
+                          email:
+                            description: The email address of the user that is used for login.
+                            type: string
+                            format: email
+                            example: john@doe.com
+                          groups:
+                            description: Policy groups attached to this user which determine the effective permissions through policies.
+                            type: array
+                            items:
+                              title: Policy Group
+                              type: object
+                              allOf:
+                              - title: Policy Group
+                                description: 'A policy group describes the permissions of a group.
+
+
+                                  This is the base type for the more concrete usages and not used directly within operations.
+
+                                  '
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Name of the policy group.
+                                    example: group name
+                                  description:
+                                    type: string
+                                    description: Description of the group, omitted if empty
+                                    example: Group provides read-access to accounts
+                                x-readme-ref-name: AbstractPolicyGroup
+                              - properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the policy group.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  accountID:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the creator account.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  createdAt:
+                                    description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-06T15:33:00Z'
+                                    readOnly: true
+                                  updatedAt:
+                                    description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-08T23:20:50Z'
+                                    readOnly: true
+                                  userCount:
+                                    type: integer
+                                    description: Amount of users that are in this group.
+                                    example: 10
+                                    readOnly: true
+                                required:
+                                - id
+                                - name
+                                - accountID
+                                - createdAt
+                                - updatedAt
+                              x-readme-ref-name: PolicyGroup
+                          mainAddress:
+                            title: Address
+                            description: Represents a physical address of a customer.
+                            allOf:
+                            - type: object
+                              properties:
+                                city:
+                                  description: The city of the location.
+                                  type: string
+                                  example: Aachen
+                                country:
+                                  description: The country of the location.
+                                  type: string
+                                  example: Germany
+                                addressLine1:
+                                  description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                  type: string
+                                  example: Oppenhoffallee 143
+                                addressLine2:
+                                  description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine3:
+                                  description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine4:
+                                  description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                timeZone:
+                                  description: The TZ Identifier of the location's timezone.
+                                  type: string
+                                  example: Europe/Berlin
+                                  readOnly: true
+                              x-readme-ref-name: AbstractLocation
+                            - type: object
+                              properties:
+                                postalcode:
+                                  description: The postal code of the location.
+                                  type: string
+                                  example: '52062'
+                                region:
+                                  description: The region of the address.
+                                  type: string
+                                telephone:
+                                  description: The telephone number of the customer.
+                                  type: string
+                            x-readme-ref-name: Address
+                          language:
+                            title: Language
+                            description: The language information of the user.
+                            type: object
+                            required:
+                            - tag
+                            - name
+                            - nameNative
+                            properties:
+                              tag:
+                                type: string
+                                description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                  See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                  '
+                                example: de_DE
+                              name:
+                                type: string
+                                description: The name of the language in English.
+                                example: German
+                                readOnly: true
+                              nameNative:
+                                type: string
+                                description: The name of the language in the language itself.
+                                example: Deutsch
+                                readOnly: true
+                            x-readme-ref-name: Language
+                        required:
+                        - auth
+                        - id
+                        - email
+                        - createdAt
+                        - updatedAt
+                        x-readme-ref-name: User
+                      userID:
+                        type: string
+                        format: uuid
+                        description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                        example: 123ee525-669f-45de-9bca-bf5a51829de3
+                    required:
+                    - user
+                    - userID
+                  x-readme-ref-name: OrganizationalAPIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found.
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/account/tokens"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/account/tokens \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/account/tokens', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/account/tokens")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createOrganizationalApiToken
+      summary: Create an organizational API token
+      description: 'Use this operation to create tokens for custom applications to authenticate against gridX APIs.
+
+        To create authorization tokens, the `AccountTokenWrite` and `AccountsUsersWrite` permissions are required.'
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - APITokenWrite
+      parameters:
+      - name: Current-Account
+        description: 'Use this header to make the call on behalf of another account.
+
+          Setting it will impersonate the given account for the scope of the call.
+
+          The authorization token used must be owned by any parent account of the account to impersonate.
+
+          '
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - title: OrganizationalAPITokenCreation
+                allOf:
+                - allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  x-readme-ref-name: APITokenCreation
+                - type: object
+                  properties:
+                    email:
+                      type: string
+                      description: Used to specify the email address associated with the user responsible for the organizational token upon its creation (account email is used by default).
+                      example: john@doe.com
+                    groups:
+                      type: array
+                      description: Used to specify the permissions assigned to the organizational token.
+                      items:
+                        type: string
+                        description: Unique identifier of the policy group.
+                        example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                x-readme-ref-name: OrganizationalAPITokenCreation
+              - additionalProperties: false
+              x-readme-ref-name: OrganizationalAPITokenCreationStrict
+      responses:
+        '201':
+          description: Organizational API token created.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: OrganizationalAPITokenWithSecret
+                allOf:
+                - title: OrganizationalAPIToken
+                  allOf:
+                  - allOf:
+                    - title: APIToken
+                      description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                        They are instead used as an in-header API Key.
+
+                        '
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                          example: My api token
+                        expiresAt:
+                          type: string
+                          format: date-time
+                          description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                            **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                            that you set an expiration date to help keep your account and information secure.
+
+                            '
+                          example: '2021-11-10T23:00:00Z'
+                      x-readme-ref-name: AbstractAPIToken
+                    - properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                          readOnly: true
+                        createdAt:
+                          type: string
+                          description: Time at which the token was created in UTC using the RFC3339 format.
+                          example: '2021-10-10T23:20:50Z'
+                          format: date-time
+                          readOnly: true
+                      required:
+                      - id
+                      - createdAt
+                    x-readme-ref-name: APIToken
+                  - properties:
+                      user:
+                        title: User
+                        description: Represents a user of the Xenon platform.
+                        type: object
+                        properties:
+                          id:
+                            description: Unique identifier of the user.
+                            type: string
+                            format: uuid
+                            example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                            readOnly: true
+                          accountID:
+                            description: Unique identifier of the account that the user belongs to.
+                            type: string
+                            format: uuid
+                            example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                            readOnly: true
+                          newPassword:
+                            description: Used to set a new password for the user.
+                            type: string
+                            writeOnly: true
+                          loginsCount:
+                            description: Number of user logins.
+                            type: integer
+                            readOnly: true
+                          mfaEnabled:
+                            description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                            type: boolean
+                            readOnly: true
+                          mfaReset:
+                            description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                            type: boolean
+                            writeOnly: true
+                          createdAt:
+                            description: Time at which the user was created in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the user was last updated in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          fullName:
+                            description: Full name of the user typically consisting of first name and last name.
+                            type: string
+                            example: John Doe
+                          email:
+                            description: The email address of the user that is used for login.
+                            type: string
+                            format: email
+                            example: john@doe.com
+                          groups:
+                            description: Policy groups attached to this user which determine the effective permissions through policies.
+                            type: array
+                            items:
+                              title: Policy Group
+                              type: object
+                              allOf:
+                              - title: Policy Group
+                                description: 'A policy group describes the permissions of a group.
+
+
+                                  This is the base type for the more concrete usages and not used directly within operations.
+
+                                  '
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Name of the policy group.
+                                    example: group name
+                                  description:
+                                    type: string
+                                    description: Description of the group, omitted if empty
+                                    example: Group provides read-access to accounts
+                                x-readme-ref-name: AbstractPolicyGroup
+                              - properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the policy group.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  accountID:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the creator account.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  createdAt:
+                                    description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-06T15:33:00Z'
+                                    readOnly: true
+                                  updatedAt:
+                                    description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-08T23:20:50Z'
+                                    readOnly: true
+                                  userCount:
+                                    type: integer
+                                    description: Amount of users that are in this group.
+                                    example: 10
+                                    readOnly: true
+                                required:
+                                - id
+                                - name
+                                - accountID
+                                - createdAt
+                                - updatedAt
+                              x-readme-ref-name: PolicyGroup
+                          mainAddress:
+                            title: Address
+                            description: Represents a physical address of a customer.
+                            allOf:
+                            - type: object
+                              properties:
+                                city:
+                                  description: The city of the location.
+                                  type: string
+                                  example: Aachen
+                                country:
+                                  description: The country of the location.
+                                  type: string
+                                  example: Germany
+                                addressLine1:
+                                  description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                  type: string
+                                  example: Oppenhoffallee 143
+                                addressLine2:
+                                  description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine3:
+                                  description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine4:
+                                  description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                timeZone:
+                                  description: The TZ Identifier of the location's timezone.
+                                  type: string
+                                  example: Europe/Berlin
+                                  readOnly: true
+                              x-readme-ref-name: AbstractLocation
+                            - type: object
+                              properties:
+                                postalcode:
+                                  description: The postal code of the location.
+                                  type: string
+                                  example: '52062'
+                                region:
+                                  description: The region of the address.
+                                  type: string
+                                telephone:
+                                  description: The telephone number of the customer.
+                                  type: string
+                            x-readme-ref-name: Address
+                          language:
+                            title: Language
+                            description: The language information of the user.
+                            type: object
+                            required:
+                            - tag
+                            - name
+                            - nameNative
+                            properties:
+                              tag:
+                                type: string
+                                description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                  See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                  '
+                                example: de_DE
+                              name:
+                                type: string
+                                description: The name of the language in English.
+                                example: German
+                                readOnly: true
+                              nameNative:
+                                type: string
+                                description: The name of the language in the language itself.
+                                example: Deutsch
+                                readOnly: true
+                            x-readme-ref-name: Language
+                        required:
+                        - auth
+                        - id
+                        - email
+                        - createdAt
+                        - updatedAt
+                        x-readme-ref-name: User
+                      userID:
+                        type: string
+                        format: uuid
+                        description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                        example: 123ee525-669f-45de-9bca-bf5a51829de3
+                    required:
+                    - user
+                    - userID
+                  x-readme-ref-name: OrganizationalAPIToken
+                - properties:
+                    token:
+                      type: string
+                      description: "This token can be used for authenticating further requests as an alternative to Bearer Authentication.\n\nExample: Set the header field `Authorization` to `Token gxo_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0`. \nTo set the permissions of it, you can assign a group to the newly created associated organizational user, see `userID`.\n\n**ATTENTION**: Please keep the token secret and treat it like a password! The token is only available immediately after creation and can not be retrieved again afterwards.\n"
+                      example: gxo_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0
+                  required:
+                  - token
+                x-readme-ref-name: OrganizationalAPITokenWithSecret
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/account/tokens\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/account/tokens \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/account/tokens', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/account/tokens\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /account/tokens/{tokenID}:
+    get:
+      operationId: getOrganizationalApiToken
+      summary: Get an organizational API token
+      description: Retrieve the given organizational API token for the currently authenticated account.
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token.
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 218e8795-2442-42d7-901b-1588373e527f
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - GetAPIToken
+      responses:
+        '200':
+          description: API token
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: OrganizationalAPIToken
+                allOf:
+                - allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        description: Time at which the token was created in UTC using the RFC3339 format.
+                        example: '2021-10-10T23:20:50Z'
+                        format: date-time
+                        readOnly: true
+                    required:
+                    - id
+                    - createdAt
+                  x-readme-ref-name: APIToken
+                - properties:
+                    user:
+                      title: User
+                      description: Represents a user of the Xenon platform.
+                      type: object
+                      properties:
+                        id:
+                          description: Unique identifier of the user.
+                          type: string
+                          format: uuid
+                          example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                          readOnly: true
+                        accountID:
+                          description: Unique identifier of the account that the user belongs to.
+                          type: string
+                          format: uuid
+                          example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                          readOnly: true
+                        newPassword:
+                          description: Used to set a new password for the user.
+                          type: string
+                          writeOnly: true
+                        loginsCount:
+                          description: Number of user logins.
+                          type: integer
+                          readOnly: true
+                        mfaEnabled:
+                          description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                          type: boolean
+                          readOnly: true
+                        mfaReset:
+                          description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                          type: boolean
+                          writeOnly: true
+                        createdAt:
+                          description: Time at which the user was created in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        updatedAt:
+                          description: Time at which the user was last updated in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        fullName:
+                          description: Full name of the user typically consisting of first name and last name.
+                          type: string
+                          example: John Doe
+                        email:
+                          description: The email address of the user that is used for login.
+                          type: string
+                          format: email
+                          example: john@doe.com
+                        groups:
+                          description: Policy groups attached to this user which determine the effective permissions through policies.
+                          type: array
+                          items:
+                            title: Policy Group
+                            type: object
+                            allOf:
+                            - title: Policy Group
+                              description: 'A policy group describes the permissions of a group.
+
+
+                                This is the base type for the more concrete usages and not used directly within operations.
+
+                                '
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the policy group.
+                                  example: group name
+                                description:
+                                  type: string
+                                  description: Description of the group, omitted if empty
+                                  example: Group provides read-access to accounts
+                              x-readme-ref-name: AbstractPolicyGroup
+                            - properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the policy group.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                accountID:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the creator account.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                createdAt:
+                                  description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-06T15:33:00Z'
+                                  readOnly: true
+                                updatedAt:
+                                  description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-08T23:20:50Z'
+                                  readOnly: true
+                                userCount:
+                                  type: integer
+                                  description: Amount of users that are in this group.
+                                  example: 10
+                                  readOnly: true
+                              required:
+                              - id
+                              - name
+                              - accountID
+                              - createdAt
+                              - updatedAt
+                            x-readme-ref-name: PolicyGroup
+                        mainAddress:
+                          title: Address
+                          description: Represents a physical address of a customer.
+                          allOf:
+                          - type: object
+                            properties:
+                              city:
+                                description: The city of the location.
+                                type: string
+                                example: Aachen
+                              country:
+                                description: The country of the location.
+                                type: string
+                                example: Germany
+                              addressLine1:
+                                description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                type: string
+                                example: Oppenhoffallee 143
+                              addressLine2:
+                                description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine3:
+                                description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine4:
+                                description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              timeZone:
+                                description: The TZ Identifier of the location's timezone.
+                                type: string
+                                example: Europe/Berlin
+                                readOnly: true
+                            x-readme-ref-name: AbstractLocation
+                          - type: object
+                            properties:
+                              postalcode:
+                                description: The postal code of the location.
+                                type: string
+                                example: '52062'
+                              region:
+                                description: The region of the address.
+                                type: string
+                              telephone:
+                                description: The telephone number of the customer.
+                                type: string
+                          x-readme-ref-name: Address
+                        language:
+                          title: Language
+                          description: The language information of the user.
+                          type: object
+                          required:
+                          - tag
+                          - name
+                          - nameNative
+                          properties:
+                            tag:
+                              type: string
+                              description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                '
+                              example: de_DE
+                            name:
+                              type: string
+                              description: The name of the language in English.
+                              example: German
+                              readOnly: true
+                            nameNative:
+                              type: string
+                              description: The name of the language in the language itself.
+                              example: Deutsch
+                              readOnly: true
+                          x-readme-ref-name: Language
+                      required:
+                      - auth
+                      - id
+                      - email
+                      - createdAt
+                      - updatedAt
+                      x-readme-ref-name: User
+                    userID:
+                      type: string
+                      format: uuid
+                      description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                      example: 123ee525-669f-45de-9bca-bf5a51829de3
+                  required:
+                  - user
+                  - userID
+                x-readme-ref-name: OrganizationalAPIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/account/tokens/tokenID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/account/tokens/tokenID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/account/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/account/tokens/tokenID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateOrganizationalApiToken
+      summary: Partially update an organizational API token
+      description: Partially update the organizational API token of the currently authenticated account.
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - UpdateAPIToken
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token to be updated.
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 218e8795-2442-42d7-901b-1588373e527f
+      requestBody:
+        description: The new API token
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - title: OrganizationalAPIToken
+                allOf:
+                - allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        description: Time at which the token was created in UTC using the RFC3339 format.
+                        example: '2021-10-10T23:20:50Z'
+                        format: date-time
+                        readOnly: true
+                    required:
+                    - id
+                    - createdAt
+                  x-readme-ref-name: APIToken
+                - properties:
+                    user:
+                      title: User
+                      description: Represents a user of the Xenon platform.
+                      type: object
+                      properties:
+                        id:
+                          description: Unique identifier of the user.
+                          type: string
+                          format: uuid
+                          example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                          readOnly: true
+                        accountID:
+                          description: Unique identifier of the account that the user belongs to.
+                          type: string
+                          format: uuid
+                          example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                          readOnly: true
+                        newPassword:
+                          description: Used to set a new password for the user.
+                          type: string
+                          writeOnly: true
+                        loginsCount:
+                          description: Number of user logins.
+                          type: integer
+                          readOnly: true
+                        mfaEnabled:
+                          description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                          type: boolean
+                          readOnly: true
+                        mfaReset:
+                          description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                          type: boolean
+                          writeOnly: true
+                        createdAt:
+                          description: Time at which the user was created in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        updatedAt:
+                          description: Time at which the user was last updated in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        fullName:
+                          description: Full name of the user typically consisting of first name and last name.
+                          type: string
+                          example: John Doe
+                        email:
+                          description: The email address of the user that is used for login.
+                          type: string
+                          format: email
+                          example: john@doe.com
+                        groups:
+                          description: Policy groups attached to this user which determine the effective permissions through policies.
+                          type: array
+                          items:
+                            title: Policy Group
+                            type: object
+                            allOf:
+                            - title: Policy Group
+                              description: 'A policy group describes the permissions of a group.
+
+
+                                This is the base type for the more concrete usages and not used directly within operations.
+
+                                '
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the policy group.
+                                  example: group name
+                                description:
+                                  type: string
+                                  description: Description of the group, omitted if empty
+                                  example: Group provides read-access to accounts
+                              x-readme-ref-name: AbstractPolicyGroup
+                            - properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the policy group.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                accountID:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the creator account.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                createdAt:
+                                  description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-06T15:33:00Z'
+                                  readOnly: true
+                                updatedAt:
+                                  description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-08T23:20:50Z'
+                                  readOnly: true
+                                userCount:
+                                  type: integer
+                                  description: Amount of users that are in this group.
+                                  example: 10
+                                  readOnly: true
+                              required:
+                              - id
+                              - name
+                              - accountID
+                              - createdAt
+                              - updatedAt
+                            x-readme-ref-name: PolicyGroup
+                        mainAddress:
+                          title: Address
+                          description: Represents a physical address of a customer.
+                          allOf:
+                          - type: object
+                            properties:
+                              city:
+                                description: The city of the location.
+                                type: string
+                                example: Aachen
+                              country:
+                                description: The country of the location.
+                                type: string
+                                example: Germany
+                              addressLine1:
+                                description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                type: string
+                                example: Oppenhoffallee 143
+                              addressLine2:
+                                description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine3:
+                                description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine4:
+                                description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              timeZone:
+                                description: The TZ Identifier of the location's timezone.
+                                type: string
+                                example: Europe/Berlin
+                                readOnly: true
+                            x-readme-ref-name: AbstractLocation
+                          - type: object
+                            properties:
+                              postalcode:
+                                description: The postal code of the location.
+                                type: string
+                                example: '52062'
+                              region:
+                                description: The region of the address.
+                                type: string
+                              telephone:
+                                description: The telephone number of the customer.
+                                type: string
+                          x-readme-ref-name: Address
+                        language:
+                          title: Language
+                          description: The language information of the user.
+                          type: object
+                          required:
+                          - tag
+                          - name
+                          - nameNative
+                          properties:
+                            tag:
+                              type: string
+                              description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                '
+                              example: de_DE
+                            name:
+                              type: string
+                              description: The name of the language in English.
+                              example: German
+                              readOnly: true
+                            nameNative:
+                              type: string
+                              description: The name of the language in the language itself.
+                              example: Deutsch
+                              readOnly: true
+                          x-readme-ref-name: Language
+                      required:
+                      - auth
+                      - id
+                      - email
+                      - createdAt
+                      - updatedAt
+                      x-readme-ref-name: User
+                    userID:
+                      type: string
+                      format: uuid
+                      description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                      example: 123ee525-669f-45de-9bca-bf5a51829de3
+                  required:
+                  - user
+                  - userID
+                x-readme-ref-name: OrganizationalAPIToken
+              - additionalProperties: false
+              x-readme-ref-name: OrganizationalAPITokenStrict
+      responses:
+        '200':
+          description: The full representation of the token after the partial update on success.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: OrganizationalAPIToken
+                allOf:
+                - allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        description: Time at which the token was created in UTC using the RFC3339 format.
+                        example: '2021-10-10T23:20:50Z'
+                        format: date-time
+                        readOnly: true
+                    required:
+                    - id
+                    - createdAt
+                  x-readme-ref-name: APIToken
+                - properties:
+                    user:
+                      title: User
+                      description: Represents a user of the Xenon platform.
+                      type: object
+                      properties:
+                        id:
+                          description: Unique identifier of the user.
+                          type: string
+                          format: uuid
+                          example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                          readOnly: true
+                        accountID:
+                          description: Unique identifier of the account that the user belongs to.
+                          type: string
+                          format: uuid
+                          example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                          readOnly: true
+                        newPassword:
+                          description: Used to set a new password for the user.
+                          type: string
+                          writeOnly: true
+                        loginsCount:
+                          description: Number of user logins.
+                          type: integer
+                          readOnly: true
+                        mfaEnabled:
+                          description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                          type: boolean
+                          readOnly: true
+                        mfaReset:
+                          description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                          type: boolean
+                          writeOnly: true
+                        createdAt:
+                          description: Time at which the user was created in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        updatedAt:
+                          description: Time at which the user was last updated in UTC using the RFC3339 format.
+                          type: string
+                          format: date-time
+                          example: '2009-11-10T23:20:50Z'
+                          readOnly: true
+                        fullName:
+                          description: Full name of the user typically consisting of first name and last name.
+                          type: string
+                          example: John Doe
+                        email:
+                          description: The email address of the user that is used for login.
+                          type: string
+                          format: email
+                          example: john@doe.com
+                        groups:
+                          description: Policy groups attached to this user which determine the effective permissions through policies.
+                          type: array
+                          items:
+                            title: Policy Group
+                            type: object
+                            allOf:
+                            - title: Policy Group
+                              description: 'A policy group describes the permissions of a group.
+
+
+                                This is the base type for the more concrete usages and not used directly within operations.
+
+                                '
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the policy group.
+                                  example: group name
+                                description:
+                                  type: string
+                                  description: Description of the group, omitted if empty
+                                  example: Group provides read-access to accounts
+                              x-readme-ref-name: AbstractPolicyGroup
+                            - properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the policy group.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                accountID:
+                                  type: string
+                                  format: uuid
+                                  description: Unique identifier of the creator account.
+                                  example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                  readOnly: true
+                                createdAt:
+                                  description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-06T15:33:00Z'
+                                  readOnly: true
+                                updatedAt:
+                                  description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                  type: string
+                                  format: date-time
+                                  example: '2019-11-08T23:20:50Z'
+                                  readOnly: true
+                                userCount:
+                                  type: integer
+                                  description: Amount of users that are in this group.
+                                  example: 10
+                                  readOnly: true
+                              required:
+                              - id
+                              - name
+                              - accountID
+                              - createdAt
+                              - updatedAt
+                            x-readme-ref-name: PolicyGroup
+                        mainAddress:
+                          title: Address
+                          description: Represents a physical address of a customer.
+                          allOf:
+                          - type: object
+                            properties:
+                              city:
+                                description: The city of the location.
+                                type: string
+                                example: Aachen
+                              country:
+                                description: The country of the location.
+                                type: string
+                                example: Germany
+                              addressLine1:
+                                description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                type: string
+                                example: Oppenhoffallee 143
+                              addressLine2:
+                                description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine3:
+                                description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              addressLine4:
+                                description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                type: string
+                              timeZone:
+                                description: The TZ Identifier of the location's timezone.
+                                type: string
+                                example: Europe/Berlin
+                                readOnly: true
+                            x-readme-ref-name: AbstractLocation
+                          - type: object
+                            properties:
+                              postalcode:
+                                description: The postal code of the location.
+                                type: string
+                                example: '52062'
+                              region:
+                                description: The region of the address.
+                                type: string
+                              telephone:
+                                description: The telephone number of the customer.
+                                type: string
+                          x-readme-ref-name: Address
+                        language:
+                          title: Language
+                          description: The language information of the user.
+                          type: object
+                          required:
+                          - tag
+                          - name
+                          - nameNative
+                          properties:
+                            tag:
+                              type: string
+                              description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                '
+                              example: de_DE
+                            name:
+                              type: string
+                              description: The name of the language in English.
+                              example: German
+                              readOnly: true
+                            nameNative:
+                              type: string
+                              description: The name of the language in the language itself.
+                              example: Deutsch
+                              readOnly: true
+                          x-readme-ref-name: Language
+                      required:
+                      - auth
+                      - id
+                      - email
+                      - createdAt
+                      - updatedAt
+                      x-readme-ref-name: User
+                    userID:
+                      type: string
+                      format: uuid
+                      description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                      example: 123ee525-669f-45de-9bca-bf5a51829de3
+                  required:
+                  - user
+                  - userID
+                x-readme-ref-name: OrganizationalAPIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/account/tokens/tokenID\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/account/tokens/tokenID \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/account/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/account/tokens/tokenID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteOrganizationalApiToken
+      summary: Delete organizational API token
+      description: Remove a given organizational API token from the currently authenticated account.
+      tags:
+      - Token
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token.
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 218e8795-2442-42d7-901b-1588373e527f
+      security:
+      - HeaderAuth:
+        - DeleteAPIToken
+      responses:
+        '204':
+          description: API token deleted successfully
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/account/tokens/tokenID"
+
+
+          response = requests.delete(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/account/tokens/tokenID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE'};\n\nfetch('https://api.gridx.de/account/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .delete(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID\")\n  .delete(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/account/tokens/tokenID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /account/tokens/{tokenID}/rotate:
+    post:
+      operationId: rotateOrganizationalApiToken
+      summary: Rotate an existing organizational API token
+      description: 'Rotates a non-expired organizational API token for the given token ID by creating and returning a new token
+
+        with the same properties as the original one, specified by the `tokenID` path parameter.
+
+        The new token''s expiry date is based on the original one extended by the value specified in the `lifetime` query parameter.
+
+        The original token''s permissions are copied verbatim.'
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the original token to rotate.
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 218e8795-2442-42d7-901b-1588373e527f
+      - name: lifetime
+        description: Lifetime to add to the original token's expiry date.
+        required: false
+        in: query
+        example: 1D
+        schema:
+          type: string
+          enum:
+          - 1D
+          - 1W
+          - 1M
+          - 1Y
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - RotateAPIToken
+      responses:
+        '201':
+          description: A new API token with the same properties as the original one, but with extended lifetime.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: OrganizationalAPITokenWithSecret
+                allOf:
+                - title: OrganizationalAPIToken
+                  allOf:
+                  - allOf:
+                    - title: APIToken
+                      description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                        They are instead used as an in-header API Key.
+
+                        '
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                          example: My api token
+                        expiresAt:
+                          type: string
+                          format: date-time
+                          description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                            **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                            that you set an expiration date to help keep your account and information secure.
+
+                            '
+                          example: '2021-11-10T23:00:00Z'
+                      x-readme-ref-name: AbstractAPIToken
+                    - properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                          readOnly: true
+                        createdAt:
+                          type: string
+                          description: Time at which the token was created in UTC using the RFC3339 format.
+                          example: '2021-10-10T23:20:50Z'
+                          format: date-time
+                          readOnly: true
+                      required:
+                      - id
+                      - createdAt
+                    x-readme-ref-name: APIToken
+                  - properties:
+                      user:
+                        title: User
+                        description: Represents a user of the Xenon platform.
+                        type: object
+                        properties:
+                          id:
+                            description: Unique identifier of the user.
+                            type: string
+                            format: uuid
+                            example: 43a4f165-8233-426b-a1a4-e569665a25dd
+                            readOnly: true
+                          accountID:
+                            description: Unique identifier of the account that the user belongs to.
+                            type: string
+                            format: uuid
+                            example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                            readOnly: true
+                          newPassword:
+                            description: Used to set a new password for the user.
+                            type: string
+                            writeOnly: true
+                          loginsCount:
+                            description: Number of user logins.
+                            type: integer
+                            readOnly: true
+                          mfaEnabled:
+                            description: Indicates whether MFA (Multi-Factor Authentication) is enabled.
+                            type: boolean
+                            readOnly: true
+                          mfaReset:
+                            description: Can be set to true if MFA (Multi-Factor Authentication) needs to to be reset. This will remove the MFA.
+                            type: boolean
+                            writeOnly: true
+                          createdAt:
+                            description: Time at which the user was created in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          updatedAt:
+                            description: Time at which the user was last updated in UTC using the RFC3339 format.
+                            type: string
+                            format: date-time
+                            example: '2009-11-10T23:20:50Z'
+                            readOnly: true
+                          fullName:
+                            description: Full name of the user typically consisting of first name and last name.
+                            type: string
+                            example: John Doe
+                          email:
+                            description: The email address of the user that is used for login.
+                            type: string
+                            format: email
+                            example: john@doe.com
+                          groups:
+                            description: Policy groups attached to this user which determine the effective permissions through policies.
+                            type: array
+                            items:
+                              title: Policy Group
+                              type: object
+                              allOf:
+                              - title: Policy Group
+                                description: 'A policy group describes the permissions of a group.
+
+
+                                  This is the base type for the more concrete usages and not used directly within operations.
+
+                                  '
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Name of the policy group.
+                                    example: group name
+                                  description:
+                                    type: string
+                                    description: Description of the group, omitted if empty
+                                    example: Group provides read-access to accounts
+                                x-readme-ref-name: AbstractPolicyGroup
+                              - properties:
+                                  id:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the policy group.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  accountID:
+                                    type: string
+                                    format: uuid
+                                    description: Unique identifier of the creator account.
+                                    example: 97874c1b-d073-4b06-bf01-a1497fbe1146
+                                    readOnly: true
+                                  createdAt:
+                                    description: Time at which the policy group was created in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-06T15:33:00Z'
+                                    readOnly: true
+                                  updatedAt:
+                                    description: Time at which the policy group was last updated in UTC (RFC 3339 format).
+                                    type: string
+                                    format: date-time
+                                    example: '2019-11-08T23:20:50Z'
+                                    readOnly: true
+                                  userCount:
+                                    type: integer
+                                    description: Amount of users that are in this group.
+                                    example: 10
+                                    readOnly: true
+                                required:
+                                - id
+                                - name
+                                - accountID
+                                - createdAt
+                                - updatedAt
+                              x-readme-ref-name: PolicyGroup
+                          mainAddress:
+                            title: Address
+                            description: Represents a physical address of a customer.
+                            allOf:
+                            - type: object
+                              properties:
+                                city:
+                                  description: The city of the location.
+                                  type: string
+                                  example: Aachen
+                                country:
+                                  description: The country of the location.
+                                  type: string
+                                  example: Germany
+                                addressLine1:
+                                  description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                                  type: string
+                                  example: Oppenhoffallee 143
+                                addressLine2:
+                                  description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine3:
+                                  description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                addressLine4:
+                                  description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                                  type: string
+                                timeZone:
+                                  description: The TZ Identifier of the location's timezone.
+                                  type: string
+                                  example: Europe/Berlin
+                                  readOnly: true
+                              x-readme-ref-name: AbstractLocation
+                            - type: object
+                              properties:
+                                postalcode:
+                                  description: The postal code of the location.
+                                  type: string
+                                  example: '52062'
+                                region:
+                                  description: The region of the address.
+                                  type: string
+                                telephone:
+                                  description: The telephone number of the customer.
+                                  type: string
+                            x-readme-ref-name: Address
+                          language:
+                            title: Language
+                            description: The language information of the user.
+                            type: object
+                            required:
+                            - tag
+                            - name
+                            - nameNative
+                            properties:
+                              tag:
+                                type: string
+                                description: 'Tag is the IETF language tag''s primary identifier for this language.
+
+
+                                  See [here](https://tools.ietf.org/rfc/bcp/bcp47.txt) and the example below for more information.
+
+                                  '
+                                example: de_DE
+                              name:
+                                type: string
+                                description: The name of the language in English.
+                                example: German
+                                readOnly: true
+                              nameNative:
+                                type: string
+                                description: The name of the language in the language itself.
+                                example: Deutsch
+                                readOnly: true
+                            x-readme-ref-name: Language
+                        required:
+                        - auth
+                        - id
+                        - email
+                        - createdAt
+                        - updatedAt
+                        x-readme-ref-name: User
+                      userID:
+                        type: string
+                        format: uuid
+                        description: Reference to the user to which the API token belongs. Can be used to set the token's "scope" by assigning groups to the user.
+                        example: 123ee525-669f-45de-9bca-bf5a51829de3
+                    required:
+                    - user
+                    - userID
+                  x-readme-ref-name: OrganizationalAPIToken
+                - properties:
+                    token:
+                      type: string
+                      description: "This token can be used for authenticating further requests as an alternative to Bearer Authentication.\n\nExample: Set the header field `Authorization` to `Token gxo_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0`. \nTo set the permissions of it, you can assign a group to the newly created associated organizational user, see `userID`.\n\n**ATTENTION**: Please keep the token secret and treat it like a password! The token is only available immediately after creation and can not be retrieved again afterwards.\n"
+                      example: gxo_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0
+                  required:
+                  - token
+                x-readme-ref-name: OrganizationalAPITokenWithSecret
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: API token not found
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/account/tokens/tokenID/rotate"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.post(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/account/tokens/tokenID/rotate \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/account/tokens/tokenID/rotate\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'POST', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/account/tokens/tokenID/rotate', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID/rotate\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/account/tokens/tokenID/rotate\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/account/tokens/tokenID/rotate")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "POST"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/account/tokens/tokenID/rotate");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/tokens:
+    get:
+      operationId: listAuthenticatedUserTokens
+      summary: List all Tokens
+      description: Lists all the API tokens for the authenticated user.
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - GetAPITokens
+      parameters:
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      - name: sort
+        description: Sort results based on a key.
+        in: query
+        schema:
+          type: string
+        example: created_at
+      - name: order
+        description: Order direction of the results, to be used in combination with `sort` parameter.
+        in: query
+        schema:
+          type: string
+        example: desc
+      - name: include
+        description: 'This query param allows requesting optional pagination metadata.
+
+
+          If `totalCount` is included, the response will contain an `X-Total-Count` header with
+
+          the total number of elements matching the query, regardless of pagination.
+
+          '
+        in: query
+        example:
+        - totalCount
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - totalCount
+      responses:
+        '200':
+          description: API tokens of the current user.
+          headers:
+            Link:
+              description: 'Pagination links following RFC 5988. Contains `rel="first"`, `rel="next"`, and `rel="prev"`
+
+                relations as applicable based on the current page.
+
+
+                Example: `</accounts?page=1&per_page=20>; rel="first", </accounts?page=3&per_page=20>; rel="next"`
+
+                '
+              schema:
+                type: string
+            X-Total-Count:
+              description: 'Total number of elements matching the query, regardless of pagination.
+
+
+                Only present when `totalCount` is included in the `include` query parameter.
+
+                '
+              schema:
+                type: integer
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        description: Time at which the token was created in UTC using the RFC3339 format.
+                        example: '2021-10-10T23:20:50Z'
+                        format: date-time
+                        readOnly: true
+                    required:
+                    - id
+                    - createdAt
+                  x-readme-ref-name: APIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found.
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/tokens"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user/tokens \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/tokens\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user/tokens', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/tokens")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/tokens");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createUserToken
+      summary: Create a Token
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - APITokenWrite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - title: APIToken
+                description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                  They are instead used as an in-header API Key.
+
+                  '
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: My api token
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                      **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                      that you set an expiration date to help keep your account and information secure.
+
+                      '
+                    example: '2021-11-10T23:00:00Z'
+                x-readme-ref-name: AbstractAPIToken
+              - additionalProperties: false
+              x-readme-ref-name: APITokenCreationStrict
+      responses:
+        '201':
+          description: API token created.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                title: PersonalAPITokenWithSecret
+                allOf:
+                - allOf:
+                  - title: APIToken
+                    description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                      They are instead used as an in-header API Key.
+
+                      '
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: My api token
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                          **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                          that you set an expiration date to help keep your account and information secure.
+
+                          '
+                        example: '2021-11-10T23:00:00Z'
+                    x-readme-ref-name: AbstractAPIToken
+                  - properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        description: Time at which the token was created in UTC using the RFC3339 format.
+                        example: '2021-10-10T23:20:50Z'
+                        format: date-time
+                        readOnly: true
+                    required:
+                    - id
+                    - createdAt
+                  x-readme-ref-name: APIToken
+                - properties:
+                    token:
+                      type: string
+                      description: "This token can be used for authenticating further requests as an alternative to Bearer Authentication.\n\nExample: Set the header field `Authorization` to `Token gxp_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0`. \nThe permissions of this tokens are the same as the user that created it.\n\n**ATTENTION** - Please keep the token secret and treat it like a password! The token is only available immediately after creation and can not be retrieved again afterwards.\n"
+                      example: gxp_SUDJmIoABC1337JiAuKBZuauC0ff331HNPR0
+                  required:
+                  - token
+                x-readme-ref-name: PersonalAPITokenWithSecret
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/user/tokens\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/user/tokens \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/tokens\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/user/tokens', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens\")\n  .post(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/user/tokens\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/tokens");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/tokens/{tokenID}:
+    get:
+      operationId: getUserToken
+      summary: Retrieve a Token
+      description: Retrieves the given API token for the authenticated user.
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - GetAPIToken
+      responses:
+        '200':
+          description: API token of the current user.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: APIToken
+                  description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                    They are instead used as an in-header API Key.
+
+                    '
+                  type: object
+                  properties:
+                    description:
+                      type: string
+                      example: My api token
+                    expiresAt:
+                      type: string
+                      format: date-time
+                      description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                        **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                        that you set an expiration date to help keep your account and information secure.
+
+                        '
+                      example: '2021-11-10T23:00:00Z'
+                  x-readme-ref-name: AbstractAPIToken
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the token was created in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                  required:
+                  - id
+                  - createdAt
+                x-readme-ref-name: APIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found.
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/tokens/tokenID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user/tokens/tokenID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/tokens/tokenID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateUserToken
+      summary: Update a Token
+      description: 'Updates the specific token by setting the values of the body parameters.
+
+        Any parameters not provided will be left unchanged.'
+      tags:
+      - Token
+      security:
+      - HeaderAuth:
+        - UpdateAPIToken
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token to be updated.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Update Token
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - title: APIToken
+                  description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                    They are instead used as an in-header API Key.
+
+                    '
+                  type: object
+                  properties:
+                    description:
+                      type: string
+                      example: My api token
+                    expiresAt:
+                      type: string
+                      format: date-time
+                      description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                        **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                        that you set an expiration date to help keep your account and information secure.
+
+                        '
+                      example: '2021-11-10T23:00:00Z'
+                  x-readme-ref-name: AbstractAPIToken
+                x-readme-ref-name: APITokenUpdate
+              - additionalProperties: false
+              x-readme-ref-name: APITokenUpdateStrict
+      responses:
+        '200':
+          description: The full representation of the token after the partial update on success.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: APIToken
+                  description: 'API Tokens can be used as an alternative to Bearer Authentication for making requests.
+
+                    They are instead used as an in-header API Key.
+
+                    '
+                  type: object
+                  properties:
+                    description:
+                      type: string
+                      example: My api token
+                    expiresAt:
+                      type: string
+                      format: date-time
+                      description: 'Time at which the token expires in UTC using the RFC3339 format.
+
+
+                        **WARNING** - if `expiresAt` is not set, the token will never expire. We strongly recommend
+
+                        that you set an expiration date to help keep your account and information secure.
+
+                        '
+                      example: '2021-11-10T23:00:00Z'
+                  x-readme-ref-name: AbstractAPIToken
+                - properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: fc8ee525-669f-45de-9bca-bf5a51829de3
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      description: Time at which the token was created in UTC using the RFC3339 format.
+                      example: '2021-10-10T23:20:50Z'
+                      format: date-time
+                      readOnly: true
+                  required:
+                  - id
+                  - createdAt
+                x-readme-ref-name: APIToken
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found.
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/user/tokens/tokenID\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/user/tokens/tokenID \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/user/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/user/tokens/tokenID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteUserToken
+      summary: Delete a Token
+      description: Removes a given token from the authenticated user.
+      tags:
+      - Token
+      parameters:
+      - name: tokenID
+        in: path
+        description: Identifier of the token.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      security:
+      - HeaderAuth:
+        - DeleteAPIToken
+      responses:
+        '204':
+          description: API token deleted successfully.
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: API token not found.
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/tokens/tokenID"
+
+
+          response = requests.delete(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/user/tokens/tokenID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/tokens/tokenID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE'};\n\nfetch('https://api.gridx.de/user/tokens/tokenID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .delete(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/tokens/tokenID\")\n  .delete(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/tokens/tokenID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/tokens/tokenID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

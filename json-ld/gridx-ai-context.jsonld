@@ -1,0 +1,1613 @@
+{
+  "@context": {
+    "@vocab": "https://gridx.ai/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "gridx": "https://gridx.ai/schema#",
+    "AccountSolution": "gridx:AccountSolution",
+    "AccountKind": "gridx:AccountKind",
+    "AbstractLocation": "gridx:AbstractLocation",
+    "city": {
+      "@id": "gridx:city",
+      "@type": "xsd:string"
+    },
+    "country": {
+      "@id": "gridx:country",
+      "@type": "xsd:string"
+    },
+    "addressLine1": {
+      "@id": "gridx:addressLine1",
+      "@type": "xsd:string"
+    },
+    "addressLine2": {
+      "@id": "gridx:addressLine2",
+      "@type": "xsd:string"
+    },
+    "addressLine3": {
+      "@id": "gridx:addressLine3",
+      "@type": "xsd:string"
+    },
+    "addressLine4": {
+      "@id": "gridx:addressLine4",
+      "@type": "xsd:string"
+    },
+    "timeZone": {
+      "@id": "gridx:timeZone",
+      "@type": "xsd:string"
+    },
+    "ProductBundle": "gridx:ProductBundle",
+    "Account": "gridx:Account",
+    "name": {
+      "@id": "gridx:name",
+      "@type": "xsd:string"
+    },
+    "email": {
+      "@id": "gridx:email",
+      "@type": "xsd:string"
+    },
+    "solution": {
+      "@id": "gridx:solution",
+      "@type": "xsd:string"
+    },
+    "id": {
+      "@id": "gridx:id",
+      "@type": "xsd:string"
+    },
+    "parentID": {
+      "@id": "gridx:parentID",
+      "@type": "xsd:string"
+    },
+    "createdAt": {
+      "@id": "gridx:createdAt",
+      "@type": "xsd:dateTime"
+    },
+    "updatedAt": {
+      "@id": "gridx:updatedAt",
+      "@type": "xsd:dateTime"
+    },
+    "systemsCount": {
+      "@id": "gridx:systemsCount",
+      "@type": "xsd:integer"
+    },
+    "kind": {
+      "@id": "gridx:kind",
+      "@type": "xsd:string"
+    },
+    "mainAddress": {
+      "@id": "gridx:mainAddress"
+    },
+    "customization": {
+      "@id": "gridx:customization"
+    },
+    "productBundles": {
+      "@id": "gridx:productBundles",
+      "@container": "@list"
+    },
+    "GeneralException": "gridx:GeneralException",
+    "message": {
+      "@id": "gridx:message",
+      "@type": "xsd:string"
+    },
+    "details": {
+      "@id": "gridx:details",
+      "@container": "@list"
+    },
+    "AccountUpdate": "gridx:AccountUpdate",
+    "AbstractAPIToken": "gridx:AbstractAPIToken",
+    "description": {
+      "@id": "gridx:description",
+      "@type": "xsd:string"
+    },
+    "expiresAt": {
+      "@id": "gridx:expiresAt",
+      "@type": "xsd:dateTime"
+    },
+    "AbstractPolicyGroup": "gridx:AbstractPolicyGroup",
+    "Language": "gridx:Language",
+    "tag": {
+      "@id": "gridx:tag",
+      "@type": "xsd:string"
+    },
+    "nameNative": {
+      "@id": "gridx:nameNative",
+      "@type": "xsd:string"
+    },
+    "User": "gridx:User",
+    "accountID": {
+      "@id": "gridx:accountID",
+      "@type": "xsd:string"
+    },
+    "newPassword": {
+      "@id": "gridx:newPassword",
+      "@type": "xsd:string"
+    },
+    "loginsCount": {
+      "@id": "gridx:loginsCount",
+      "@type": "xsd:integer"
+    },
+    "mfaEnabled": {
+      "@id": "gridx:mfaEnabled",
+      "@type": "xsd:boolean"
+    },
+    "mfaReset": {
+      "@id": "gridx:mfaReset",
+      "@type": "xsd:boolean"
+    },
+    "fullName": {
+      "@id": "gridx:fullName",
+      "@type": "xsd:string"
+    },
+    "groups": {
+      "@id": "gridx:groups",
+      "@container": "@list"
+    },
+    "language": {
+      "@id": "gridx:language"
+    },
+    "AccountKindWithDefault": "gridx:AccountKindWithDefault",
+    "AccountCreate": "gridx:AccountCreate",
+    "AccountTreeNode": "gridx:AccountTreeNode",
+    "children": {
+      "@id": "gridx:children",
+      "@container": "@list"
+    },
+    "CustomerAccount": "gridx:CustomerAccount",
+    "CustomerAccountUpdate": "gridx:CustomerAccountUpdate",
+    "AbstractEVChargingStationConfiguration": "gridx:AbstractEVChargingStationConfiguration",
+    "issueTimestamp": {
+      "@id": "gridx:issueTimestamp",
+      "@type": "xsd:dateTime"
+    },
+    "chargingEnabled": {
+      "@id": "gridx:chargingEnabled",
+      "@type": "xsd:boolean"
+    },
+    "chargingRemoteControllable": {
+      "@id": "gridx:chargingRemoteControllable",
+      "@type": "xsd:boolean"
+    },
+    "lockEnabled": {
+      "@id": "gridx:lockEnabled",
+      "@type": "xsd:boolean"
+    },
+    "minRequestedSoc": {
+      "@id": "gridx:minRequestedSoc",
+      "@type": "xsd:decimal"
+    },
+    "departureTimestamp": {
+      "@id": "gridx:departureTimestamp",
+      "@type": "xsd:dateTime"
+    },
+    "estimatedDepartureTimestamp": {
+      "@id": "gridx:estimatedDepartureTimestamp",
+      "@type": "xsd:dateTime"
+    },
+    "userSoc": {
+      "@id": "gridx:userSoc",
+      "@type": "xsd:decimal"
+    },
+    "userTotalCapacity": {
+      "@id": "gridx:userTotalCapacity",
+      "@type": "xsd:decimal"
+    },
+    "chargeMode": {
+      "@id": "gridx:chargeMode",
+      "@type": "xsd:string"
+    },
+    "maxPowerCalculated": {
+      "@id": "gridx:maxPowerCalculated",
+      "@type": "xsd:decimal"
+    },
+    "maxChargePower": {
+      "@id": "gridx:maxChargePower",
+      "@type": "xsd:decimal"
+    },
+    "minChargePower": {
+      "@id": "gridx:minChargePower",
+      "@type": "xsd:decimal"
+    },
+    "minChargePowerPerPhase": {
+      "@id": "gridx:minChargePowerPerPhase",
+      "@type": "xsd:decimal"
+    },
+    "evProfileID": {
+      "@id": "gridx:evProfileID",
+      "@type": "xsd:string"
+    },
+    "AbstractElectricVehicleProfile": "gridx:AbstractElectricVehicleProfile",
+    "manufacturer": {
+      "@id": "gridx:manufacturer",
+      "@type": "xsd:string"
+    },
+    "model": {
+      "@id": "gridx:model",
+      "@type": "xsd:string"
+    },
+    "color": {
+      "@id": "gridx:color",
+      "@type": "xsd:string"
+    },
+    "capacity": {
+      "@id": "gridx:capacity",
+      "@type": "xsd:decimal"
+    },
+    "averageConsumption": {
+      "@id": "gridx:averageConsumption",
+      "@type": "xsd:decimal"
+    },
+    "phasesCount": {
+      "@id": "gridx:phasesCount",
+      "@type": "xsd:decimal"
+    },
+    "image": {
+      "@id": "gridx:image",
+      "@type": "xsd:string"
+    },
+    "zeroLockDuration": {
+      "@id": "gridx:zeroLockDuration",
+      "@type": "xsd:integer"
+    },
+    "phaseSwitchFeatureEnabled": {
+      "@id": "gridx:phaseSwitchFeatureEnabled",
+      "@type": "xsd:boolean"
+    },
+    "AbstractEVChargingSchedule": "gridx:AbstractEVChargingSchedule",
+    "from": {
+      "@id": "gridx:from",
+      "@type": "xsd:dateTime"
+    },
+    "to": {
+      "@id": "gridx:to",
+      "@type": "xsd:dateTime"
+    },
+    "limit": {
+      "@id": "gridx:limit",
+      "@type": "xsd:integer"
+    },
+    "Measurement": "gridx:Measurement",
+    "measuredAt": {
+      "@id": "gridx:measuredAt",
+      "@type": "xsd:dateTime"
+    },
+    "grid": {
+      "@id": "gridx:grid",
+      "@type": "xsd:decimal"
+    },
+    "gridL1": {
+      "@id": "gridx:gridL1",
+      "@type": "xsd:decimal"
+    },
+    "gridL2": {
+      "@id": "gridx:gridL2",
+      "@type": "xsd:decimal"
+    },
+    "gridL3": {
+      "@id": "gridx:gridL3",
+      "@type": "xsd:decimal"
+    },
+    "gridSupplyLimit": {
+      "@id": "gridx:gridSupplyLimit",
+      "@type": "xsd:decimal"
+    },
+    "photovoltaic": {
+      "@id": "gridx:photovoltaic",
+      "@type": "xsd:decimal"
+    },
+    "photovoltaicExternal": {
+      "@id": "gridx:photovoltaicExternal",
+      "@type": "xsd:decimal"
+    },
+    "blockTypeThermalPowerStation": {
+      "@id": "gridx:blockTypeThermalPowerStation",
+      "@type": "xsd:decimal"
+    },
+    "fuelCell": {
+      "@id": "gridx:fuelCell",
+      "@type": "xsd:decimal"
+    },
+    "production": {
+      "@id": "gridx:production",
+      "@type": "xsd:decimal"
+    },
+    "battery": {
+      "@id": "gridx:battery"
+    },
+    "batteries": {
+      "@id": "gridx:batteries",
+      "@container": "@list"
+    },
+    "heatPump": {
+      "@id": "gridx:heatPump",
+      "@type": "xsd:decimal"
+    },
+    "heatPumpExternal": {
+      "@id": "gridx:heatPumpExternal",
+      "@type": "xsd:decimal"
+    },
+    "heatPumps": {
+      "@id": "gridx:heatPumps",
+      "@container": "@list"
+    },
+    "evChargingStation": {
+      "@id": "gridx:evChargingStation"
+    },
+    "evChargingStations": {
+      "@id": "gridx:evChargingStations",
+      "@container": "@list"
+    },
+    "consumption": {
+      "@id": "gridx:consumption",
+      "@type": "xsd:decimal"
+    },
+    "totalConsumption": {
+      "@id": "gridx:totalConsumption",
+      "@type": "xsd:decimal"
+    },
+    "selfConsumption": {
+      "@id": "gridx:selfConsumption",
+      "@type": "xsd:decimal"
+    },
+    "directConsumption": {
+      "@id": "gridx:directConsumption",
+      "@type": "xsd:decimal"
+    },
+    "directConsumptionHousehold": {
+      "@id": "gridx:directConsumptionHousehold",
+      "@type": "xsd:decimal"
+    },
+    "directConsumptionHeatPump": {
+      "@id": "gridx:directConsumptionHeatPump",
+      "@type": "xsd:decimal"
+    },
+    "directConsumptionEV": {
+      "@id": "gridx:directConsumptionEV",
+      "@type": "xsd:decimal"
+    },
+    "directConsumptionHeater": {
+      "@id": "gridx:directConsumptionHeater",
+      "@type": "xsd:decimal"
+    },
+    "selfSupply": {
+      "@id": "gridx:selfSupply",
+      "@type": "xsd:decimal"
+    },
+    "selfSufficiencyRate": {
+      "@id": "gridx:selfSufficiencyRate",
+      "@type": "xsd:decimal"
+    },
+    "selfConsumptionRate": {
+      "@id": "gridx:selfConsumptionRate",
+      "@type": "xsd:decimal"
+    },
+    "directConsumptionRate": {
+      "@id": "gridx:directConsumptionRate",
+      "@type": "xsd:decimal"
+    },
+    "heating": {
+      "@id": "gridx:heating",
+      "@type": "xsd:decimal"
+    },
+    "heatingTemperature": {
+      "@id": "gridx:heatingTemperature",
+      "@type": "xsd:decimal"
+    },
+    "heaters": {
+      "@id": "gridx:heaters",
+      "@container": "@list"
+    },
+    "appliancePower": {
+      "@id": "gridx:appliancePower",
+      "@type": "xsd:decimal"
+    },
+    "appliances": {
+      "@id": "gridx:appliances",
+      "@container": "@list"
+    },
+    "gridMeterReadingPositive": {
+      "@id": "gridx:gridMeterReadingPositive",
+      "@type": "xsd:decimal"
+    },
+    "gridMeterReadingNegative": {
+      "@id": "gridx:gridMeterReadingNegative",
+      "@type": "xsd:decimal"
+    },
+    "heatPumpMeterReadingPositive": {
+      "@id": "gridx:heatPumpMeterReadingPositive",
+      "@type": "xsd:decimal"
+    },
+    "heatPumpMeterReadingNegative": {
+      "@id": "gridx:heatPumpMeterReadingNegative",
+      "@type": "xsd:decimal"
+    },
+    "windTurbine": {
+      "@id": "gridx:windTurbine",
+      "@type": "xsd:decimal"
+    },
+    "fuelCellMeterReadingPositive": {
+      "@id": "gridx:fuelCellMeterReadingPositive",
+      "@type": "xsd:decimal"
+    },
+    "fuelCellMeterReadingNegative": {
+      "@id": "gridx:fuelCellMeterReadingNegative",
+      "@type": "xsd:decimal"
+    },
+    "l1CurtailmentPower": {
+      "@id": "gridx:l1CurtailmentPower",
+      "@type": "xsd:decimal"
+    },
+    "l2CurtailmentPower": {
+      "@id": "gridx:l2CurtailmentPower",
+      "@type": "xsd:decimal"
+    },
+    "l3CurtailmentPower": {
+      "@id": "gridx:l3CurtailmentPower",
+      "@type": "xsd:decimal"
+    },
+    "fuseProtectionCount": {
+      "@id": "gridx:fuseProtectionCount",
+      "@type": "xsd:integer"
+    },
+    "airConditioner": {
+      "@id": "gridx:airConditioner",
+      "@type": "xsd:decimal"
+    },
+    "Measurements": "gridx:Measurements",
+    "total": {
+      "@id": "gridx:total"
+    },
+    "data": {
+      "@id": "gridx:data",
+      "@container": "@list"
+    },
+    "MeasurementExtended": "gridx:MeasurementExtended",
+    "MeasurementBatteryExtended": "gridx:MeasurementBatteryExtended",
+    "charge": {
+      "@id": "gridx:charge",
+      "@type": "xsd:decimal"
+    },
+    "discharge": {
+      "@id": "gridx:discharge",
+      "@type": "xsd:decimal"
+    },
+    "stateOfCharge": {
+      "@id": "gridx:stateOfCharge",
+      "@type": "xsd:decimal"
+    },
+    "nominalCapacity": {
+      "@id": "gridx:nominalCapacity",
+      "@type": "xsd:decimal"
+    },
+    "MeasurementEVStationExtended": "gridx:MeasurementEVStationExtended",
+    "currentL1": {
+      "@id": "gridx:currentL1",
+      "@type": "xsd:decimal"
+    },
+    "currentL2": {
+      "@id": "gridx:currentL2",
+      "@type": "xsd:decimal"
+    },
+    "currentL3": {
+      "@id": "gridx:currentL3",
+      "@type": "xsd:decimal"
+    },
+    "MeasurementGrid": "gridx:MeasurementGrid",
+    "feedIn": {
+      "@id": "gridx:feedIn",
+      "@type": "xsd:decimal"
+    },
+    "supply": {
+      "@id": "gridx:supply",
+      "@type": "xsd:decimal"
+    },
+    "supplyLimit": {
+      "@id": "gridx:supplyLimit",
+      "@type": "xsd:decimal"
+    },
+    "meterReading": {
+      "@id": "gridx:meterReading"
+    },
+    "MeasurementGridMeterReading": "gridx:MeasurementGridMeterReading",
+    "InverterMeasurement": "gridx:InverterMeasurement",
+    "gridFrequency": {
+      "@id": "gridx:gridFrequency",
+      "@type": "xsd:integer"
+    },
+    "acCurrent": {
+      "@id": "gridx:acCurrent",
+      "@type": "xsd:integer"
+    },
+    "l1ACCurrent": {
+      "@id": "gridx:l1ACCurrent",
+      "@type": "xsd:integer"
+    },
+    "l2ACCurrent": {
+      "@id": "gridx:l2ACCurrent",
+      "@type": "xsd:integer"
+    },
+    "l3ACCurrent": {
+      "@id": "gridx:l3ACCurrent",
+      "@type": "xsd:integer"
+    },
+    "l1ACVoltage": {
+      "@id": "gridx:l1ACVoltage",
+      "@type": "xsd:integer"
+    },
+    "l2ACVoltage": {
+      "@id": "gridx:l2ACVoltage",
+      "@type": "xsd:integer"
+    },
+    "l3ACVoltage": {
+      "@id": "gridx:l3ACVoltage",
+      "@type": "xsd:integer"
+    },
+    "acActivePower": {
+      "@id": "gridx:acActivePower",
+      "@type": "xsd:integer"
+    },
+    "acReactivePower": {
+      "@id": "gridx:acReactivePower",
+      "@type": "xsd:integer"
+    },
+    "acApparentPower": {
+      "@id": "gridx:acApparentPower",
+      "@type": "xsd:integer"
+    },
+    "dcCurrent": {
+      "@id": "gridx:dcCurrent",
+      "@type": "xsd:integer"
+    },
+    "dcVoltage": {
+      "@id": "gridx:dcVoltage",
+      "@type": "xsd:integer"
+    },
+    "dcPower": {
+      "@id": "gridx:dcPower",
+      "@type": "xsd:integer"
+    },
+    "AUXMeterMeasurement": "gridx:AUXMeterMeasurement",
+    "l1ActivePower": {
+      "@id": "gridx:l1ActivePower",
+      "@type": "xsd:integer"
+    },
+    "l1ActivePowerReadingPositive": {
+      "@id": "gridx:l1ActivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l1ActivePowerReadingNegative": {
+      "@id": "gridx:l1ActivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l1ReactivePower": {
+      "@id": "gridx:l1ReactivePower",
+      "@type": "xsd:integer"
+    },
+    "l1ReactivePowerReadingPositive": {
+      "@id": "gridx:l1ReactivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l1ReactivePowerReadingNegative": {
+      "@id": "gridx:l1ReactivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l1ApparentPower": {
+      "@id": "gridx:l1ApparentPower",
+      "@type": "xsd:integer"
+    },
+    "l1ApparentPowerReadingPositive": {
+      "@id": "gridx:l1ApparentPowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l1ApparentPowerReadingNegative": {
+      "@id": "gridx:l1ApparentPowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l1Current": {
+      "@id": "gridx:l1Current",
+      "@type": "xsd:integer"
+    },
+    "l1Voltage": {
+      "@id": "gridx:l1Voltage",
+      "@type": "xsd:integer"
+    },
+    "l1ImportPowerLimit": {
+      "@id": "gridx:l1ImportPowerLimit",
+      "@type": "xsd:integer"
+    },
+    "l2ActivePower": {
+      "@id": "gridx:l2ActivePower",
+      "@type": "xsd:integer"
+    },
+    "l2ActivePowerReadingPositive": {
+      "@id": "gridx:l2ActivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l2ActivePowerReadingNegative": {
+      "@id": "gridx:l2ActivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l2ReactivePower": {
+      "@id": "gridx:l2ReactivePower",
+      "@type": "xsd:integer"
+    },
+    "l2ReactivePowerReadingPositive": {
+      "@id": "gridx:l2ReactivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l2ReactivePowerReadingNegative": {
+      "@id": "gridx:l2ReactivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l2ApparentPower": {
+      "@id": "gridx:l2ApparentPower",
+      "@type": "xsd:integer"
+    },
+    "l2ApparentPowerReadingPositive": {
+      "@id": "gridx:l2ApparentPowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l2ApparentPowerReadingNegative": {
+      "@id": "gridx:l2ApparentPowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l2Current": {
+      "@id": "gridx:l2Current",
+      "@type": "xsd:integer"
+    },
+    "l2Voltage": {
+      "@id": "gridx:l2Voltage",
+      "@type": "xsd:integer"
+    },
+    "l2ImportPowerLimit": {
+      "@id": "gridx:l2ImportPowerLimit",
+      "@type": "xsd:integer"
+    },
+    "l3ActivePower": {
+      "@id": "gridx:l3ActivePower",
+      "@type": "xsd:integer"
+    },
+    "l3ActivePowerReadingPositive": {
+      "@id": "gridx:l3ActivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l3ActivePowerReadingNegative": {
+      "@id": "gridx:l3ActivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l3ReactivePower": {
+      "@id": "gridx:l3ReactivePower",
+      "@type": "xsd:integer"
+    },
+    "l3ReactivePowerReadingPositive": {
+      "@id": "gridx:l3ReactivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l3ReactivePowerReadingNegative": {
+      "@id": "gridx:l3ReactivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l3ApparentPower": {
+      "@id": "gridx:l3ApparentPower",
+      "@type": "xsd:integer"
+    },
+    "l3ApparentPowerReadingPositive": {
+      "@id": "gridx:l3ApparentPowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "l3ApparentPowerReadingNegative": {
+      "@id": "gridx:l3ApparentPowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "l3Current": {
+      "@id": "gridx:l3Current",
+      "@type": "xsd:integer"
+    },
+    "l3Voltage": {
+      "@id": "gridx:l3Voltage",
+      "@type": "xsd:integer"
+    },
+    "l3ImportPowerLimit": {
+      "@id": "gridx:l3ImportPowerLimit",
+      "@type": "xsd:integer"
+    },
+    "sumActivePower": {
+      "@id": "gridx:sumActivePower",
+      "@type": "xsd:integer"
+    },
+    "sumActivePowerReadingPositive": {
+      "@id": "gridx:sumActivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "sumActivePowerReadingNegative": {
+      "@id": "gridx:sumActivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "sumApparentPower": {
+      "@id": "gridx:sumApparentPower",
+      "@type": "xsd:integer"
+    },
+    "sumApparentPowerReadingPositive": {
+      "@id": "gridx:sumApparentPowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "sumApparentPowerReadingNegative": {
+      "@id": "gridx:sumApparentPowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "sumReactivePower": {
+      "@id": "gridx:sumReactivePower",
+      "@type": "xsd:integer"
+    },
+    "sumReactivePowerReadingPositive": {
+      "@id": "gridx:sumReactivePowerReadingPositive",
+      "@type": "xsd:integer"
+    },
+    "sumReactivePowerReadingNegative": {
+      "@id": "gridx:sumReactivePowerReadingNegative",
+      "@type": "xsd:integer"
+    },
+    "sumImportPowerLimit": {
+      "@id": "gridx:sumImportPowerLimit",
+      "@type": "xsd:integer"
+    },
+    "sumPowerFactor": {
+      "@id": "gridx:sumPowerFactor",
+      "@type": "xsd:integer"
+    },
+    "EnergyManagementMeasurement": "gridx:EnergyManagementMeasurement",
+    "strategyID": {
+      "@id": "gridx:strategyID",
+      "@type": "xsd:string"
+    },
+    "dynamicFeedInCurtailment": {
+      "@id": "gridx:dynamicFeedInCurtailment",
+      "@type": "xsd:boolean"
+    },
+    "prognosisBasedBatteryCharging": {
+      "@id": "gridx:prognosisBasedBatteryCharging",
+      "@type": "xsd:boolean"
+    },
+    "activePowerSetpoint": {
+      "@id": "gridx:activePowerSetpoint",
+      "@type": "xsd:integer"
+    },
+    "activePowerSetpointSystemicError": {
+      "@id": "gridx:activePowerSetpointSystemicError",
+      "@type": "xsd:integer"
+    },
+    "l1CurrentSetpoint": {
+      "@id": "gridx:l1CurrentSetpoint",
+      "@type": "xsd:integer"
+    },
+    "l2CurrentSetpoint": {
+      "@id": "gridx:l2CurrentSetpoint",
+      "@type": "xsd:integer"
+    },
+    "l3CurrentSetpoint": {
+      "@id": "gridx:l3CurrentSetpoint",
+      "@type": "xsd:integer"
+    },
+    "maxStateOfChargeAfterMaxFeedIn": {
+      "@id": "gridx:maxStateOfChargeAfterMaxFeedIn",
+      "@type": "xsd:integer"
+    },
+    "predictedEnergyOutput": {
+      "@id": "gridx:predictedEnergyOutput",
+      "@type": "xsd:integer"
+    },
+    "energyOverFeedInCumulatedDaily": {
+      "@id": "gridx:energyOverFeedInCumulatedDaily",
+      "@type": "xsd:integer"
+    },
+    "EVChargingStationMeasurement": "gridx:EVChargingStationMeasurement",
+    "realPower": {
+      "@id": "gridx:realPower",
+      "@type": "xsd:integer"
+    },
+    "powerFactor": {
+      "@id": "gridx:powerFactor",
+      "@type": "xsd:integer"
+    },
+    "l1RealPower": {
+      "@id": "gridx:l1RealPower",
+      "@type": "xsd:integer"
+    },
+    "l2RealPower": {
+      "@id": "gridx:l2RealPower",
+      "@type": "xsd:integer"
+    },
+    "l3RealPower": {
+      "@id": "gridx:l3RealPower",
+      "@type": "xsd:integer"
+    },
+    "temperature": {
+      "@id": "gridx:temperature",
+      "@type": "xsd:integer"
+    },
+    "maxCharge": {
+      "@id": "gridx:maxCharge",
+      "@type": "xsd:integer"
+    },
+    "minCharge": {
+      "@id": "gridx:minCharge",
+      "@type": "xsd:integer"
+    },
+    "maxDischarge": {
+      "@id": "gridx:maxDischarge",
+      "@type": "xsd:integer"
+    },
+    "stationState": {
+      "@id": "gridx:stationState",
+      "@type": "xsd:string"
+    },
+    "plugState": {
+      "@id": "gridx:plugState",
+      "@type": "xsd:string"
+    },
+    "pluggedIn": {
+      "@id": "gridx:pluggedIn",
+      "@type": "xsd:boolean"
+    },
+    "tokenID": {
+      "@id": "gridx:tokenID",
+      "@type": "xsd:string"
+    },
+    "HeatPumpMeasurement": "gridx:HeatPumpMeasurement",
+    "applianceID": {
+      "@id": "gridx:applianceID",
+      "@type": "xsd:string"
+    },
+    "power": {
+      "@id": "gridx:power",
+      "@type": "xsd:decimal"
+    },
+    "sgReadyState": {
+      "@id": "gridx:sgReadyState",
+      "@type": "xsd:string"
+    },
+    "MeasurementHeating": "gridx:MeasurementHeating",
+    "powerL1": {
+      "@id": "gridx:powerL1",
+      "@type": "xsd:decimal"
+    },
+    "powerL2": {
+      "@id": "gridx:powerL2",
+      "@type": "xsd:decimal"
+    },
+    "powerL3": {
+      "@id": "gridx:powerL3",
+      "@type": "xsd:decimal"
+    },
+    "minTemperature": {
+      "@id": "gridx:minTemperature",
+      "@type": "xsd:decimal"
+    },
+    "maxTemperature": {
+      "@id": "gridx:maxTemperature",
+      "@type": "xsd:decimal"
+    },
+    "MeasurementAppliance": "gridx:MeasurementAppliance",
+    "BatteryMeasurementRaw": "gridx:BatteryMeasurementRaw",
+    "stateOfHealth": {
+      "@id": "gridx:stateOfHealth",
+      "@type": "xsd:integer"
+    },
+    "presentCharge": {
+      "@id": "gridx:presentCharge",
+      "@type": "xsd:integer"
+    },
+    "presentDischarge": {
+      "@id": "gridx:presentDischarge",
+      "@type": "xsd:integer"
+    },
+    "HeatPumpMeasurementRaw": "gridx:HeatPumpMeasurementRaw",
+    "minPower": {
+      "@id": "gridx:minPower",
+      "@type": "xsd:integer"
+    },
+    "maxPower": {
+      "@id": "gridx:maxPower",
+      "@type": "xsd:integer"
+    },
+    "readyState": {
+      "@id": "gridx:readyState",
+      "@type": "xsd:string"
+    },
+    "averageTemperature": {
+      "@id": "gridx:averageTemperature",
+      "@type": "xsd:decimal"
+    },
+    "controlledTemperature": {
+      "@id": "gridx:controlledTemperature",
+      "@type": "xsd:decimal"
+    },
+    "baseLineTemperature": {
+      "@id": "gridx:baseLineTemperature",
+      "@type": "xsd:decimal"
+    },
+    "heatSourceTemperature": {
+      "@id": "gridx:heatSourceTemperature",
+      "@type": "xsd:decimal"
+    },
+    "outdoorTemperature": {
+      "@id": "gridx:outdoorTemperature",
+      "@type": "xsd:decimal"
+    },
+    "operationStatus": {
+      "@id": "gridx:operationStatus",
+      "@type": "xsd:string"
+    },
+    "energyHeating": {
+      "@id": "gridx:energyHeating",
+      "@type": "xsd:decimal"
+    },
+    "energyDrinkingHotWater": {
+      "@id": "gridx:energyDrinkingHotWater",
+      "@type": "xsd:decimal"
+    },
+    "BatteryMeasurement": "gridx:BatteryMeasurement",
+    "remainingCharge": {
+      "@id": "gridx:remainingCharge",
+      "@type": "xsd:decimal"
+    },
+    "EVStationMeasurement": "gridx:EVStationMeasurement",
+    "readingTotal": {
+      "@id": "gridx:readingTotal",
+      "@type": "xsd:decimal"
+    },
+    "readingTariff1": {
+      "@id": "gridx:readingTariff1",
+      "@type": "xsd:decimal"
+    },
+    "readingTariff2": {
+      "@id": "gridx:readingTariff2",
+      "@type": "xsd:decimal"
+    },
+    "AbstractPowerLimitSchedule": "gridx:AbstractPowerLimitSchedule",
+    "title": {
+      "@id": "gridx:title",
+      "@type": "xsd:string"
+    },
+    "timezone": {
+      "@id": "gridx:timezone",
+      "@type": "xsd:string"
+    },
+    "timeframes": {
+      "@id": "gridx:timeframes",
+      "@container": "@list"
+    },
+    "recurrence": {
+      "@id": "gridx:recurrence"
+    },
+    "PowerLimitIntervals": "gridx:PowerLimitIntervals",
+    "intervals": {
+      "@id": "gridx:intervals",
+      "@container": "@list"
+    },
+    "AbstractProductFunctionality": "gridx:AbstractProductFunctionality",
+    "hide": {
+      "@id": "gridx:hide",
+      "@type": "xsd:boolean"
+    },
+    "AbstractProductOption": "gridx:AbstractProductOption",
+    "LoginEvent": "gridx:LoginEvent",
+    "type": {
+      "@id": "gridx:type",
+      "@type": "xsd:string"
+    },
+    "ip": {
+      "@id": "gridx:ip",
+      "@type": "xsd:string"
+    },
+    "UserCreationRequest": "gridx:UserCreationRequest",
+    "UserSelfUpdateRequest": "gridx:UserSelfUpdateRequest",
+    "UserPartialUpdateRequest": "gridx:UserPartialUpdateRequest",
+    "LanguageUpdateRequest": "gridx:LanguageUpdateRequest",
+    "ClusterMeasurement": "gridx:ClusterMeasurement",
+    "EMobilityTimeOfUseSettings": "gridx:EMobilityTimeOfUseSettings",
+    "enabled": {
+      "@id": "gridx:enabled",
+      "@type": "xsd:boolean"
+    },
+    "energy": {
+      "@id": "gridx:energy"
+    },
+    "tariff": {
+      "@id": "gridx:tariff"
+    },
+    "EMobilityTimeOfUseSettingsUpdate": "gridx:EMobilityTimeOfUseSettingsUpdate",
+    "EnergyGuarantee": "gridx:EnergyGuarantee",
+    "minEnergy": {
+      "@id": "gridx:minEnergy",
+      "@type": "xsd:integer"
+    },
+    "minDuration": {
+      "@id": "gridx:minDuration",
+      "@type": "xsd:string"
+    },
+    "OptimizationParameters": "gridx:OptimizationParameters",
+    "parkedFrom": {
+      "@id": "gridx:parkedFrom",
+      "@type": "xsd:string"
+    },
+    "parkedUntil": {
+      "@id": "gridx:parkedUntil",
+      "@type": "xsd:string"
+    },
+    "percentile": {
+      "@id": "gridx:percentile",
+      "@type": "xsd:decimal"
+    },
+    "ChargingPriority": "gridx:ChargingPriority",
+    "priority": {
+      "@id": "gridx:priority",
+      "@type": "xsd:integer"
+    },
+    "AssetBySerialNumber": "gridx:AssetBySerialNumber",
+    "serialNumber": {
+      "@id": "gridx:serialNumber",
+      "@type": "xsd:string"
+    },
+    "connectorNumber": {
+      "@id": "gridx:connectorNumber",
+      "@type": "xsd:integer"
+    },
+    "FullAssetIdenfication": "gridx:FullAssetIdenfication",
+    "systemID": {
+      "@id": "gridx:systemID",
+      "@type": "xsd:string"
+    },
+    "assetID": {
+      "@id": "gridx:assetID",
+      "@type": "xsd:string"
+    },
+    "evseID": {
+      "@id": "gridx:evseID",
+      "@type": "xsd:string"
+    },
+    "ApplianceAuthenticatedCheckRequest": "gridx:ApplianceAuthenticatedCheckRequest",
+    "manufacturersWithAuthentication": {
+      "@id": "gridx:manufacturersWithAuthentication",
+      "@container": "@list"
+    },
+    "BatteryChargedCheckRequest": "gridx:BatteryChargedCheckRequest",
+    "chargeTolerance": {
+      "@id": "gridx:chargeTolerance",
+      "@type": "xsd:decimal"
+    },
+    "BatteryDischargedCheckRequest": "gridx:BatteryDischargedCheckRequest",
+    "dischargeTolerance": {
+      "@id": "gridx:dischargeTolerance",
+      "@type": "xsd:decimal"
+    },
+    "CheckProfile": "gridx:CheckProfile",
+    "CheckResult": "gridx:CheckResult",
+    "state": {
+      "@id": "gridx:state",
+      "@type": "xsd:string"
+    },
+    "properties": {
+      "@id": "gridx:properties"
+    },
+    "CheckResultState": "gridx:CheckResultState",
+    "ConnectionIssueCheckRequest": "gridx:ConnectionIssueCheckRequest",
+    "shortOutage": {
+      "@id": "gridx:shortOutage",
+      "@type": "xsd:string"
+    },
+    "longOutage": {
+      "@id": "gridx:longOutage",
+      "@type": "xsd:string"
+    },
+    "maxShortOutages": {
+      "@id": "gridx:maxShortOutages",
+      "@type": "xsd:integer"
+    },
+    "ConsumptionProductionCorrelationCheckRequest": "gridx:ConsumptionProductionCorrelationCheckRequest",
+    "maxCorrelation": {
+      "@id": "gridx:maxCorrelation",
+      "@type": "xsd:decimal"
+    },
+    "CosPhiCheckRequest": "gridx:CosPhiCheckRequest",
+    "lowerCosPhiThreshold": {
+      "@id": "gridx:lowerCosPhiThreshold",
+      "@type": "xsd:decimal"
+    },
+    "maxPercentageThreshold": {
+      "@id": "gridx:maxPercentageThreshold",
+      "@type": "xsd:decimal"
+    },
+    "GridFeedInMissingCheckRequest": "gridx:GridFeedInMissingCheckRequest",
+    "powerTolerance": {
+      "@id": "gridx:powerTolerance",
+      "@type": "xsd:decimal"
+    },
+    "toleranceRatio": {
+      "@id": "gridx:toleranceRatio",
+      "@type": "xsd:decimal"
+    },
+    "HealthCheckError": "gridx:HealthCheckError",
+    "status": {
+      "@id": "gridx:status",
+      "@type": "xsd:integer"
+    },
+    "detail": {
+      "@id": "gridx:detail",
+      "@type": "xsd:string"
+    },
+    "instance": {
+      "@id": "gridx:instance",
+      "@type": "xsd:string"
+    },
+    "HealthCheckMetaData": "gridx:HealthCheckMetaData",
+    "profiles": {
+      "@id": "gridx:profiles",
+      "@container": "@list"
+    },
+    "HealthCheckMetaDataResult": "gridx:HealthCheckMetaDataResult",
+    "checks": {
+      "@id": "gridx:checks",
+      "@container": "@list"
+    },
+    "HealthCheckRequest": "gridx:HealthCheckRequest",
+    "systems": {
+      "@id": "gridx:systems",
+      "@container": "@list"
+    },
+    "profile": {
+      "@id": "gridx:profile",
+      "@type": "xsd:string"
+    },
+    "HealthCheckResult": "gridx:HealthCheckResult",
+    "results": {
+      "@id": "gridx:results",
+      "@container": "@list"
+    },
+    "IndividualCheckRequest": "gridx:IndividualCheckRequest",
+    "params": {
+      "@id": "gridx:params"
+    },
+    "NighttimePVProductionCheckRequest": "gridx:NighttimePVProductionCheckRequest",
+    "nightTimeTolerance": {
+      "@id": "gridx:nightTimeTolerance",
+      "@type": "xsd:string"
+    },
+    "nightProductionTolerance": {
+      "@id": "gridx:nightProductionTolerance",
+      "@type": "xsd:decimal"
+    },
+    "PeakProductionExceededCheckRequest": "gridx:PeakProductionExceededCheckRequest",
+    "exceedingProductionTolerance": {
+      "@id": "gridx:exceedingProductionTolerance",
+      "@type": "xsd:decimal"
+    },
+    "SystemCheckResult": "gridx:SystemCheckResult",
+    "system": {
+      "@id": "gridx:system"
+    },
+    "SystemID": "gridx:SystemID",
+    "gatewaySerialNumber": {
+      "@id": "gridx:gatewaySerialNumber",
+      "@type": "xsd:string"
+    },
+    "wizardStatus": {
+      "@id": "gridx:wizardStatus",
+      "@type": "xsd:string"
+    },
+    "checkType": "gridx:checkType",
+    "Intent": "gridx:Intent",
+    "Modifier": "gridx:Modifier",
+    "AssetIntentCurrent": "gridx:AssetIntentCurrent",
+    "intent": {
+      "@id": "gridx:intent",
+      "@type": "xsd:string"
+    },
+    "modifiers": {
+      "@id": "gridx:modifiers",
+      "@container": "@list"
+    },
+    "reportedAt": {
+      "@id": "gridx:reportedAt",
+      "@type": "xsd:dateTime"
+    },
+    "IntentSegment": "gridx:IntentSegment",
+    "TimeInterval": "gridx:TimeInterval",
+    "AssetIntentHistory": "gridx:AssetIntentHistory",
+    "intentSegments": {
+      "@id": "gridx:intentSegments",
+      "@container": "@list"
+    },
+    "modifierSegments": {
+      "@id": "gridx:modifierSegments"
+    },
+    "ScanConfiguration": "gridx:ScanConfiguration",
+    "configuration": {
+      "@id": "gridx:configuration",
+      "@container": "@list"
+    },
+    "ScanConfigurationSet": "gridx:ScanConfigurationSet",
+    "InventoryAbstractLocation": "gridx:InventoryAbstractLocation",
+    "LocationCountryCode": "gridx:LocationCountryCode",
+    "MetadataWizard": "gridx:MetadataWizard",
+    "step": {
+      "@id": "gridx:step",
+      "@type": "xsd:string"
+    },
+    "firstCompletedAt": {
+      "@id": "gridx:firstCompletedAt",
+      "@type": "xsd:dateTime"
+    },
+    "version": {
+      "@id": "gridx:version",
+      "@type": "xsd:integer"
+    },
+    "SyncEntitySettings": "gridx:SyncEntitySettings",
+    "syncInterval": {
+      "@id": "gridx:syncInterval",
+      "@type": "xsd:decimal"
+    },
+    "ttl": {
+      "@id": "gridx:ttl",
+      "@type": "xsd:decimal"
+    },
+    "disabled": {
+      "@id": "gridx:disabled",
+      "@type": "xsd:boolean"
+    },
+    "DerAPISettings": "gridx:DerAPISettings",
+    "enabledCloudAPI": {
+      "@id": "gridx:enabledCloudAPI",
+      "@type": "xsd:boolean"
+    },
+    "constraints": {
+      "@id": "gridx:constraints"
+    },
+    "flexibilities": {
+      "@id": "gridx:flexibilities"
+    },
+    "MetadataEMS": "gridx:MetadataEMS",
+    "agreedEMSTerms": {
+      "@id": "gridx:agreedEMSTerms",
+      "@type": "xsd:boolean"
+    },
+    "enabledEMS": {
+      "@id": "gridx:enabledEMS",
+      "@type": "xsd:boolean"
+    },
+    "agreedDynamicPVControlTerms": {
+      "@id": "gridx:agreedDynamicPVControlTerms",
+      "@type": "xsd:boolean"
+    },
+    "enabledDynamicPVControl": {
+      "@id": "gridx:enabledDynamicPVControl",
+      "@type": "xsd:boolean"
+    },
+    "enabledInverterGCPControl": {
+      "@id": "gridx:enabledInverterGCPControl",
+      "@type": "xsd:boolean"
+    },
+    "agreedForecastBasedEMSTerms": {
+      "@id": "gridx:agreedForecastBasedEMSTerms",
+      "@type": "xsd:boolean"
+    },
+    "enabledForecastBasedEMS": {
+      "@id": "gridx:enabledForecastBasedEMS",
+      "@type": "xsd:boolean"
+    },
+    "agreedPriorityConfigurationTerms": {
+      "@id": "gridx:agreedPriorityConfigurationTerms",
+      "@type": "xsd:boolean"
+    },
+    "enabledPriorityConfiguration": {
+      "@id": "gridx:enabledPriorityConfiguration",
+      "@type": "xsd:boolean"
+    },
+    "agreedPowerManagementTerms": {
+      "@id": "gridx:agreedPowerManagementTerms",
+      "@type": "xsd:boolean"
+    },
+    "enabledPowerManagement": {
+      "@id": "gridx:enabledPowerManagement",
+      "@type": "xsd:boolean"
+    },
+    "enabledStaticPowerManagement": {
+      "@id": "gridx:enabledStaticPowerManagement",
+      "@type": "xsd:boolean"
+    },
+    "enabledPowerImportPeakOptimization": {
+      "@id": "gridx:enabledPowerImportPeakOptimization",
+      "@type": "xsd:boolean"
+    },
+    "powerImportPeakPerOptimizationInterval": {
+      "@id": "gridx:powerImportPeakPerOptimizationInterval",
+      "@type": "xsd:decimal"
+    },
+    "powerImportPeakPerOptimizationIntervalmVA": {
+      "@id": "gridx:powerImportPeakPerOptimizationIntervalmVA",
+      "@type": "xsd:decimal"
+    },
+    "enabledBatteryFullGridCharge": {
+      "@id": "gridx:enabledBatteryFullGridCharge",
+      "@type": "xsd:boolean"
+    },
+    "enabledLessConstrainingSOCLimits": {
+      "@id": "gridx:enabledLessConstrainingSOCLimits",
+      "@type": "xsd:boolean"
+    },
+    "derAPISettings": {
+      "@id": "gridx:derAPISettings"
+    },
+    "enabledTimeOfUseOptimization": {
+      "@id": "gridx:enabledTimeOfUseOptimization",
+      "@type": "xsd:boolean"
+    },
+    "disableAveragePmaxCalculation": {
+      "@id": "gridx:disableAveragePmaxCalculation",
+      "@type": "xsd:boolean"
+    },
+    "excludeApplianceTypes": {
+      "@id": "gridx:excludeApplianceTypes",
+      "@container": "@list"
+    },
+    "evChargingReallocationTolerance": {
+      "@id": "gridx:evChargingReallocationTolerance",
+      "@type": "xsd:decimal"
+    },
+    "enabledPowerWindowHysteresis": {
+      "@id": "gridx:enabledPowerWindowHysteresis",
+      "@type": "xsd:boolean"
+    },
+    "MetadataEnergy": "gridx:MetadataEnergy",
+    "installer": {
+      "@id": "gridx:installer",
+      "@type": "xsd:string"
+    },
+    "norminalPower": {
+      "@id": "gridx:norminalPower",
+      "@type": "xsd:decimal"
+    },
+    "nominalPower": {
+      "@id": "gridx:nominalPower",
+      "@type": "xsd:decimal"
+    },
+    "curtailment": {
+      "@id": "gridx:curtailment",
+      "@type": "xsd:decimal"
+    },
+    "heatingSystem": {
+      "@id": "gridx:heatingSystem",
+      "@type": "xsd:string"
+    },
+    "ems": {
+      "@id": "gridx:ems"
+    },
+    "smartMeterInstallationTimestamp": {
+      "@id": "gridx:smartMeterInstallationTimestamp",
+      "@type": "xsd:dateTime"
+    },
+    "MetadataEnergySupplier": "gridx:MetadataEnergySupplier",
+    "unitPrice": {
+      "@id": "gridx:unitPrice",
+      "@type": "xsd:decimal"
+    },
+    "installment": {
+      "@id": "gridx:installment",
+      "@type": "xsd:decimal"
+    },
+    "baseFee": {
+      "@id": "gridx:baseFee",
+      "@type": "xsd:decimal"
+    },
+    "feedInTariff": {
+      "@id": "gridx:feedInTariff",
+      "@type": "xsd:decimal"
+    },
+    "expectedConsumption": {
+      "@id": "gridx:expectedConsumption",
+      "@type": "xsd:decimal"
+    },
+    "MetadataSmartMeter": "gridx:MetadataSmartMeter",
+    "installed": {
+      "@id": "gridx:installed",
+      "@type": "xsd:boolean"
+    },
+    "hasInstallationDate": {
+      "@id": "gridx:hasInstallationDate",
+      "@type": "xsd:boolean"
+    },
+    "SystemMetadata": "gridx:SystemMetadata",
+    "wizard": {
+      "@id": "gridx:wizard"
+    },
+    "energySupplier": {
+      "@id": "gridx:energySupplier"
+    },
+    "smartMeter": {
+      "@id": "gridx:smartMeter"
+    },
+    "AbstractSystem": "gridx:AbstractSystem",
+    "priorities": {
+      "@id": "gridx:priorities",
+      "@container": "@list"
+    },
+    "appliancePriorities": {
+      "@id": "gridx:appliancePriorities",
+      "@container": "@list"
+    },
+    "plan": {
+      "@id": "gridx:plan",
+      "@type": "xsd:string"
+    },
+    "operatingSince": {
+      "@id": "gridx:operatingSince",
+      "@type": "xsd:dateTime"
+    },
+    "curtailmentStrategy": {
+      "@id": "gridx:curtailmentStrategy",
+      "@type": "xsd:string"
+    },
+    "location": {
+      "@id": "gridx:location"
+    },
+    "metadata": {
+      "@id": "gridx:metadata"
+    },
+    "AbstractGateway": "gridx:AbstractGateway",
+    "debugModeUntil": {
+      "@id": "gridx:debugModeUntil",
+      "@type": "xsd:dateTime"
+    },
+    "GatewayType": "gridx:GatewayType",
+    "ConnectionStatus": "gridx:ConnectionStatus",
+    "contactedAt": {
+      "@id": "gridx:contactedAt",
+      "@type": "xsd:dateTime"
+    },
+    "statusChangedAt": {
+      "@id": "gridx:statusChangedAt",
+      "@type": "xsd:dateTime"
+    },
+    "AdditionalIdentifier": "gridx:AdditionalIdentifier",
+    "service": {
+      "@id": "gridx:service",
+      "@type": "xsd:string"
+    },
+    "identifier": {
+      "@id": "gridx:identifier",
+      "@type": "xsd:string"
+    },
+    "InventoryAccountSolution": "gridx:InventoryAccountSolution",
+    "InventoryAbstractAccount": "gridx:InventoryAbstractAccount",
+    "EmbeddedAccounts": "gridx:EmbeddedAccounts",
+    "accounts": {
+      "@id": "gridx:accounts",
+      "@container": "@list"
+    },
+    "SystemUserLanguage": "gridx:SystemUserLanguage",
+    "SystemUser": "gridx:SystemUser",
+    "SystemAccountAssignment": "gridx:SystemAccountAssignment",
+    "moveSystemsAndCustomers": {
+      "@id": "gridx:moveSystemsAndCustomers",
+      "@type": "xsd:boolean"
+    },
+    "moveVendorID": {
+      "@id": "gridx:moveVendorID",
+      "@type": "xsd:boolean"
+    },
+    "uuids": {
+      "@id": "gridx:uuids",
+      "@container": "@list"
+    },
+    "SystemAccountUnAssignment": "gridx:SystemAccountUnAssignment",
+    "AssetConnectionStatus": "gridx:AssetConnectionStatus",
+    "BaseAsset": "gridx:BaseAsset",
+    "connectionStatus": {
+      "@id": "gridx:connectionStatus"
+    },
+    "gatewayType": {
+      "@id": "gridx:gatewayType",
+      "@type": "xsd:string"
+    },
+    "parent": {
+      "@id": "gridx:parent",
+      "@type": "xsd:string"
+    },
+    "serialnumber": {
+      "@id": "gridx:serialnumber",
+      "@type": "xsd:string"
+    },
+    "gateway": {
+      "@id": "gridx:gateway"
+    },
+    "AssetHardwareStatus": "gridx:AssetHardwareStatus",
+    "action": {
+      "@id": "gridx:action",
+      "@type": "xsd:string"
+    },
+    "errorCode": {
+      "@id": "gridx:errorCode",
+      "@type": "xsd:string"
+    },
+    "BatteryAsset": "gridx:BatteryAsset",
+    "controllable": {
+      "@id": "gridx:controllable",
+      "@type": "xsd:boolean"
+    },
+    "dischargeLimit": {
+      "@id": "gridx:dischargeLimit",
+      "@type": "xsd:integer"
+    },
+    "rechargeLimit": {
+      "@id": "gridx:rechargeLimit",
+      "@type": "xsd:integer"
+    },
+    "controlSettings": {
+      "@id": "gridx:controlSettings"
+    },
+    "BaseEVStationAsset": "gridx:BaseEVStationAsset",
+    "firmware": {
+      "@id": "gridx:firmware",
+      "@type": "xsd:string"
+    },
+    "IODeviceAssetInputAction": "gridx:IODeviceAssetInputAction",
+    "value": {
+      "@id": "gridx:value",
+      "@type": "xsd:decimal"
+    },
+    "IODeviceAssetInputChannel": "gridx:IODeviceAssetInputChannel",
+    "bitMask": {
+      "@id": "gridx:bitMask",
+      "@type": "xsd:string"
+    },
+    "bitValue": {
+      "@id": "gridx:bitValue",
+      "@type": "xsd:string"
+    },
+    "actions": {
+      "@id": "gridx:actions",
+      "@container": "@list"
+    },
+    "IODeviceAssetOutputActionSGReady": "gridx:IODeviceAssetOutputActionSGReady",
+    "pMin": {
+      "@id": "gridx:pMin",
+      "@type": "xsd:decimal"
+    },
+    "pMax": {
+      "@id": "gridx:pMax",
+      "@type": "xsd:decimal"
+    },
+    "IODeviceAssetOutputAction": "gridx:IODeviceAssetOutputAction",
+    "sgReady": {
+      "@id": "gridx:sgReady"
+    },
+    "IODeviceAssetOutputChannel": "gridx:IODeviceAssetOutputChannel",
+    "BaseEVAsset": "gridx:BaseEVAsset",
+    "year": {
+      "@id": "gridx:year",
+      "@type": "xsd:integer"
+    },
+    "AssetsList": "gridx:AssetsList",
+    "assets": {
+      "@id": "gridx:assets",
+      "@container": "@list"
+    },
+    "BaseAssetCreate": "gridx:BaseAssetCreate",
+    "AbstractBatteryInformation": "gridx:AbstractBatteryInformation",
+    "PVArray": "gridx:PVArray",
+    "tilt": {
+      "@id": "gridx:tilt",
+      "@type": "xsd:integer"
+    },
+    "azimuth": {
+      "@id": "gridx:azimuth",
+      "@type": "xsd:integer"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "gridX API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects gridX's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-09) from openapi/gridx-ai-openapi.yml.",
+  "dcterms:created": "2026-10-09",
+  "dcterms:source": [
+    "openapi/gridx-ai-openapi.yml"
+  ]
+}

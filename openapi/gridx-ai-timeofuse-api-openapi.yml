@@ -1,0 +1,4573 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Time Of Use API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged TimeOfUse across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: TimeOfUse
+  x-displayName: TimeOfUse
+paths:
+  /systems/{systemID}/timeofuse/decisions:
+    get:
+      operationId: getSystemTimeOfUseDecisions
+      summary: Get time of use optimization decisions of a system
+      description: 'Get optimization decisions and associated metrics for a system
+
+        with `system_id`,
+
+
+        within given time interval. Note that decisions may not always cover the complete
+
+        time interval.
+
+
+        Only decisions with `start_at` in the past are returned.
+
+
+        The maximum time interval that can be requested is 48 hours.'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        description: 'Requested time interval, formatted in ISO8601.
+
+
+          In this format the start and end point of the interval are formatted according
+
+          to RFC3339 and separated by a slash "/".
+
+          '
+        in: query
+        required: true
+        allowReserved: true
+        example: 2021-12-24T18:21:00Z/2021-12-25T18:21:00Z
+        schema:
+          type: string
+          format: datetime
+      responses:
+        '200':
+          description: Array of optimization decisions and associated metrics.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: Collection of ToU decisions and decision metrics.
+                type: object
+                properties:
+                  decisions:
+                    type: array
+                    items:
+                      description: ToU decision entry.
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                        to:
+                          type: string
+                          format: date-time
+                        case_name:
+                          type: string
+                          enum:
+                          - BATTERY_SELF_CONSUMPTION
+                          - BATTERY_NO_DISCHARGE
+                          - BATTERY_CHARGE_FROM_GRID
+                          - BATTERY_CHARGE_FROM_SURPLUS
+                          - BATTERY_DISCHARGE_TO_GRID
+                          - BATTERY_NO_CHARGE
+                          - BATTERY_NO_CHARGE_NO_DISCHARGE
+                          - BATTERY_LIMIT_CHARGE
+                          - BATTERY_LIMIT_DISCHARGE
+                          - BATTERY_UNDEFINED_DECISION
+                          - EV_NO_DECISION
+                          - EV_CHARGE_FROM_GRID
+                          - EV_NO_CHARGE
+                          - EV_LIMIT_CHARGE
+                          - EV_LIMIT_DISCHARGE
+                          - EV_CHARGE_WITH_MIN_POWER
+                          - EV_UNDEFINED_DECISION
+                          - HEATPUMP_RECOMMEND_ON
+                          - HEATPUMP_AUTO
+                          - GCP_EXPORT_LIMIT
+                          - GCP_NO_LIMIT
+                          - PV_CURTAILMENT
+                          - PV_NO_DECISION
+                          example: BATTERY_CHARGE_FROM_GRID
+                          description: "Identifies underlying the decision case that this decision is based on.\n\nThe following cases are implemented:\n\n1. `BATTERY_SELF_CONSUMPTION`: No time-of-use decision applied for the battery.\n  In this case, the default self-consumption maximization logic applies to\n  the battery.\n\n2. `BATTERY_NO_DISCHARGE`: Do not discharge the battery, even if there is\n  demand and no PV surplus. Demand is served with power from the grid,\n  instead of discharging the battery.\n\n3. `BATTERY_CHARGE_FROM_GRID`: Charge the battery with power from the grid,\n  instead of only charging the PV surplus. The battery is forced to charge\n  with maximum charging power.\n\n4. `BATTERY_CHARGE_FROM_SURPLUS`: Charge the battery with power from the\n  surplus.\n\n5. `BATTERY_DISCHARGE_TO_GRID`: Discharge the battery into the grid, instead of\n  only discharging to serve demand. Discharge of the battery may coincide\n  with PV surplus, to benefit from high grid export prices. The battery is\n  forced to discharge with maximum power.\n\n6. `BATTERY_NO_CHARGE`: Do not charge the battery, even if there is PV\n  surplus. PV surplus is injected into the grid, instead of charging the\n  battery.\n\n7. `BATTERY_NO_CHARGE_NO_DISCHARGE`: Do not charge or discharge the battery,\n  regardless of PV surplus or insufficient PV production to meet demand.\n\n8. `BATTERY_LIMIT_CHARGE`: Limit the charging power of the battery, even if\n  there is additional PV surplus.\n\n9. `BATTERY_LIMIT_DISCHARGE`: Limit the discharging power of the battery, even\n  if there is additional demand.\n\n10. `BATTERY_UNDEFINED_DECISION`: Decision applied to the battery, but the\n    decision cannot be mapped to any other decision case. This case is used as\n    a fallback for newly implemented decision cases.\n\n11. `EV_NO_DECISION`: No time-of-use decision applied for the EV. In this case,\n    the default charge logic applies to the EV, depending on the charge mode.\n\n12. `EV_CHARGE_FROM_GRID`: Charge the EV with power from the grid, instead of\n    only charging the PV surplus. The EV is forced to charge with maximum\n    charging power.\n\n13. `EV_NO_CHARGE`: Do not charge the EV, even if there is PV surplus.\n\n14. `EV_LIMIT_CHARGE`: Limit the charging power of the EV.\n\n15. `EV_LIMIT_DISCHARGE`: Limit the discharging power of the EV.\n\n16. `EV_CHARGE_WITH_MIN_POWER`: Charge the EV with minimum charging power.\n\n17. `EV_UNDEFINED_DECISION`: Decision applied to the EV, but the decision\n    cannot be mapped to any other decision case. This case is used as a\n    fallback for newly implemented decision cases.\n\n18. `HEATPUMP_RECOMMEND_ON`: Recommending the heat pump to switch on.\n\n19. `HEATPUMP_AUTO`: The heat pump is set to run in its energy-efficient\n    normal mode.\n\n20. `GCP_EXPORT_LIMIT`: The grid export is limited at the grid connection\n    point (GCP).\n\n21. `GCP_NO_LIMIT`: No grid export limit is applied.\n\n22. `PV_CURTAILMENT`: The PV production is curtailed to avoid grid export\n    during periods of negative feed-in prices.\n\n23. `PV_NO_DECISION`: No time-of-use decision applied for the PV."
+                        insight:
+                          description: ToU decision insight entry.
+                          type: object
+                          properties:
+                            motives:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - BATTERY_CHARGE_TO_COVER_LOAD
+                                - BATTERY_CHARGE_TO_DISCHARGE_TO_GRID
+                                - BATTERY_CHARGE_SURPLUS_TO_COVER_LOAD
+                                - BATTERY_CHARGE_SURPLUS_TO_DISCHARGE_TO_GRID
+                                - BATTERY_KEEP_TO_COVER_LOAD
+                                - BATTERY_KEEP_TO_DISCHARGE_TO_GRID
+                                - BATTERY_PREVENT_CHARGE_TO_EXPORT_SURPLUS_AT_HIGH_EXPORT_PRICE
+                                - BATTERY_DISCHARGE_TO_GRID
+                                - BATTERY_DISCHARGE_TO_GRID_TO_FREE_CAPACITY_FOR_WORSE_NEGATIVE_PRICES
+                                - BATTERY_PREVENT_CHARGE_TO_RESERVE_CAPACITY_FOR_WORSE_NEGATIVE_PRICES
+                                - EV_CHARGE_IN_LOW_PRICES
+                                - EV_CHARGE_IN_EXPECTED_SURPLUS
+                                - EV_CHARGE_TO_SATISFY_DESIRED_SOC
+                                - EV_FORCE_CHARGE
+                                - EV_STOP_CHARGE
+                                - EV_KEEP_TO_EXPORT_SURPLUS_AND_CHARGE_FROM_GRID_LATER
+                                - EV_DELAY_CHARGE_TO_LOW_PRICES
+                                - EV_DELAY_CHARGE_TO_SURPLUS
+                                - HEAT_PUMP_RECOMMEND_ON_MOTIVE
+                              example:
+                              - BATTERY_CHARGE_TO_COVER_LOAD
+                              description: 'Identifies the motivation behind a ToU decision. The following
+
+                                insights are implemented:
+
+
+                                1. `BATTERY_CHARGE_TO_COVER_LOAD`: Charge the battery in low `import_price`
+
+                                to cover load at higher import prices (> `break_even_import_price`) between
+
+                                `start_time` and `end_time`.
+
+
+                                2. `BATTERY_CHARGE_TO_DISCHARGE_TO_GRID`: Charge the battery in low `import_price`
+
+                                to discharge to grid at higher export prices (> `break_even_export_price`)
+
+                                between `start_time` and `end_time`.
+
+
+                                3. `BATTERY_CHARGE_SURPLUS_TO_COVER_LOAD`: Charge the battery from surplus
+
+                                to cover load later at higher import prices.
+
+
+                                4. `BATTERY_CHARGE_SURPLUS_TO_DISCHARGE_TO_GRID`: Charge the battery from
+
+                                surplus to discharge to grid at higher export prices.
+
+
+                                5. `BATTERY_KEEP_TO_COVER_LOAD`: Delay battery discharge to cover load
+
+                                at higher import prices (> `break_even_import_price`) between `start_time`
+
+                                and `end_time`.
+
+
+                                6. `BATTERY_KEEP_TO_DISCHARGE_TO_GRID`: Delay battery discharge to the
+
+                                grid at higher export prices (> `break_even_export_price`) between `start_time`
+
+                                and `end_time`.
+
+
+                                7. `BATTERY_PREVENT_CHARGE_TO_EXPORT_SURPLUS_AT_HIGH_EXPORT_PRICE`: Prevent
+
+                                battery charge to allow PV surplus export at high export prices.
+
+
+                                8. `BATTERY_DISCHARGE_TO_GRID`: Discharge the battery into the grid to
+
+                                benefit from high export prices.
+
+
+                                9. `BATTERY_DISCHARGE_TO_GRID_TO_FREE_CAPACITY_FOR_WORSE_NEGATIVE_PRICES`:
+
+                                Discharge the battery during negative export prices to free capacity for
+
+                                charging PV surplus later at an even more negative export price, reducing
+
+                                total grid export cost.
+
+
+                                10. `BATTERY_PREVENT_CHARGE_TO_RESERVE_CAPACITY_FOR_WORSE_NEGATIVE_PRICES`:
+
+                                Prevent battery charge during negative export prices to reserve capacity for
+
+                                charging PV surplus later at an even more negative export price, reducing
+
+                                total grid export cost.
+
+
+                                11. `EV_CHARGE_IN_LOW_PRICES`: Charge the EV earlier in low `import_price`.
+
+                                The desired SoC expected to be met at `end_time`.
+
+
+                                12. `EV_CHARGE_IN_EXPECTED_SURPLUS`: Charge the EV with expected PV surplus.
+
+                                The desired SoC expected to be met at `end_time`.
+
+
+                                13. `EV_CHARGE_TO_SATISFY_DESIRED_SOC`: Force Charge the EV from grid to
+
+                                ensure that the desired SoC at pre-defined departure time (regardless
+
+                                of prices).
+
+
+                                14. `EV_FORCE_CHARGE`: Force Charge the EV from grid regardless the current
+
+                                import price via QUICK charge mode.
+
+
+                                15. `EV_STOP_CHARGE`: Prevent the EV from charging via QUICK charge mode
+
+
+                                16. `EV_KEEP_TO_EXPORT_SURPLUS_AND_CHARGE_FROM_GRID_LATER`: Prevent EV
+
+                                charge to allow PV surplus export at high export prices, and charge EV
+
+                                from grid later at lower import prices.
+
+
+                                17. `EV_DELAY_CHARGE_TO_LOW_PRICES`: Charge EV later at lower import prices.
+
+
+                                18. `EV_DELAY_CHARGE_TO_SURPLUS`: Charge EV later from PV surplus.
+
+
+                                19. `HEAT_PUMP_RECOMMEND_ON_MOTIVE`: Request increased heat pump operation,
+
+                                to avoid potential higher price periods or to use PV surplus.'
+                            importPrice:
+                              type: number
+                              example: 0.1
+                              description: Current import price at which the decision is taken.
+                            breakEvenImportPrice:
+                              type: number
+                              example: 0.1
+                              description: 'Refers to the minimum import price at which using the stored
+
+                                energy later becomes more profitable than importing from grid, while accounting
+
+                                for battery efficiency losses.'
+                            averageImportPrice:
+                              type: number
+                              example: 0.1
+                              description: Average import price at which the stored energy was utilized.
+                            exportPrice:
+                              type: number
+                              example: 0.1
+                              description: Current export price at which the decision is taken.
+                            breakEvenExportPrice:
+                              type: number
+                              example: 0.1
+                              description: 'Refers to the minimum export price at which selling the stored
+
+                                energy to grid later becomes profitable, while accounting for battery
+
+                                efficiency losses.'
+                            averageExportPrice:
+                              type: number
+                              example: 0.1
+                              description: Average export price at which the stored energy was utilized.
+                            from:
+                              type: string
+                              format: date-time
+                              example: '2020-09-21T00:00:00Z'
+                              description: 'Refers to the start time of an upcoming event justifying the
+
+                                current decision (e.g., start of battery discharge to cover load / to
+
+                                grid).'
+                            to:
+                              type: string
+                              format: date-time
+                              example: '2020-09-21T01:00:00Z'
+                              description: 'Refers to the end time of an upcoming event justifying the
+
+                                current decision (e.g., end of battery discharge to cover load / to grid).'
+                          x-readme-ref-name: DecisionInsight
+                        isPriceBasedOptimization:
+                          type: boolean
+                          description: Indicates if the decision is based on price. In most cases, decisions not based on price correspond to the "default" decision for a particular appliance type.
+                      required:
+                      - from
+                      - to
+                      - case_name
+                      - isPriceBasedOptimization
+                      x-readme-ref-name: Decision
+                  metrics:
+                    description: ToU decision metrics.
+                    type: object
+                    properties:
+                      percent_decision_taken:
+                        type: number
+                        format: double
+                        example: 75
+                        description: 'Percentage of the taken decisions as a share of the total possible decisions during this time interval. Taken decisions are all decisions excluding "no-decision" cases.
+
+                          '
+                    required:
+                    - percent_decision_taken
+                    x-readme-ref-name: DecisionMetrics
+                required:
+                - decisions
+                - metrics
+                x-readme-ref-name: Decisions
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/decisions"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/decisions \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/decisions\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/decisions', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/decisions\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/decisions\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/decisions")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/decisions");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/settings:
+    get:
+      operationId: getSystemTimeOfUseSettings
+      summary: Get time of use optimization settings of a system
+      description: Get time of use optimization settings of a system.
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - description: Settings for the Time-of-Use (ToU) optimization feature.
+                  type: object
+                  properties:
+                    enabled:
+                      description: 'If `true`, Time-of-Use (ToU) optimization is enabled for this
+
+                        system.'
+                      type: boolean
+                      example: false
+                    enabledBatteryChargeFromGrid:
+                      description: 'If `true`, the Time-of-Use (ToU) optimization is allowed to
+
+                        trigger charging of the battery while
+
+
+                        simultaneously importing electricity from the grid. Default: `true`'
+                      example: true
+                      type: boolean
+                    enabledDischargeFlexibilityToGrid:
+                      description: 'If `true`, the Time-of-Use optimization is allowed to trigger
+
+                        discharging of electricity from any
+
+
+                        flexibility (battery and EVCS, when EVCS discharge is supported) into
+
+                        the grid. Default: `false`'
+                      example: false
+                      type: boolean
+                    enabledPVCurtailment:
+                      type: boolean
+                      example: false
+                      description: 'If `true`, the Time-of-Use optimization allows curtailment
+
+                        of PV generation to prevent energy surplus feed-in
+
+
+                        during negative export prices.  Default: `false`'
+                    excludeAssetIDs:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      example:
+                      - 550e8400-e29b-41d4-a716-446655440000
+                      - 123e4567-e89b-12d3-a456-426614174000
+                      description: List of all asset IDs within the system that should be excluded from ToU optimization.
+                    systemKind:
+                      deprecated: true
+                      type: string
+                      enum:
+                      - HEMS
+                      - CLOUD_CONNECTOR
+                      example: HEMS
+                      description: '**Deprecated.** This field will be removed in a future release.
+
+
+                        Denotes the system''s general use case. Typical connected systems with a gateway have a `HEMS` system kind.
+
+                        Otherwise, systems with no gateways are denoted as `CLOUD_CONNECTOR` systems.
+
+                        For PUT requests, the default value is already assumed based on the system data.
+
+                        An attempt to PUT or PATCH settings with an invalid system kind leads to an HTTP status code 422."'
+                  x-readme-ref-name: TimeOfUseSettings
+                - required:
+                  - enabled
+                  - enabledBatteryChargeFromGrid
+                  - enabledDischargeFlexibilityToGrid
+                  - enabledPVCurtailment
+                  - excludeAssetIDs
+        '204':
+          description: No time of use setting information found for the given systemID
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/settings"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/settings \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/settings\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/settings', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/settings")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/settings");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      operationId: setSystemTimeOfUseSettings
+      summary: Set time of use optimization settings for a system
+      description: Set time of use optimization settings for a system.
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: skipClusterCreation
+        in: query
+        description: If True, then cluster creation is skipped.
+        example: true
+        required: false
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Settings for the Time-of-Use (ToU) optimization feature.
+              allOf:
+              - description: Settings for the Time-of-Use (ToU) optimization feature.
+                allOf:
+                - description: Settings for the Time-of-Use (ToU) optimization feature.
+                  type: object
+                  properties:
+                    enabled:
+                      description: 'If `true`, Time-of-Use (ToU) optimization is enabled for this
+
+                        system.'
+                      type: boolean
+                      example: false
+                    enabledBatteryChargeFromGrid:
+                      description: 'If `true`, the Time-of-Use (ToU) optimization is allowed to
+
+                        trigger charging of the battery while
+
+
+                        simultaneously importing electricity from the grid. Default: `true`'
+                      example: true
+                      type: boolean
+                    enabledDischargeFlexibilityToGrid:
+                      description: 'If `true`, the Time-of-Use optimization is allowed to trigger
+
+                        discharging of electricity from any
+
+
+                        flexibility (battery and EVCS, when EVCS discharge is supported) into
+
+                        the grid. Default: `false`'
+                      example: false
+                      type: boolean
+                    enabledPVCurtailment:
+                      type: boolean
+                      example: false
+                      description: 'If `true`, the Time-of-Use optimization allows curtailment
+
+                        of PV generation to prevent energy surplus feed-in
+
+
+                        during negative export prices.  Default: `false`'
+                    excludeAssetIDs:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      example:
+                      - 550e8400-e29b-41d4-a716-446655440000
+                      - 123e4567-e89b-12d3-a456-426614174000
+                      description: List of all asset IDs within the system that should be excluded from ToU optimization.
+                    systemKind:
+                      deprecated: true
+                      type: string
+                      enum:
+                      - HEMS
+                      - CLOUD_CONNECTOR
+                      example: HEMS
+                      description: '**Deprecated.** This field will be removed in a future release.
+
+
+                        Denotes the system''s general use case. Typical connected systems with a gateway have a `HEMS` system kind.
+
+                        Otherwise, systems with no gateways are denoted as `CLOUD_CONNECTOR` systems.
+
+                        For PUT requests, the default value is already assumed based on the system data.
+
+                        An attempt to PUT or PATCH settings with an invalid system kind leads to an HTTP status code 422."'
+                  x-readme-ref-name: TimeOfUseSettings
+                - properties:
+                    enabledBatteryChargeFromGrid:
+                      default: true
+                    enabledDischargeFlexibilityToGrid:
+                      default: false
+                    enabledPVCurtailment:
+                      default: false
+                    systemKind:
+                      deprecated: true
+                      example: HEMS
+                  required:
+                  - enabled
+                x-readme-ref-name: TimeOfUseSettingsPut
+              - additionalProperties: false
+              x-readme-ref-name: TimeOfUseSettingsPutStrict
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - description: Settings for the Time-of-Use (ToU) optimization feature.
+                  type: object
+                  properties:
+                    enabled:
+                      description: 'If `true`, Time-of-Use (ToU) optimization is enabled for this
+
+                        system.'
+                      type: boolean
+                      example: false
+                    enabledBatteryChargeFromGrid:
+                      description: 'If `true`, the Time-of-Use (ToU) optimization is allowed to
+
+                        trigger charging of the battery while
+
+
+                        simultaneously importing electricity from the grid. Default: `true`'
+                      example: true
+                      type: boolean
+                    enabledDischargeFlexibilityToGrid:
+                      description: 'If `true`, the Time-of-Use optimization is allowed to trigger
+
+                        discharging of electricity from any
+
+
+                        flexibility (battery and EVCS, when EVCS discharge is supported) into
+
+                        the grid. Default: `false`'
+                      example: false
+                      type: boolean
+                    enabledPVCurtailment:
+                      type: boolean
+                      example: false
+                      description: 'If `true`, the Time-of-Use optimization allows curtailment
+
+                        of PV generation to prevent energy surplus feed-in
+
+
+                        during negative export prices.  Default: `false`'
+                    excludeAssetIDs:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      example:
+                      - 550e8400-e29b-41d4-a716-446655440000
+                      - 123e4567-e89b-12d3-a456-426614174000
+                      description: List of all asset IDs within the system that should be excluded from ToU optimization.
+                    systemKind:
+                      deprecated: true
+                      type: string
+                      enum:
+                      - HEMS
+                      - CLOUD_CONNECTOR
+                      example: HEMS
+                      description: '**Deprecated.** This field will be removed in a future release.
+
+
+                        Denotes the system''s general use case. Typical connected systems with a gateway have a `HEMS` system kind.
+
+                        Otherwise, systems with no gateways are denoted as `CLOUD_CONNECTOR` systems.
+
+                        For PUT requests, the default value is already assumed based on the system data.
+
+                        An attempt to PUT or PATCH settings with an invalid system kind leads to an HTTP status code 422."'
+                  x-readme-ref-name: TimeOfUseSettings
+                - required:
+                  - enabled
+                  - enabledBatteryChargeFromGrid
+                  - enabledDischargeFlexibilityToGrid
+                  - enabledPVCurtailment
+                  - excludeAssetIDs
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/timeofuse/settings\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/settings \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/settings\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/settings', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .put(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .put(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/timeofuse/settings\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/settings");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateSystemTimeOfUseSettings
+      summary: Update time of use optimization settings for a system
+      description: Update time of use optimization settings for a system.
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: skipClusterCreation
+        in: query
+        description: If True, then cluster creation is skipped.
+        example: true
+        required: false
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Settings for the Time-of-Use (ToU) optimization feature.
+              allOf:
+              - description: Settings for the Time-of-Use (ToU) optimization feature.
+                type: object
+                properties:
+                  enabled:
+                    description: 'If `true`, Time-of-Use (ToU) optimization is enabled for this
+
+                      system.'
+                    type: boolean
+                    example: false
+                  enabledBatteryChargeFromGrid:
+                    description: 'If `true`, the Time-of-Use (ToU) optimization is allowed to
+
+                      trigger charging of the battery while
+
+
+                      simultaneously importing electricity from the grid. Default: `true`'
+                    example: true
+                    type: boolean
+                  enabledDischargeFlexibilityToGrid:
+                    description: 'If `true`, the Time-of-Use optimization is allowed to trigger
+
+                      discharging of electricity from any
+
+
+                      flexibility (battery and EVCS, when EVCS discharge is supported) into
+
+                      the grid. Default: `false`'
+                    example: false
+                    type: boolean
+                  enabledPVCurtailment:
+                    type: boolean
+                    example: false
+                    description: 'If `true`, the Time-of-Use optimization allows curtailment
+
+                      of PV generation to prevent energy surplus feed-in
+
+
+                      during negative export prices.  Default: `false`'
+                  excludeAssetIDs:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    example:
+                    - 550e8400-e29b-41d4-a716-446655440000
+                    - 123e4567-e89b-12d3-a456-426614174000
+                    description: List of all asset IDs within the system that should be excluded from ToU optimization.
+                  systemKind:
+                    deprecated: true
+                    type: string
+                    enum:
+                    - HEMS
+                    - CLOUD_CONNECTOR
+                    example: HEMS
+                    description: '**Deprecated.** This field will be removed in a future release.
+
+
+                      Denotes the system''s general use case. Typical connected systems with a gateway have a `HEMS` system kind.
+
+                      Otherwise, systems with no gateways are denoted as `CLOUD_CONNECTOR` systems.
+
+                      For PUT requests, the default value is already assumed based on the system data.
+
+                      An attempt to PUT or PATCH settings with an invalid system kind leads to an HTTP status code 422."'
+                x-readme-ref-name: TimeOfUseSettings
+              - additionalProperties: false
+              x-readme-ref-name: TimeOfUseSettingsPatchStrict
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - description: Settings for the Time-of-Use (ToU) optimization feature.
+                  type: object
+                  properties:
+                    enabled:
+                      description: 'If `true`, Time-of-Use (ToU) optimization is enabled for this
+
+                        system.'
+                      type: boolean
+                      example: false
+                    enabledBatteryChargeFromGrid:
+                      description: 'If `true`, the Time-of-Use (ToU) optimization is allowed to
+
+                        trigger charging of the battery while
+
+
+                        simultaneously importing electricity from the grid. Default: `true`'
+                      example: true
+                      type: boolean
+                    enabledDischargeFlexibilityToGrid:
+                      description: 'If `true`, the Time-of-Use optimization is allowed to trigger
+
+                        discharging of electricity from any
+
+
+                        flexibility (battery and EVCS, when EVCS discharge is supported) into
+
+                        the grid. Default: `false`'
+                      example: false
+                      type: boolean
+                    enabledPVCurtailment:
+                      type: boolean
+                      example: false
+                      description: 'If `true`, the Time-of-Use optimization allows curtailment
+
+                        of PV generation to prevent energy surplus feed-in
+
+
+                        during negative export prices.  Default: `false`'
+                    excludeAssetIDs:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      example:
+                      - 550e8400-e29b-41d4-a716-446655440000
+                      - 123e4567-e89b-12d3-a456-426614174000
+                      description: List of all asset IDs within the system that should be excluded from ToU optimization.
+                    systemKind:
+                      deprecated: true
+                      type: string
+                      enum:
+                      - HEMS
+                      - CLOUD_CONNECTOR
+                      example: HEMS
+                      description: '**Deprecated.** This field will be removed in a future release.
+
+
+                        Denotes the system''s general use case. Typical connected systems with a gateway have a `HEMS` system kind.
+
+                        Otherwise, systems with no gateways are denoted as `CLOUD_CONNECTOR` systems.
+
+                        For PUT requests, the default value is already assumed based on the system data.
+
+                        An attempt to PUT or PATCH settings with an invalid system kind leads to an HTTP status code 422."'
+                  x-readme-ref-name: TimeOfUseSettings
+                - required:
+                  - enabled
+                  - enabledBatteryChargeFromGrid
+                  - enabledDischargeFlexibilityToGrid
+                  - enabledPVCurtailment
+                  - excludeAssetIDs
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/timeofuse/settings\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/settings \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/settings\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/settings', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/settings\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/timeofuse/settings\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/settings");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/forecasts/meter:
+    get:
+      operationId: listSystemTimeOfUseForecasts
+      summary: Get the Time-of-Use forecasts for the grid connection point
+      description: 'The Time-of-Use (ToU) optimization runs on a given resolution
+
+        of 15 minutes.
+
+
+        For each time segment, i.e. `[10:00, 10:15]` it publishes a series of forecasts
+
+        for
+
+
+        the grid connection point associated with a system with `systemID`.
+
+
+        This endpoint requires to specify a time window called `interval` for which
+
+        the forecasts are returned.
+
+
+        For example `[2021-01-01T02:07:14Z, 2021-01-02T02:07:14Z]`.
+
+
+        If no interval is provided it is assumed to be `[00:00:00 today, 00:00:00
+
+        in two days]`.
+
+
+        The maximum size of this interval is 48h.
+
+
+        This endpoint returns the forecasts **in the selected time window**.
+
+
+        Please note that the forecasts might not cover the whole time window.
+
+
+        In this case the largest possible subset is returned.
+
+
+        If no forecast is available, an empty list is returned.'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      responses:
+        '200':
+          description: Successful request. Retrieved forecasts for the given parameters.
+          content:
+            application/json:
+              schema:
+                description: Grid connection point forecast.
+                type: object
+                properties:
+                  from:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T00:00:00Z'
+                    description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                      validity period for the forecast.'
+                  to:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T22:10:00Z'
+                    description: 'Timestamp in RFC3339 format that marks the end of the validity
+
+                      period for the forecast.'
+                  periods:
+                    type: array
+                    items:
+                      description: Grid connection point forecast period.
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          example: '2020-09-21T00:00:00Z'
+                          description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                            period.'
+                        to:
+                          type: string
+                          format: date-time
+                          example: '2020-09-21T00:15:00Z'
+                          description: Timestamp in RFC3339 format that marks the end of the period.
+                        importActivePower:
+                          type: number
+                          description: The forecasted import active power in Watts.
+                        exportActivePower:
+                          type: number
+                          description: The forecasted export active power in Watts.
+                        maxImportActivePower:
+                          type:
+                          - number
+                          - 'null'
+                          description: The maximum forecasted import active power in Watts.
+                        maxExportActivePower:
+                          type:
+                          - number
+                          - 'null'
+                          description: 'The maximum forecasted export active power in Watts.
+
+                            '
+                      x-readme-ref-name: GridConnectionPointPeriod
+                  lastUpdated:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T00:00:00Z'
+                    description: Last time when the forecast was updated.
+                x-readme-ref-name: GridConnectionPointForecasts
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/forecasts/meter/last-updated:
+    get:
+      operationId: getSystemTimeOfUseForecastLastUpdated
+      summary: Get the last updated timestamp for the Time-of-Use forecasts for the grid…
+      description: 'The Time-of-Use (ToU) optimization runs on a given resolution
+
+        of 15 minutes.
+
+
+        For each time segment, i.e. `[10:00, 10:15]` it publishes a series of forecasts
+
+        for
+
+
+        the grid connection point associated with a system with `systemID`.
+
+
+        This endpoint requires to specify a time window called `interval` for which
+
+        the forecasts are returned.
+
+
+        For example `[2021-01-01T02:07:14Z, 2021-01-02T02:07:14Z]`.
+
+
+        If no interval is provided it is assumed to be `[00:00:00 today, 00:00:00
+
+        in two days]`.
+
+
+        The maximum size of this interval is 48h.
+
+
+        This endpoint returns the last timestamp RFC3339 format when the forecasts
+
+        **in the selected time window**
+
+
+        were updated.'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      responses:
+        '200':
+          description: 'Successful request. Retrieved last update time for the given
+
+            parameters.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastUpdated:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T00:00:00Z'
+                    description: Last time when the prediction where updated.
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/forecasts/meter/last-updated");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/forecasts/pv:
+    get:
+      tags:
+      - TimeOfUse
+      summary: Get the PV forecast for a system
+      operationId: getSystemTimeOfUseForecastPv
+      description: 'Returns forecasted PV export active power for the specified system in watts.
+
+        Forecasts are provided in 15-minute intervals and are available
+
+        from the current time
+
+        up to 48 hours into the future. Historical forecast data is not
+
+        available.
+
+
+        The `interval` parameter specifies the time window for returned
+
+        forecasts.
+
+        If omitted, defaults to `[now, now + 48h]`.
+
+
+        If the requested interval extends beyond the 48-hour forecast
+
+        horizon or includes past times,
+
+        only the available subset within `[now, now + 48h]` is returned.
+
+        If the requested interval is entirely outside this range, an empty
+
+        list is returned.'
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      responses:
+        '200':
+          description: 'Successful request. Retrieved PV forecasts for given `systemID`.
+
+            '
+          content:
+            application/json:
+              schema:
+                description: 'Forecasted PV export active power in watts for the system over the given time period.
+
+                  '
+                type: array
+                items:
+                  type: object
+                  description: 'PV forecast period.
+
+                    '
+                  properties:
+                    from:
+                      type: string
+                      format: date-time
+                      example: '2020-09-21T00:00:00Z'
+                      description: 'Timestamp in RFC3339 format that marks the beginning of the period.
+
+                        '
+                    to:
+                      type: string
+                      format: date-time
+                      example: '2020-09-21T00:15:00Z'
+                      description: 'Timestamp in RFC3339 format that marks the end of the period.
+
+                        '
+                    exportActivePower:
+                      type: number
+                      description: 'The forecasted export active power of the PV in watts.
+
+                        '
+                x-readme-ref-name: PVForecasts
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/forecasts/pv");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/status:
+    get:
+      operationId: listHistoricalSystemTimeOfUseStatus
+      summary: Get the historical status of the Time-of-Use service
+      description: 'The Time-of-Use (ToU) optimization runs on a given resolution
+
+        of 15 minutes.
+
+
+        For each time segment, i.e. `[10:00, 10:15]` it publishes an operational status
+
+
+        associated with a system with `systemID`.
+
+
+        This endpoint requires to specify a time window called `interval` for which
+
+        the status data are returned.
+
+
+        For example `[2021-01-01T02:07:14Z, 2021-01-02T02:07:14Z]`.
+
+
+        If no interval is provided it is assumed to be `[now - 48h, now]`.
+
+
+        The maximum size of this interval is 48h.
+
+
+        Please note that the statuses might not cover the whole time window."'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      responses:
+        '200':
+          description: 'Successful request. Retrieved historical status for given
+
+            parameters.'
+          content:
+            application/json:
+              schema:
+                description: ToU status history.
+                type: object
+                properties:
+                  from:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T00:00:00Z'
+                    description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                      validity period for the status history.'
+                  to:
+                    type: string
+                    format: date-time
+                    example: '2020-09-21T22:10:00Z'
+                    description: 'Timestamp in RFC3339 format that marks the end of the validity
+
+                      period for the status history.'
+                  periods:
+                    description: ToU status array.
+                    type: array
+                    items:
+                      description: ToU status entry.
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          example: '2020-09-21T00:00:00Z'
+                          description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                            period.'
+                        to:
+                          type: string
+                          format: date-time
+                          example: '2020-09-21T00:15:00Z'
+                          description: Timestamp in RFC3339 format that marks the end of the period.
+                        status:
+                          type: string
+                          enum:
+                          - ONLINE
+                          - SUBOPTIMAL
+                          - OFFLINE
+                          - DISABLED
+                          - INITIALIZING
+                          example: ONLINE
+                          description: 'Operational status of Time-of-Use for a specific run.
+
+
+
+                            * `ONLINE` - Time-of-Use optimization is running successfully.
+
+
+                            * `SUBOPTIMAL` - Time-of-Use optimization is running suboptimally.
+
+
+                            * `OFFLINE` - Time-of-Use optimization failed.
+
+
+                            * `DISABLED` - Time-of-Use optimization is disabled for the system.
+
+
+                            * `INITIALIZING` - Time-of-Use optimization is initializing, it may take up
+
+                            to 48h.'
+                          x-readme-ref-name: StatusValue
+                        error_code:
+                          type: string
+                          enum:
+                          - STATIC_PRICES
+                          - MISSING_PRICES
+                          - INCOMPLETE_PRICES
+                          - MISSING_APPLIANCES
+                          - MISSING_GRID_METER
+                          - MULTIPLE_GRID_METERS
+                          - MULTIPLE_BATTERIES
+                          - MULTIPLE_EVCS
+                          - MULTIPLE_EV
+                          - MULTIPLE_HEAT_PUMPS
+                          - MULTIPLE_PVS_CURTAILMENT
+                          - MISSING_CONTROLLABLE_APPLIANCE
+                          - ALL_CONTROLLABLE_APPLIANCES_OFFLINE
+                          - MISSING_EV
+                          - UNCONTROLLABLE_EV
+                          - OFFLINE_APPLIANCE
+                          - EMS_NOT_ENABLED
+                          - EMS_CONSENT_NOT_GIVEN
+                          - UNKNOWN_INVERTER
+                          - MISSING_HISTORICAL_DATA
+                          - PV_CURTAILMENT_NOT_SUPPORTED
+                          - MISSING_FUSE_IMPORT_LIMIT
+                          - MISSING_PV_NOMINAL_POWER_FOR_CURTAILMENT
+                          - INTERNAL_GET_CONSTRAINTS_EVCS
+                          - INTERNAL_GET_CONSTRAINTS_EV
+                          - INTERNAL_GET_FLEXIBILITY_EVCS
+                          - INTERNAL_GET_FLEXIBILITY_EV
+                          - INTERNAL_BATTERY_FLEXIBILITY_INVALID
+                          - INTERNAL_MAP_NODE_CONSTRAINT
+                          - INTERNAL_MAP_NODE_CONSTRAINT_MISSING_BATTERY_FIELDS
+                          - INTERNAL_MAP_NODE_STATE
+                          - INTERNAL_MAP_NODE_STATE_MISSING_BATTERY_STATE_OF_CHARGE
+                          - INTERNAL_EXTRACT_HYBRID_INVERTER_BATTERY_CONSTRAINT
+                          - INTERNAL_EXTRACT_DRIVER_CONSTRAINTS
+                          - INTERNAL_EMPTY_EVCS_DRIVER_CONSTRAINTS
+                          - INTERNAL_EMPTY_EV_DRIVER_CONSTRAINTS
+                          - INTERNAL_EXTRACT_BATTERY_DRIVER_CONSTRAINTS
+                          - INTERNAL_EXTRACT_HEAT_PUMP_DRIVER_CONSTRAINTS
+                          - INTERNAL_OPTIMIZATION_SOLVER
+                          - INTERNAL_PV_FORECAST
+                          - EV_NOT_PLUGGED
+                          - EV_DEPARTURE_TIME_ROLLOVER
+                          - INTERNAL_ERROR
+                          example: INTERNAL_ERROR
+                          description: 'Most recent error causing a failure of Time-of-Use specific run.
+
+
+                            * `STATIC_PRICES` - Time-of-Use failing due to import and export prices are
+
+                            constant.
+
+
+                            * `MISSING_PRICES` - Time-of-Use failing due to missing import and export
+
+                            prices.
+
+
+                            * `INCOMPLETE_PRICES` - Time-of-Use failing due to incomplete import and export
+
+                            prices.
+
+
+                            * `MISSING_APPLIANCES` - Time-of-Use failing due to missing appliances in
+
+                            a system.
+
+
+                            * `MISSING_GRID_METER` - Time-of-Use failing due to missing grid meter.
+
+
+                            * `MULTIPLE_GRID_METERS` - Time-of-Use failing due to multiple grid meters
+
+                            within a system.
+
+
+                            * `MULTIPLE_BATTERIES` - Time-of-Use failing due to multiple batteries within
+
+                            a system.
+
+
+                            * `MULTIPLE_EVCS` - Time-of-Use failing due to multiple EV charging stations
+
+                            within a system.
+
+
+                            * `MULTIPLE_EV` - Time-of-Use failing due to multiple EV''s within a system.
+
+
+                            * `MULTIPLE_HEAT_PUMPS` - Time-of-Use failing due to multiple heat pumps within
+
+                            a system.
+
+
+                            * `MULTIPLE_PVS_CURTAILMENT` - Time-of-Use failing due to multiple PVs within
+
+                            a system with PV curtailment enabled.
+
+
+                            * `MISSING_CONTROLLABLE_APPLIANCE` - Time-of-Use failing due to missing controllable
+
+                            device (battery, EV or heat pump).
+
+
+                            * `ALL_CONTROLLABLE_APPLIANCES_OFFLINE` - Time-of-Use failing due to all controllable
+
+                            devices (battery, EV and heat pump) being offline.
+
+
+                            * `MISSING_EV` - Time-of-Use failing due to missing EV appliance.
+
+
+                            * `UNCONTROLLABLE_EV` - Time-of-Use failing due to an uncontrollable EV appliance.
+
+
+                            * `OFFLINE_APPLIANCE` - Time-of-Use failing due to an offline appliance.
+
+
+                            * `EMS_NOT_ENABLED` - Time-of-Use failing due to energy management not being
+
+                            enabled on the system.
+
+
+                            * `EMS_CONSENT_NOT_GIVEN` - Time-of-Use failing due to consent to energy management
+
+                            not being given for the system.
+
+
+                            * `UNKNOWN_INVERTER` - Time-of-Use failing due to an unknown inverter.
+
+
+                            * `MISSING_HISTORICAL_DATA` - Time-of-Use failing due to insufficient historical
+
+                            data to generate forecasts.
+
+
+                            * `PV_CURTAILMENT_NOT_SUPPORTED` - Time-of-Use failing because the inverter
+
+                            does not support PV power curtailment.
+
+
+                            * `MISSING_FUSE_IMPORT_LIMIT` - Time-of-Use failing due to missing fuse protection
+
+                            import limit.
+
+
+                            * `MISSING_PV_NOMINAL_POWER_FOR_CURTAILMENT` - time-of-Use failing due to invalid or unavailable
+
+                            nominal PV power with PV curtailment activated.
+
+
+                            * `INTERNAL_GET_CONSTRAINTS_EVCS` - Time-of-Use failing due to missing EVCS constraints.
+
+
+                            * `INTERNAL_GET_CONSTRAINTS_EV` - Time-of-Use failing due to missing EV constraints.
+
+
+                            * `INTERNAL_GET_FLEXIBILITY_EVCS` - Time-of-Use failing due to missing EVCS flexibility.
+
+
+                            * `INTERNAL_GET_FLEXIBILITY_EV` - Time-of-Use failing due to missing EV flexibility.
+
+
+                            * `INTERNAL_BATTERY_FLEXIBILITY_INVALID` - Time-of-Use failing due to invalid
+
+                            flexibility (e.g. flexibility is expired).
+
+
+                            * `INTERNAL_MAP_NODE_CONSTRAINT` - Time-of-Use failing due to incorrect node
+
+                            constraint (e.g. missing some fields).
+
+
+                            * `INTERNAL_MAP_NODE_CONSTRAINT_MISSING_BATTERY_FIELDS` - Time-of-Use failing
+
+                            due to incorrect node constraint for the battery (e.g. missing some fields).
+
+
+                            * `INTERNAL_MAP_NODE_STATE` - Time-of-Use failing due to incorrect node flexibility
+
+                            (e.g. missing some fields).
+
+
+                            * `INTERNAL_MAP_NODE_STATE_MISSING_BATTERY_STATE_OF_CHARGE` - Time-of-Use
+
+                            failing due to missing battery SoC.
+
+
+                            * `INTERNAL_EXTRACT_HYBRID_INVERTER_BATTERY_CONSTRAINT` - Time-of-Use failing
+
+                            due to some issues extracting driver constraint for the hybrid inverter battery.
+
+
+                            * `INTERNAL_EXTRACT_DRIVER_CONSTRAINTS` - Time-of-Use failing due to missing
+
+                            driver constraints.
+
+
+                            * `INTERNAL_EMPTY_EVCS_DRIVER_CONSTRAINTS` - Time-of-Use failing due to empty
+
+                            EVCS driver constraints.
+
+
+                            * `INTERNAL_EMPTY_EV_DRIVER_CONSTRAINTS` - Time-of-Use failing due to empty
+
+                            EV driver constraints.
+
+
+                            * `INTERNAL_EXTRACT_BATTERY_DRIVER_CONSTRAINTS` - Time-of-Use failing due
+
+                            to missing driver constraints for the battery.
+
+
+                            * `INTERNAL_EXTRACT_HEAT_PUMP_DRIVER_CONSTRAINTS` - Time-of-Use failing due
+
+                            to missing driver constraints for the heat pump.
+
+
+                            * `INTERNAL_OPTIMIZATION_SOLVER`- Time-of-Use failing due to the optimization
+
+                            solver not converging in time.
+
+
+                            * `INTERNAL_PV_FORECAST` - Time-of-Use failing due to missing PV forecast or failure to compute PV forecast.
+
+
+                            * `EV_NOT_PLUGGED` - Time-of-Use failing due to EV being unplugged
+
+
+                            * `EV_DEPARTURE_TIME_ROLLOVER` - Time-of-Use failing due to EV daily departure
+
+                            time rolling over to the next day while still plugged in the same charging session.
+
+
+                            * `INTERNAL_ERROR` - Time-of-Use failing due to an unknown, internal issue.'
+                          x-readme-ref-name: ToUErrorCode
+                        warnings:
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - MISSING_EV_CONFIG
+                            - MISSING_EV_PROFILE
+                            - MISSING_EV_SOC_ESTIMATION
+                            - UNSUPPORTED_CHARGE_MODE_QUICK
+                            - UNSUPPORTED_CHARGE_MODE_SURPLUS
+                            - UNSUPPORTED_CHARGE_MODE_SAFETY
+                            - UNSUPPORTED_CHARGE_MODE_UNKNOWN
+                            - BATTERY_UNCONTROLLABLE
+                            - BATTERY_OEM_ERROR
+                            - INVALID_DEPARTURE_TIME
+                          example:
+                          - MISSING_EV_CONFIG
+                          description: 'All the relevant warnings that occurred during a Time-of-Use specific
+
+                            run.
+
+
+                            * `MISSING_EV_CONFIG` - Time-of-Use not working optimally due to missing EV
+
+                            configuration.
+
+
+                            * `MISSING_EV_PROFILE` - Time-of-Use not working optimally due to missing
+
+                            EV profile.
+
+
+                            * `MISSING_EV_SOC_ESTIMATION` - Time-of-Use not working optimally due to missing
+
+                            EV SoC estimation in program charge mode.
+
+
+                            * `UNSUPPORTED_CHARGE_MODE_QUICK` - Time-of-Use not working optimally due
+
+                            to EV set to Quick Charge Mode, which is not supported.
+
+
+                            * `UNSUPPORTED_CHARGE_MODE_SURPLUS` - Time-of-Use not working optimally due
+
+                            to EV set to Surplus Charge Mode, which is not supported.
+
+
+                            * `UNSUPPORTED_CHARGE_MODE_SAFETY` - Time-of-Use not working optimally due
+
+                            to EV set to Safety Charge Mode, which is not supported.
+
+
+                            * `UNSUPPORTED_CHARGE_MODE_UNKNOWN` - Time-of-Use not working optimally due
+
+                            to EV set to unknown charge mode.
+
+
+                            * `BATTERY_UNCONTROLLABLE` - Time-of-Use not working optimally due to battery
+
+                            being uncontrollable.
+
+
+                            * `BATTERY_OEM_ERROR` - Time-of-Use not working optimally due to battery
+
+                            being in error state.
+
+
+                            * `INVALID_DEPARTURE_TIME` - Time-of-Use not working optimally due to
+
+                            missing or invalid departure time for EV or EVCS.'
+                          x-readme-ref-name: ToUWarnings
+                      x-readme-ref-name: RunStatus
+                    x-readme-ref-name: RunStatuses
+                x-readme-ref-name: StatusHistory
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/status"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/status \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/status\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/status', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/status\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/status\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/status")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/status");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/status/current:
+    get:
+      operationId: getSystemTimeOfUseCurrentStatus
+      summary: Get the last known status of the Time-of-Use service
+      description: 'The Time-of-Use (ToU) optimization runs on a given resolution
+
+        of 15 minutes.
+
+
+        For each time segment, i.e. `[10:00, 10:15]` it publishes an operational status
+
+        for
+
+
+        associated with a system with `systemID`.
+
+
+        This endpoint provides the last known, or current, status of the Time-of-Use
+
+        runs."'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '200':
+          description: Successful request. Retrieved status for the given parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: ToU status entry.
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                        format: date-time
+                        example: '2020-09-21T00:00:00Z'
+                        description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                          period.'
+                      to:
+                        type: string
+                        format: date-time
+                        example: '2020-09-21T00:15:00Z'
+                        description: Timestamp in RFC3339 format that marks the end of the period.
+                      status:
+                        type: string
+                        enum:
+                        - ONLINE
+                        - SUBOPTIMAL
+                        - OFFLINE
+                        - DISABLED
+                        - INITIALIZING
+                        example: ONLINE
+                        description: 'Operational status of Time-of-Use for a specific run.
+
+
+
+                          * `ONLINE` - Time-of-Use optimization is running successfully.
+
+
+                          * `SUBOPTIMAL` - Time-of-Use optimization is running suboptimally.
+
+
+                          * `OFFLINE` - Time-of-Use optimization failed.
+
+
+                          * `DISABLED` - Time-of-Use optimization is disabled for the system.
+
+
+                          * `INITIALIZING` - Time-of-Use optimization is initializing, it may take up
+
+                          to 48h.'
+                        x-readme-ref-name: StatusValue
+                      error_code:
+                        type: string
+                        enum:
+                        - STATIC_PRICES
+                        - MISSING_PRICES
+                        - INCOMPLETE_PRICES
+                        - MISSING_APPLIANCES
+                        - MISSING_GRID_METER
+                        - MULTIPLE_GRID_METERS
+                        - MULTIPLE_BATTERIES
+                        - MULTIPLE_EVCS
+                        - MULTIPLE_EV
+                        - MULTIPLE_HEAT_PUMPS
+                        - MULTIPLE_PVS_CURTAILMENT
+                        - MISSING_CONTROLLABLE_APPLIANCE
+                        - ALL_CONTROLLABLE_APPLIANCES_OFFLINE
+                        - MISSING_EV
+                        - UNCONTROLLABLE_EV
+                        - OFFLINE_APPLIANCE
+                        - EMS_NOT_ENABLED
+                        - EMS_CONSENT_NOT_GIVEN
+                        - UNKNOWN_INVERTER
+                        - MISSING_HISTORICAL_DATA
+                        - PV_CURTAILMENT_NOT_SUPPORTED
+                        - MISSING_FUSE_IMPORT_LIMIT
+                        - MISSING_PV_NOMINAL_POWER_FOR_CURTAILMENT
+                        - INTERNAL_GET_CONSTRAINTS_EVCS
+                        - INTERNAL_GET_CONSTRAINTS_EV
+                        - INTERNAL_GET_FLEXIBILITY_EVCS
+                        - INTERNAL_GET_FLEXIBILITY_EV
+                        - INTERNAL_BATTERY_FLEXIBILITY_INVALID
+                        - INTERNAL_MAP_NODE_CONSTRAINT
+                        - INTERNAL_MAP_NODE_CONSTRAINT_MISSING_BATTERY_FIELDS
+                        - INTERNAL_MAP_NODE_STATE
+                        - INTERNAL_MAP_NODE_STATE_MISSING_BATTERY_STATE_OF_CHARGE
+                        - INTERNAL_EXTRACT_HYBRID_INVERTER_BATTERY_CONSTRAINT
+                        - INTERNAL_EXTRACT_DRIVER_CONSTRAINTS
+                        - INTERNAL_EMPTY_EVCS_DRIVER_CONSTRAINTS
+                        - INTERNAL_EMPTY_EV_DRIVER_CONSTRAINTS
+                        - INTERNAL_EXTRACT_BATTERY_DRIVER_CONSTRAINTS
+                        - INTERNAL_EXTRACT_HEAT_PUMP_DRIVER_CONSTRAINTS
+                        - INTERNAL_OPTIMIZATION_SOLVER
+                        - INTERNAL_PV_FORECAST
+                        - EV_NOT_PLUGGED
+                        - EV_DEPARTURE_TIME_ROLLOVER
+                        - INTERNAL_ERROR
+                        example: INTERNAL_ERROR
+                        description: 'Most recent error causing a failure of Time-of-Use specific run.
+
+
+                          * `STATIC_PRICES` - Time-of-Use failing due to import and export prices are
+
+                          constant.
+
+
+                          * `MISSING_PRICES` - Time-of-Use failing due to missing import and export
+
+                          prices.
+
+
+                          * `INCOMPLETE_PRICES` - Time-of-Use failing due to incomplete import and export
+
+                          prices.
+
+
+                          * `MISSING_APPLIANCES` - Time-of-Use failing due to missing appliances in
+
+                          a system.
+
+
+                          * `MISSING_GRID_METER` - Time-of-Use failing due to missing grid meter.
+
+
+                          * `MULTIPLE_GRID_METERS` - Time-of-Use failing due to multiple grid meters
+
+                          within a system.
+
+
+                          * `MULTIPLE_BATTERIES` - Time-of-Use failing due to multiple batteries within
+
+                          a system.
+
+
+                          * `MULTIPLE_EVCS` - Time-of-Use failing due to multiple EV charging stations
+
+                          within a system.
+
+
+                          * `MULTIPLE_EV` - Time-of-Use failing due to multiple EV''s within a system.
+
+
+                          * `MULTIPLE_HEAT_PUMPS` - Time-of-Use failing due to multiple heat pumps within
+
+                          a system.
+
+
+                          * `MULTIPLE_PVS_CURTAILMENT` - Time-of-Use failing due to multiple PVs within
+
+                          a system with PV curtailment enabled.
+
+
+                          * `MISSING_CONTROLLABLE_APPLIANCE` - Time-of-Use failing due to missing controllable
+
+                          device (battery, EV or heat pump).
+
+
+                          * `ALL_CONTROLLABLE_APPLIANCES_OFFLINE` - Time-of-Use failing due to all controllable
+
+                          devices (battery, EV and heat pump) being offline.
+
+
+                          * `MISSING_EV` - Time-of-Use failing due to missing EV appliance.
+
+
+                          * `UNCONTROLLABLE_EV` - Time-of-Use failing due to an uncontrollable EV appliance.
+
+
+                          * `OFFLINE_APPLIANCE` - Time-of-Use failing due to an offline appliance.
+
+
+                          * `EMS_NOT_ENABLED` - Time-of-Use failing due to energy management not being
+
+                          enabled on the system.
+
+
+                          * `EMS_CONSENT_NOT_GIVEN` - Time-of-Use failing due to consent to energy management
+
+                          not being given for the system.
+
+
+                          * `UNKNOWN_INVERTER` - Time-of-Use failing due to an unknown inverter.
+
+
+                          * `MISSING_HISTORICAL_DATA` - Time-of-Use failing due to insufficient historical
+
+                          data to generate forecasts.
+
+
+                          * `PV_CURTAILMENT_NOT_SUPPORTED` - Time-of-Use failing because the inverter
+
+                          does not support PV power curtailment.
+
+
+                          * `MISSING_FUSE_IMPORT_LIMIT` - Time-of-Use failing due to missing fuse protection
+
+                          import limit.
+
+
+                          * `MISSING_PV_NOMINAL_POWER_FOR_CURTAILMENT` - time-of-Use failing due to invalid or unavailable
+
+                          nominal PV power with PV curtailment activated.
+
+
+                          * `INTERNAL_GET_CONSTRAINTS_EVCS` - Time-of-Use failing due to missing EVCS constraints.
+
+
+                          * `INTERNAL_GET_CONSTRAINTS_EV` - Time-of-Use failing due to missing EV constraints.
+
+
+                          * `INTERNAL_GET_FLEXIBILITY_EVCS` - Time-of-Use failing due to missing EVCS flexibility.
+
+
+                          * `INTERNAL_GET_FLEXIBILITY_EV` - Time-of-Use failing due to missing EV flexibility.
+
+
+                          * `INTERNAL_BATTERY_FLEXIBILITY_INVALID` - Time-of-Use failing due to invalid
+
+                          flexibility (e.g. flexibility is expired).
+
+
+                          * `INTERNAL_MAP_NODE_CONSTRAINT` - Time-of-Use failing due to incorrect node
+
+                          constraint (e.g. missing some fields).
+
+
+                          * `INTERNAL_MAP_NODE_CONSTRAINT_MISSING_BATTERY_FIELDS` - Time-of-Use failing
+
+                          due to incorrect node constraint for the battery (e.g. missing some fields).
+
+
+                          * `INTERNAL_MAP_NODE_STATE` - Time-of-Use failing due to incorrect node flexibility
+
+                          (e.g. missing some fields).
+
+
+                          * `INTERNAL_MAP_NODE_STATE_MISSING_BATTERY_STATE_OF_CHARGE` - Time-of-Use
+
+                          failing due to missing battery SoC.
+
+
+                          * `INTERNAL_EXTRACT_HYBRID_INVERTER_BATTERY_CONSTRAINT` - Time-of-Use failing
+
+                          due to some issues extracting driver constraint for the hybrid inverter battery.
+
+
+                          * `INTERNAL_EXTRACT_DRIVER_CONSTRAINTS` - Time-of-Use failing due to missing
+
+                          driver constraints.
+
+
+                          * `INTERNAL_EMPTY_EVCS_DRIVER_CONSTRAINTS` - Time-of-Use failing due to empty
+
+                          EVCS driver constraints.
+
+
+                          * `INTERNAL_EMPTY_EV_DRIVER_CONSTRAINTS` - Time-of-Use failing due to empty
+
+                          EV driver constraints.
+
+
+                          * `INTERNAL_EXTRACT_BATTERY_DRIVER_CONSTRAINTS` - Time-of-Use failing due
+
+                          to missing driver constraints for the battery.
+
+
+                          * `INTERNAL_EXTRACT_HEAT_PUMP_DRIVER_CONSTRAINTS` - Time-of-Use failing due
+
+                          to missing driver constraints for the heat pump.
+
+
+                          * `INTERNAL_OPTIMIZATION_SOLVER`- Time-of-Use failing due to the optimization
+
+                          solver not converging in time.
+
+
+                          * `INTERNAL_PV_FORECAST` - Time-of-Use failing due to missing PV forecast or failure to compute PV forecast.
+
+
+                          * `EV_NOT_PLUGGED` - Time-of-Use failing due to EV being unplugged
+
+
+                          * `EV_DEPARTURE_TIME_ROLLOVER` - Time-of-Use failing due to EV daily departure
+
+                          time rolling over to the next day while still plugged in the same charging session.
+
+
+                          * `INTERNAL_ERROR` - Time-of-Use failing due to an unknown, internal issue.'
+                        x-readme-ref-name: ToUErrorCode
+                      warnings:
+                        type: array
+                        items:
+                          type: string
+                          enum:
+                          - MISSING_EV_CONFIG
+                          - MISSING_EV_PROFILE
+                          - MISSING_EV_SOC_ESTIMATION
+                          - UNSUPPORTED_CHARGE_MODE_QUICK
+                          - UNSUPPORTED_CHARGE_MODE_SURPLUS
+                          - UNSUPPORTED_CHARGE_MODE_SAFETY
+                          - UNSUPPORTED_CHARGE_MODE_UNKNOWN
+                          - BATTERY_UNCONTROLLABLE
+                          - BATTERY_OEM_ERROR
+                          - INVALID_DEPARTURE_TIME
+                        example:
+                        - MISSING_EV_CONFIG
+                        description: 'All the relevant warnings that occurred during a Time-of-Use specific
+
+                          run.
+
+
+                          * `MISSING_EV_CONFIG` - Time-of-Use not working optimally due to missing EV
+
+                          configuration.
+
+
+                          * `MISSING_EV_PROFILE` - Time-of-Use not working optimally due to missing
+
+                          EV profile.
+
+
+                          * `MISSING_EV_SOC_ESTIMATION` - Time-of-Use not working optimally due to missing
+
+                          EV SoC estimation in program charge mode.
+
+
+                          * `UNSUPPORTED_CHARGE_MODE_QUICK` - Time-of-Use not working optimally due
+
+                          to EV set to Quick Charge Mode, which is not supported.
+
+
+                          * `UNSUPPORTED_CHARGE_MODE_SURPLUS` - Time-of-Use not working optimally due
+
+                          to EV set to Surplus Charge Mode, which is not supported.
+
+
+                          * `UNSUPPORTED_CHARGE_MODE_SAFETY` - Time-of-Use not working optimally due
+
+                          to EV set to Safety Charge Mode, which is not supported.
+
+
+                          * `UNSUPPORTED_CHARGE_MODE_UNKNOWN` - Time-of-Use not working optimally due
+
+                          to EV set to unknown charge mode.
+
+
+                          * `BATTERY_UNCONTROLLABLE` - Time-of-Use not working optimally due to battery
+
+                          being uncontrollable.
+
+
+                          * `BATTERY_OEM_ERROR` - Time-of-Use not working optimally due to battery
+
+                          being in error state.
+
+
+                          * `INVALID_DEPARTURE_TIME` - Time-of-Use not working optimally due to
+
+                          missing or invalid departure time for EV or EVCS.'
+                        x-readme-ref-name: ToUWarnings
+                    x-readme-ref-name: RunStatus
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/status/current"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/status/current \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/status/current\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/status/current', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/status/current\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/status/current\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/status/current")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/status/current");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/readiness:
+    get:
+      operationId: getSystemTimeOfUseReadiness
+      summary: Evaluate whether the system is ready for enabling Time-of-Use
+      description: 'A series of operational prerequisites are required before enabling Time-of-Use (ToU) for a system.
+
+        The checks are done in order to evaluate the system''s "readiness" for ToU.
+
+        In principal, checks pertaining to appliances used, price data used, as well as some system metadata are performed.'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      responses:
+        '200':
+          description: 'Successful request. Retrieved ToU readiness for the given
+
+            parameters.'
+          content:
+            application/json:
+              schema:
+                description: Readiness for Time-of-Use based on the given system setup.
+                type: object
+                properties:
+                  isTouReady:
+                    type: boolean
+                    example: false
+                    description: Truth value whether system is ready for ToU.
+                  reasons:
+                    type: array
+                    description: List of reasons detailing the cause(s) of the truth value of ToU Readiness
+                    items:
+                      type: string
+                      enum:
+                      - UNKNOWN_REASON
+                      - UNSUPPORTED_SETUP_NO_APPLIANCES_FOUND
+                      - UNSUPPORTED_SETUP_MULTIPLE_BATTERIES
+                      - UNSUPPORTED_SETUP_MULTIPLE_EVCS
+                      - UNSUPPORTED_SETUP_MULTIPLE_GRID_METERS
+                      - UNSUPPORTED_SETUP_MULTIPLE_HEAT_PUMPS
+                      - UNSUPPORTED_SETUP_NO_GRID_METER
+                      - UNSUPPORTED_SETUP_NO_CONTROLLABLE_APPLIANCE
+                      - UNSUPPORTED_SETUP_UNKNOWN_APPLIANCE
+                      - UNSUPPORTED_APPLIANCE_PV_INVERTER
+                      - UNSUPPORTED_APPLIANCE_BATTERY_INVERTER
+                      - UNSUPPORTED_APPLIANCE_EVCS
+                      - UNSUPPORTED_APPLIANCE_HEAT_PUMP
+                      - INFORMALLY_SUPPORTED_BATTERY_INVERTER
+                      - INFORMALLY_SUPPORTED_PV_INVERTER
+                      - INFORMALLY_SUPPORTED_EVCS
+                      - INFORMALLY_SUPPORTED_HEAT_PUMP
+                      - SYSTEM_LOCATION_MISSING
+                      - TARIFF_PRICES_NOT_SET
+                      - TARIFF_PRICES_NOT_DYNAMIC
+                      - TARIFF_PRICES_BIDDING_ZONE_NOT_SET
+                      example: UNSUPPORTED_SETUP_NO_APPLIANCES_FOUND
+                      description: Justification for ToU Readiness truth value.
+                      x-readme-ref-name: ToUReadinessReason
+                required:
+                - isTouReady
+                x-readme-ref-name: ToUReadiness
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/readiness"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/readiness \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/readiness\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/readiness', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/readiness\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/readiness\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/readiness")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/readiness");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/timeofuse/kpi:
+    get:
+      operationId: listHistoricalSystemTimeOfUseKPIs
+      summary: Get the historical KPIs of the Time-of-Use service
+      description: 'Provides Key Performance Indicators (KPIs) for system cost analysis
+
+        under Time-of-Use (ToU) and
+
+
+        Self-Sufficiency Optimization (SSO) models. Returns interval-based ToU and
+
+        SSO costs to evaluate potential savings between the two scenarios."'
+      tags:
+      - TimeOfUse
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      responses:
+        '200':
+          description: Successful request. Retrieved historical KPI for given parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  periods:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          example: '2020-09-21T00:00:00Z'
+                          description: 'Timestamp in RFC3339 format that marks the beginning of the
+
+                            period.'
+                        to:
+                          type: string
+                          format: date-time
+                          example: '2020-09-22T00:00:00Z'
+                          description: Timestamp in RFC3339 format that marks the end of the period.
+                        touCost:
+                          type: number
+                          description: ToU cost for the requested interval.
+                        touCostCurrency:
+                          type: string
+                          description: A currency for a ToU cost for the requested interval.
+                        ssoCost:
+                          type: number
+                          description: SSO cost for the requested interval.
+                        ssoCostCurrency:
+                          type: string
+                          description: A currency for a SSO cost for the requested interval.
+                        errorCode:
+                          type: string
+                          description: 'Error code describing the reason of a failed saving calculation
+
+                            run.'
+                      description: Time-of-Use KPI record.
+                      x-readme-ref-name: KPI
+                    description: Time-of-Use KPI collection.
+                    x-readme-ref-name: KPIs
+                description: 'Time-of-Use KPI history for the system for which the request is
+
+                  made.'
+                x-readme-ref-name: KPIHistory
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/timeofuse/kpi"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/timeofuse/kpi \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/timeofuse/kpi\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/timeofuse/kpi', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/kpi\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/timeofuse/kpi\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/timeofuse/kpi")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/timeofuse/kpi");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

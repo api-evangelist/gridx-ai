@@ -1,0 +1,552 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Health Checks API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Health Checks across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Health Checks
+  x-displayName: Health Checks
+paths:
+  /health-checks:
+    post:
+      operationId: runHealthChecks
+      summary: Post a configuration of Health Checks and run them
+      description: Post a configuration of Health Checks and run them.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - system
+                      - results
+                      properties:
+                        system:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            gatewaySerialNumber:
+                              type: string
+                            wizardStatus:
+                              type: string
+                              readOnly: true
+                          description: Identifier of the System to run the Health Checks for.
+                          x-readme-ref-name: SystemID
+                        results:
+                          type: array
+                          items:
+                            type: object
+                            required:
+                            - type
+                            - state
+                            - properties
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                - applianceAuthenticated
+                                - batteryCharged
+                                - batteryDischarged
+                                - connectionIssues
+                                - consumptionProductionCorrelated
+                                - cosPhi
+                                - energyFlow
+                                - gridFeedInMissing
+                                - nighttimePVProduction
+                                - hasSetpoints
+                                - peakProductionExceeded
+                                description: Enumeration of available check types.
+                                x-readme-ref-name: checkType
+                              state:
+                                type: string
+                                enum:
+                                - PASSED
+                                - FAILED
+                                - SKIPPED
+                                description: Possible states that a check can have. `PASSED` indicates that there are no issues for this check. `FAILED` means that the check has found some issues with the system. `SKIPPED` checks weren't run due to technical issues.
+                                x-readme-ref-name: CheckResultState
+                              properties:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                            description: Result of an individual Health Check.
+                            x-readme-ref-name: CheckResult
+                      description: Results of all Health Checks for one System.
+                      x-readme-ref-name: SystemCheckResult
+                description: Result of all Health Checks for all Systems.
+                x-readme-ref-name: HealthCheckResult
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - title
+                properties:
+                  type:
+                    type: string
+                  status:
+                    type: integer
+                    format: int32
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                  instance:
+                    type: string
+                description: Error object.
+                x-readme-ref-name: HealthCheckError
+      tags:
+      - Health Checks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - systems
+              - checks
+              properties:
+                systems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      gatewaySerialNumber:
+                        type: string
+                      wizardStatus:
+                        type: string
+                        readOnly: true
+                    description: Identifier of the System to run the Health Checks for.
+                    x-readme-ref-name: SystemID
+                checks:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - type
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - applianceAuthenticated
+                        - batteryCharged
+                        - batteryDischarged
+                        - connectionIssues
+                        - consumptionProductionCorrelated
+                        - cosPhi
+                        - energyFlow
+                        - gridFeedInMissing
+                        - nighttimePVProduction
+                        - hasSetpoints
+                        - peakProductionExceeded
+                        description: Enumeration of available check types.
+                        x-readme-ref-name: checkType
+                      params:
+                        oneOf:
+                        - type: object
+                          properties:
+                            manufacturersWithAuthentication:
+                              type: array
+                              items:
+                                type: string
+                              minItems: 0
+                              description: 'List of manufacturers that require authentication. If an appliance in the given system belongs to one of those
+
+                                manufacturers but does not have authentication, the check will fail. Case Insensitive.'
+                              default:
+                              - EEBUS
+                              - Enphase
+                              - Sonnen
+                          description: Configuration for Appliance Authenticated Production Check.
+                          x-readme-ref-name: ApplianceAuthenticatedCheckRequest
+                        - type: object
+                          properties:
+                            chargeTolerance:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: Define what percentage of measurements may be not positive battery charge measurements.
+                              default: 0.01
+                          description: Configuration for Battery Charged Check.
+                          x-readme-ref-name: BatteryChargedCheckRequest
+                        - type: object
+                          properties:
+                            dischargeTolerance:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: Define what percentage of measurements may be not negative battery charge measurements.
+                              default: 0.01
+                          description: Configuration for Battery DisCharged Check.
+                          x-readme-ref-name: BatteryDischargedCheckRequest
+                        - type: object
+                          properties:
+                            shortOutage:
+                              type: string
+                              format: duration (ISO8601)
+                              description: An asset may be offline for a few times for this time period without the check failing.
+                              example: PT1H
+                              default: PT1H
+                            longOutage:
+                              type: string
+                              format: duration (ISO8601)
+                              description: An asset may be offline for exactly one time for this time period without failing the check.
+                              example: PT6H
+                              default: PT6H
+                            maxShortOutages:
+                              type: integer
+                              format: int32
+                              minimum: 0
+                              description: How many short outages may happen before the check fails
+                              default: 3
+                          description: Configuration for Connection Issue Check.
+                          x-readme-ref-name: ConnectionIssueCheckRequest
+                        - type: object
+                          properties:
+                            maxCorrelation:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: If the correlation of production and consumption exceeds this threshold, the check will fail.
+                              example: 0.07
+                              default: 0.7
+                          description: Configuration for Consumption Production Correlation Check.
+                          x-readme-ref-name: ConsumptionProductionCorrelationCheckRequest
+                        - type: object
+                          properties:
+                            lowerCosPhiThreshold:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: Minimal value of cosine phi.
+                              example: 0.7
+                              default: 0.7
+                            maxPercentageThreshold:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: Maximum value of deviations from cosine phi in percent until the check fails.
+                              example: 0.05
+                              default: 0.05
+                          description: Configuration for Cosine Phi Check.
+                          x-readme-ref-name: CosPhiCheckRequest
+                        - type: object
+                          properties:
+                            powerTolerance:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: Minimal value in Watts in order for it to be considered grid feed-in.
+                              example: 50
+                              default: 50
+                            toleranceRatio:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: Percentage of measurements that may have a grid feed-in below the power tolerance.
+                              example: 0.2
+                              default: 0
+                          description: Configuration for Grid FeedIn Missing Check.
+                          x-readme-ref-name: GridFeedInMissingCheckRequest
+                        - type: object
+                          properties:
+                            nightTimeTolerance:
+                              type: string
+                              format: duration (ISO8601)
+                              description: Tolerance for before sunrise and after sunset when PV production may occur without failing the check.
+                              example: PT1H
+                              default: PT1H
+                            nightProductionTolerance:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: power in Watts that may be produced during nighttime without failing the check.
+                              example: 20
+                              default: 20
+                          description: Configuration for Nighttime PV Production Check.
+                          x-readme-ref-name: NighttimePVProductionCheckRequest
+                        - type: object
+                          properties:
+                            exceedingProductionTolerance:
+                              type: number
+                              format: double
+                              minimum: 0
+                              maximum: 1
+                              description: ratio of datapoints that may exceed the maximum production capabilities of the system.
+                              example: 0.05
+                              default: 0.05
+                          description: Configuration for Peak Production Exceeded Check.
+                          x-readme-ref-name: PeakProductionExceededCheckRequest
+                    description: 'Request to run an individual check of the given type with the given parameters. Note that some checks don''t have a
+
+                      configuration and therefore might not be listed as part of the params. You can still run the check by specifying the
+
+                      type, but no configuration object can be passed.'
+                    x-readme-ref-name: IndividualCheckRequest
+                profile:
+                  type: string
+                  enum:
+                  - quick
+                  - extended
+                  description: Enumeration of available check run profiles.
+                  x-readme-ref-name: CheckProfile
+              description: Request to run the configured checks on all Systems.
+              x-readme-ref-name: HealthCheckRequest
+      security:
+      - HeaderAuth: []
+      x-badges:
+      - label: beta
+        color: orange
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/health-checks\"\n\npayload = {\n    \"systems\": [\n        {\n            \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n            \"gatewaySerialNumber\": \"string\"\n        }\n    ],\n    \"checks\": [\n        {\n            \"type\": \"applianceAuthenticated\",\n            \"params\": { \"manufacturersWithAuthentication\": [\"string\"] }\n        }\n    ],\n    \"profile\": \"quick\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/health-checks \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"systems\": [\n    {\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"gatewaySerialNumber\": \"string\"\n    }\n  ],\n  \"checks\": [\n    {\n      \"type\": \"applianceAuthenticated\",\n      \"params\": {\n        \"manufacturersWithAuthentication\": [\n          \"string\"\n        ]\n      }\n    }\n  ],\n  \"profile\": \"quick\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/health-checks\"\n\n\tpayload := strings.NewReader(\"{\\\"systems\\\":[{\\\"id\\\":\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\",\\\"gatewaySerialNumber\\\":\\\"string\\\"}],\\\"checks\\\":[{\\\"type\\\":\\\"applianceAuthenticated\\\",\\\"params\\\":{\\\"manufacturersWithAuthentication\\\":[\\\"string\\\"]}}],\\\"profile\\\":\\\"quick\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    systems: [{id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', gatewaySerialNumber: 'string'}],\n    checks: [\n      {\n        type: 'applianceAuthenticated',\n        params: {manufacturersWithAuthentication: ['string']}\n      }\n    ],\n    profile: 'quick'\n  })\n};\n\nfetch('https://api.gridx.de/health-checks', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"systems\\\":[{\\\"id\\\":\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\",\\\"gatewaySerialNumber\\\":\\\"string\\\"}],\\\"checks\\\":[{\\\"type\\\":\\\"applianceAuthenticated\\\",\\\"params\\\":{\\\"manufacturersWithAuthentication\\\":[\\\"string\\\"]}}],\\\"profile\\\":\\\"quick\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/health-checks\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"systems\\\":[{\\\"id\\\":\\\"3fa85f64-5717-4562-b3fc-2c963f66afa6\\\",\\\"gatewaySerialNumber\\\":\\\"string\\\"}],\\\"checks\\\":[{\\\"type\\\":\\\"applianceAuthenticated\\\",\\\"params\\\":{\\\"manufacturersWithAuthentication\\\":[\\\"string\\\"]}}],\\\"profile\\\":\\\"quick\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/health-checks\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"systems\": [\n    [\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"gatewaySerialNumber\": \"string\"\n    ]\n  ],\n  \"checks\": [\n    [\n      \"type\": \"applianceAuthenticated\",\n      \"params\": [\"manufacturersWithAuthentication\": [\"string\"]]\n    ]\n  ],\n  \"profile\": \"quick\"\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/health-checks\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/health-checks");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"systems\":[{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\"gatewaySerialNumber\":\"string\"}],\"checks\":[{\"type\":\"applianceAuthenticated\",\"params\":{\"manufacturersWithAuthentication\":[\"string\"]}}],\"profile\":\"quick\"}", false);
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    get:
+      operationId: listHealthChecks
+      description: List names and descriptions of health checks available to run.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - checks
+                properties:
+                  checks:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - type
+                      - name
+                      - description
+                      - profiles
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - applianceAuthenticated
+                          - batteryCharged
+                          - batteryDischarged
+                          - connectionIssues
+                          - consumptionProductionCorrelated
+                          - cosPhi
+                          - energyFlow
+                          - gridFeedInMissing
+                          - nighttimePVProduction
+                          - hasSetpoints
+                          - peakProductionExceeded
+                          description: Enumeration of available check types.
+                          x-readme-ref-name: checkType
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        profiles:
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - quick
+                            - extended
+                            description: Enumeration of available check run profiles.
+                            x-readme-ref-name: CheckProfile
+                      description: Information about an individual Health Check.
+                      x-readme-ref-name: HealthCheckMetaData
+                description: List of available Health Checks.
+                x-readme-ref-name: HealthCheckMetaDataResult
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - title
+                properties:
+                  type:
+                    type: string
+                  status:
+                    type: integer
+                    format: int32
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                  instance:
+                    type: string
+                description: Error object.
+                x-readme-ref-name: HealthCheckError
+      tags:
+      - Health Checks
+      security:
+      - HeaderAuth: []
+      x-badges:
+      - label: draft
+        color: red
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/health-checks"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/health-checks \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/health-checks\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/health-checks', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/health-checks\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/health-checks\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/health-checks")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/health-checks");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+      summary: List health checks
+      x-summary-source: derived
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,7 @@
+name: gridX API rate limits
+generated: '2026-10-09'
+method: none
+limit_count: 0
+limits: []
+headers: []
+note: Rate limits are undocumented. The OpenAPI declares no 429 response and no X-RateLimit-*/RateLimit-*/Retry-After headers, and a search of community.developer.gridx.de for "rate limit" and "429" returned no topics on 2026-10-09.

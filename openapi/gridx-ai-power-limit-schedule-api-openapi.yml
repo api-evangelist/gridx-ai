@@ -1,0 +1,2213 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Power Limit Schedule API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Power Limit Schedule across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Power Limit Schedule
+  x-displayName: Power Limit Schedule
+paths:
+  /systems/{systemID}/power-limit-schedules:
+    get:
+      operationId: listSystemPowerLimitSchedules
+      summary: List a Systems power limit schedules
+      description: List all power limit schedules of the system.
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: page
+        description: 'Requested page, to be used in combination with the `per_page` parameter.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+        example: 1
+      - name: per_page
+        description: 'Requested number of items per page.
+
+          '
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 20
+          maximum: 500
+        example: 10
+      responses:
+        '200':
+          description: Power limit schedules ordered by `from` and `to` in ascending order.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                  - title: Power Limit Schedule
+                    description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        description: Name of this schedule. Must be unique for this system.
+                      from:
+                        type: string
+                        format: date-time
+                        description: From when the schedule applies (inclusive).
+                      to:
+                        type: string
+                        format: date-time
+                        description: Until when the schedule applies (exclusive).
+                      timezone:
+                        type: string
+                        description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                          Used to determine time of day of the timeframes.
+
+                          '
+                      timeframes:
+                        description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                          They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                          '
+                        type: array
+                        items:
+                          type: object
+                          required:
+                          - from
+                          - to
+                          - maxPower
+                          properties:
+                            from:
+                              description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                                '
+                              type: string
+                              example: 00:00
+                            to:
+                              description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                                '
+                              type: string
+                              example: '14:00'
+                            maxPower:
+                              description: Max import power in Watt to apply to the grid meter during this timeframe.
+                              type: integer
+                              format: int64
+                              minimum: 0
+                              example: 100000
+                      recurrence:
+                        type: object
+                        description: 'Recurrence rules for this schedule.
+
+
+                          Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                          '
+                        required:
+                        - frequency
+                        properties:
+                          frequency:
+                            description: Type of recurrence rule.
+                            type: string
+                            enum:
+                            - DAILY
+                          byDayOfWeek:
+                            description: 'Specifies a list of weekdays this rule should apply to.
+
+                              Only valid for `frequency=DAILY`.
+
+
+                              Omitting it is the same as selecting all days.
+
+                              '
+                            type: array
+                            items:
+                              type: string
+                              enum:
+                              - SU
+                              - MO
+                              - TU
+                              - WE
+                              - TH
+                              - FR
+                              - SA
+                    x-readme-ref-name: AbstractPowerLimitSchedule
+                  - required:
+                    - id
+                    - title
+                    - from
+                    - to
+                    - timezone
+                    - timeframes
+                    - recurrence
+                    - status
+                    - createdAt
+                    - updatedAt
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: Unique ID of this schedule.
+                      timeframes:
+                        minItems: 1
+                      status:
+                        description: 'Status of the schedule.
+
+
+                          - `ACTIVE`: A timeframe of this schedule is currently being applied.
+
+                          - `OUTDATED`: No more timeframes from this schedule will be applied.
+
+                          - `UPCOMING`: A timeframe of this schedule will be applied in the future.
+
+                          '
+                        type: string
+                        enum:
+                        - ACTIVE
+                        - OUTDATED
+                        - UPCOMING
+                      createdAt:
+                        description: When the Power Limit Schedule was created.
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        description: When the Power Limit Schedule was last updated.
+                        type: string
+                        format: date-time
+                  x-readme-ref-name: PowerLimitSchedule
+        '400':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/power-limit-schedules"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/power-limit-schedules")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createSystemPowerLimitSchedule
+      summary: Create a power limit schedule
+      description: Creates a power limit schedule for this system.
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      requestBody:
+        description: Power limit schedule to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - title: Power Limit Schedule
+                  description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Name of this schedule. Must be unique for this system.
+                    from:
+                      type: string
+                      format: date-time
+                      description: From when the schedule applies (inclusive).
+                    to:
+                      type: string
+                      format: date-time
+                      description: Until when the schedule applies (exclusive).
+                    timezone:
+                      type: string
+                      description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                        Used to determine time of day of the timeframes.
+
+                        '
+                    timeframes:
+                      description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                        They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                        '
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        - to
+                        - maxPower
+                        properties:
+                          from:
+                            description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                              '
+                            type: string
+                            example: 00:00
+                          to:
+                            description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                              '
+                            type: string
+                            example: '14:00'
+                          maxPower:
+                            description: Max import power in Watt to apply to the grid meter during this timeframe.
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 100000
+                    recurrence:
+                      type: object
+                      description: 'Recurrence rules for this schedule.
+
+
+                        Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                        '
+                      required:
+                      - frequency
+                      properties:
+                        frequency:
+                          description: Type of recurrence rule.
+                          type: string
+                          enum:
+                          - DAILY
+                        byDayOfWeek:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+                            Only valid for `frequency=DAILY`.
+
+
+                            Omitting it is the same as selecting all days.
+
+                            '
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                  x-readme-ref-name: AbstractPowerLimitSchedule
+                - required:
+                  - title
+                  - from
+                  - to
+                  - timeframes
+                  - recurrence
+                  properties:
+                    timezone:
+                      default: Europe/Berlin
+                    timeframes:
+                      minItems: 1
+                x-readme-ref-name: PowerLimitScheduleCreate
+              - additionalProperties: false
+              x-readme-ref-name: PowerLimitScheduleCreateStrict
+            examples:
+              dailyRepetition:
+                summary: Daily repeating
+                value:
+                  title: Daily repeating
+                  from: '2024-01-01T00:00:00+02:00'
+                  to: '2025-01-01T00:00:00+02:00'
+                  timeframes:
+                  - from: 00:00
+                    to: '18:00'
+                    maxPower: 100000
+                  - from: '18:00'
+                    to: 00:00
+                    maxPower: 150000
+                  recurrence:
+                    frequency: DAILY
+              weekends:
+                summary: Weekends
+                value:
+                  title: Weekends
+                  from: '2024-01-01T00:00:00+02:00'
+                  to: '2025-01-01T00:00:00+02:00'
+                  timeframes:
+                  - from: 00:00
+                    to: 00:00
+                    maxPower: 100000
+                  recurrence:
+                    frequency: DAILY
+                    byDayOfWeek:
+                    - SA
+                    - SU
+      responses:
+        '201':
+          description: Created power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Power Limit Schedule
+                  description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Name of this schedule. Must be unique for this system.
+                    from:
+                      type: string
+                      format: date-time
+                      description: From when the schedule applies (inclusive).
+                    to:
+                      type: string
+                      format: date-time
+                      description: Until when the schedule applies (exclusive).
+                    timezone:
+                      type: string
+                      description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                        Used to determine time of day of the timeframes.
+
+                        '
+                    timeframes:
+                      description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                        They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                        '
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        - to
+                        - maxPower
+                        properties:
+                          from:
+                            description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                              '
+                            type: string
+                            example: 00:00
+                          to:
+                            description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                              '
+                            type: string
+                            example: '14:00'
+                          maxPower:
+                            description: Max import power in Watt to apply to the grid meter during this timeframe.
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 100000
+                    recurrence:
+                      type: object
+                      description: 'Recurrence rules for this schedule.
+
+
+                        Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                        '
+                      required:
+                      - frequency
+                      properties:
+                        frequency:
+                          description: Type of recurrence rule.
+                          type: string
+                          enum:
+                          - DAILY
+                        byDayOfWeek:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+                            Only valid for `frequency=DAILY`.
+
+
+                            Omitting it is the same as selecting all days.
+
+                            '
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                  x-readme-ref-name: AbstractPowerLimitSchedule
+                - required:
+                  - id
+                  - title
+                  - from
+                  - to
+                  - timezone
+                  - timeframes
+                  - recurrence
+                  - status
+                  - createdAt
+                  - updatedAt
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: Unique ID of this schedule.
+                    timeframes:
+                      minItems: 1
+                    status:
+                      description: 'Status of the schedule.
+
+
+                        - `ACTIVE`: A timeframe of this schedule is currently being applied.
+
+                        - `OUTDATED`: No more timeframes from this schedule will be applied.
+
+                        - `UPCOMING`: A timeframe of this schedule will be applied in the future.
+
+                        '
+                      type: string
+                      enum:
+                      - ACTIVE
+                      - OUTDATED
+                      - UPCOMING
+                    createdAt:
+                      description: When the Power Limit Schedule was created.
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      description: When the Power Limit Schedule was last updated.
+                      type: string
+                      format: date-time
+                x-readme-ref-name: PowerLimitSchedule
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/power-limit-schedules\"\n\npayload = {\n    \"title\": \"Daily repeating\",\n    \"from\": \"2024-01-01T00:00:00+02:00\",\n    \"to\": \"2025-01-01T00:00:00+02:00\",\n    \"timeframes\": [\n        {\n            \"from\": \"00:00\",\n            \"to\": \"18:00\",\n            \"maxPower\": 100000\n        },\n        {\n            \"from\": \"18:00\",\n            \"to\": \"00:00\",\n            \"maxPower\": 150000\n        }\n    ],\n    \"recurrence\": { \"frequency\": \"DAILY\" }\n}\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"title\": \"Daily repeating\",\n  \"from\": \"2024-01-01T00:00:00+02:00\",\n  \"to\": \"2025-01-01T00:00:00+02:00\",\n  \"timeframes\": [\n    {\n      \"from\": \"00:00\",\n      \"to\": \"18:00\",\n      \"maxPower\": 100000\n    },\n    {\n      \"from\": \"18:00\",\n      \"to\": \"00:00\",\n      \"maxPower\": 150000\n    }\n  ],\n  \"recurrence\": {\n    \"frequency\": \"DAILY\"\n  }\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules\"\n\n\tpayload := strings.NewReader(\"{\\\"title\\\":\\\"Daily repeating\\\",\\\"from\\\":\\\"2024-01-01T00:00:00+02:00\\\",\\\"to\\\":\\\"2025-01-01T00:00:00+02:00\\\",\\\"timeframes\\\":[{\\\"from\\\":\\\"00:00\\\",\\\"to\\\":\\\"18:00\\\",\\\"maxPower\\\":100000},{\\\"from\\\":\\\"18:00\\\",\\\"to\\\":\\\"00:00\\\",\\\"maxPower\\\":150000}],\\\"recurrence\\\":{\\\"frequency\\\":\\\"DAILY\\\"}}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    title: 'Daily repeating',\n    from: '2024-01-01T00:00:00+02:00',\n    to: '2025-01-01T00:00:00+02:00',\n    timeframes: [\n      {from: '00:00', to: '18:00', maxPower: 100000},\n      {from: '18:00', to: '00:00', maxPower: 150000}\n    ],\n    recurrence: {frequency: 'DAILY'}\n  })\n};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"title\\\":\\\"Daily repeating\\\",\\\"from\\\":\\\"2024-01-01T00:00:00+02:00\\\",\\\"to\\\":\\\"2025-01-01T00:00:00+02:00\\\",\\\"timeframes\\\":[{\\\"from\\\":\\\"00:00\\\",\\\"to\\\":\\\"18:00\\\",\\\"maxPower\\\":100000},{\\\"from\\\":\\\"18:00\\\",\\\"to\\\":\\\"00:00\\\",\\\"maxPower\\\":150000}],\\\"recurrence\\\":{\\\"frequency\\\":\\\"DAILY\\\"}}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules\")\n  .post(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"title\\\":\\\"Daily repeating\\\",\\\"from\\\":\\\"2024-01-01T00:00:00+02:00\\\",\\\"to\\\":\\\"2025-01-01T00:00:00+02:00\\\",\\\"timeframes\\\":[{\\\"from\\\":\\\"00:00\\\",\\\"to\\\":\\\"18:00\\\",\\\"maxPower\\\":100000},{\\\"from\\\":\\\"18:00\\\",\\\"to\\\":\\\"00:00\\\",\\\"maxPower\\\":150000}],\\\"recurrence\\\":{\\\"frequency\\\":\\\"DAILY\\\"}}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules\")\n  .post(body)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"title\": \"Daily repeating\",\n  \"from\": \"2024-01-01T00:00:00+02:00\",\n  \"to\": \"2025-01-01T00:00:00+02:00\",\n  \"timeframes\": [\n    [\n      \"from\": \"00:00\",\n      \"to\": \"18:00\",\n      \"maxPower\": 100000\n    ],\n    [\n      \"from\": \"18:00\",\n      \"to\": \"00:00\",\n      \"maxPower\": 150000\n    ]\n  ],\n  \"recurrence\": [\"frequency\": \"DAILY\"]\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/power-limit-schedules\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddJsonBody("{\"title\":\"Daily repeating\",\"from\":\"2024-01-01T00:00:00+02:00\",\"to\":\"2025-01-01T00:00:00+02:00\",\"timeframes\":[{\"from\":\"00:00\",\"to\":\"18:00\",\"maxPower\":100000},{\"from\":\"18:00\",\"to\":\"00:00\",\"maxPower\":150000}],\"recurrence\":{\"frequency\":\"DAILY\"}}", false);
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/power-limit-schedules/{scheduleID}:
+    get:
+      operationId: getSystemPowerLimitSchedule
+      summary: Retrieve a power limit schedule
+      description: Retrieves the details of an existing power limit schedule.
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: scheduleID
+        description: 'Unique identifier for a schedule.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: ec4d0c89-a604-49ac-82f0-427f9cb42204
+      responses:
+        '200':
+          description: Returned power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Power Limit Schedule
+                  description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Name of this schedule. Must be unique for this system.
+                    from:
+                      type: string
+                      format: date-time
+                      description: From when the schedule applies (inclusive).
+                    to:
+                      type: string
+                      format: date-time
+                      description: Until when the schedule applies (exclusive).
+                    timezone:
+                      type: string
+                      description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                        Used to determine time of day of the timeframes.
+
+                        '
+                    timeframes:
+                      description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                        They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                        '
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        - to
+                        - maxPower
+                        properties:
+                          from:
+                            description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                              '
+                            type: string
+                            example: 00:00
+                          to:
+                            description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                              '
+                            type: string
+                            example: '14:00'
+                          maxPower:
+                            description: Max import power in Watt to apply to the grid meter during this timeframe.
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 100000
+                    recurrence:
+                      type: object
+                      description: 'Recurrence rules for this schedule.
+
+
+                        Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                        '
+                      required:
+                      - frequency
+                      properties:
+                        frequency:
+                          description: Type of recurrence rule.
+                          type: string
+                          enum:
+                          - DAILY
+                        byDayOfWeek:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+                            Only valid for `frequency=DAILY`.
+
+
+                            Omitting it is the same as selecting all days.
+
+                            '
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                  x-readme-ref-name: AbstractPowerLimitSchedule
+                - required:
+                  - id
+                  - title
+                  - from
+                  - to
+                  - timezone
+                  - timeframes
+                  - recurrence
+                  - status
+                  - createdAt
+                  - updatedAt
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: Unique ID of this schedule.
+                    timeframes:
+                      minItems: 1
+                    status:
+                      description: 'Status of the schedule.
+
+
+                        - `ACTIVE`: A timeframe of this schedule is currently being applied.
+
+                        - `OUTDATED`: No more timeframes from this schedule will be applied.
+
+                        - `UPCOMING`: A timeframe of this schedule will be applied in the future.
+
+                        '
+                      type: string
+                      enum:
+                      - ACTIVE
+                      - OUTDATED
+                      - UPCOMING
+                    createdAt:
+                      description: When the Power Limit Schedule was created.
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      description: When the Power Limit Schedule was last updated.
+                      type: string
+                      format: date-time
+                x-readme-ref-name: PowerLimitSchedule
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    patch:
+      operationId: updateSystemPowerLimitSchedule
+      summary: Update a power limit schedule
+      description: Updates the specified power limit schedule.
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: scheduleID
+        description: 'Unique identifier for a schedule.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: ec4d0c89-a604-49ac-82f0-427f9cb42204
+      requestBody:
+        description: Partially modified power limit schedule.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - title: Power Limit Schedule
+                  description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Name of this schedule. Must be unique for this system.
+                    from:
+                      type: string
+                      format: date-time
+                      description: From when the schedule applies (inclusive).
+                    to:
+                      type: string
+                      format: date-time
+                      description: Until when the schedule applies (exclusive).
+                    timezone:
+                      type: string
+                      description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                        Used to determine time of day of the timeframes.
+
+                        '
+                    timeframes:
+                      description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                        They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                        '
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        - to
+                        - maxPower
+                        properties:
+                          from:
+                            description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                              '
+                            type: string
+                            example: 00:00
+                          to:
+                            description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                              '
+                            type: string
+                            example: '14:00'
+                          maxPower:
+                            description: Max import power in Watt to apply to the grid meter during this timeframe.
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 100000
+                    recurrence:
+                      type: object
+                      description: 'Recurrence rules for this schedule.
+
+
+                        Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                        '
+                      required:
+                      - frequency
+                      properties:
+                        frequency:
+                          description: Type of recurrence rule.
+                          type: string
+                          enum:
+                          - DAILY
+                        byDayOfWeek:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+                            Only valid for `frequency=DAILY`.
+
+
+                            Omitting it is the same as selecting all days.
+
+                            '
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                  x-readme-ref-name: AbstractPowerLimitSchedule
+                x-readme-ref-name: PowerLimitScheduleUpdate
+              - additionalProperties: false
+              x-readme-ref-name: PowerLimitScheduleUpdateStrict
+      responses:
+        '200':
+          description: Updated power limit schedule.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                allOf:
+                - title: Power Limit Schedule
+                  description: "A Power Limit Schedule is a schedule that defines recurring import power limits, \nwhich should be applied to the grid meter.\n\nThe schedule is recurring inside the interval bounds defined by `from` and `to`.\n\nThere can be only one active timeframe for every point in time.\nSchedules can overlap, but they must not have overlapping timeframes. \n"
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Name of this schedule. Must be unique for this system.
+                    from:
+                      type: string
+                      format: date-time
+                      description: From when the schedule applies (inclusive).
+                    to:
+                      type: string
+                      format: date-time
+                      description: Until when the schedule applies (exclusive).
+                    timezone:
+                      type: string
+                      description: 'Fully qualified identifier of the timezone ([IANA timezone database identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) this schedule should be applied in.
+
+                        Used to determine time of day of the timeframes.
+
+                        '
+                    timeframes:
+                      description: 'List of timeframes containing which import limit should be applied at which time of the day.
+
+
+                        They must not overlap in this schedule and also not with timeframes of other schedules of this system.
+
+                        '
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - from
+                        - to
+                        - maxPower
+                        properties:
+                          from:
+                            description: 'Time of day from when the limit of this timeframe should be applied (inclusive).
+
+                              '
+                            type: string
+                            example: 00:00
+                          to:
+                            description: 'Time of day until when the limit of this timeframe should be applied (exclusive).
+
+                              '
+                            type: string
+                            example: '14:00'
+                          maxPower:
+                            description: Max import power in Watt to apply to the grid meter during this timeframe.
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 100000
+                    recurrence:
+                      type: object
+                      description: 'Recurrence rules for this schedule.
+
+
+                        Inspired by [RFC5545](https://www.rfc-editor.org/rfc/rfc5545#section-3.3.10) and supporting a small subset of it.
+
+                        '
+                      required:
+                      - frequency
+                      properties:
+                        frequency:
+                          description: Type of recurrence rule.
+                          type: string
+                          enum:
+                          - DAILY
+                        byDayOfWeek:
+                          description: 'Specifies a list of weekdays this rule should apply to.
+
+                            Only valid for `frequency=DAILY`.
+
+
+                            Omitting it is the same as selecting all days.
+
+                            '
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                            - SU
+                            - MO
+                            - TU
+                            - WE
+                            - TH
+                            - FR
+                            - SA
+                  x-readme-ref-name: AbstractPowerLimitSchedule
+                - required:
+                  - id
+                  - title
+                  - from
+                  - to
+                  - timezone
+                  - timeframes
+                  - recurrence
+                  - status
+                  - createdAt
+                  - updatedAt
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: Unique ID of this schedule.
+                    timeframes:
+                      minItems: 1
+                    status:
+                      description: 'Status of the schedule.
+
+
+                        - `ACTIVE`: A timeframe of this schedule is currently being applied.
+
+                        - `OUTDATED`: No more timeframes from this schedule will be applied.
+
+                        - `UPCOMING`: A timeframe of this schedule will be applied in the future.
+
+                        '
+                      type: string
+                      enum:
+                      - ACTIVE
+                      - OUTDATED
+                      - UPCOMING
+                    createdAt:
+                      description: When the Power Limit Schedule was created.
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      description: When the Power Limit Schedule was last updated.
+                      type: string
+                      format: date-time
+                x-readme-ref-name: PowerLimitSchedule
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\"\n\nheaders = {\n    \"accept\": \"application/vnd.gridx.v2+json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PATCH \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID \\\n     --header 'accept: application/vnd.gridx.v2+json' \\\n     --header 'content-type: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/vnd.gridx.v2+json', 'content-type': 'application/json'}\n};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .patch(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet url = URL(string: \"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PATCH\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/vnd.gridx.v2+json\",\n  \"content-type\": \"application/json\"\n]\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          request.AddHeader("content-type", "application/json");
+
+          var response = await client.PatchAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteSystemPowerLimitSchedule
+      summary: Delete a power limit schedule
+      description: Deletes a power limit schedule.
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: scheduleID
+        description: 'Unique identifier for a schedule.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: ec4d0c89-a604-49ac-82f0-427f9cb42204
+      responses:
+        '204':
+          description: Power limit schedule has been deleted successfully.
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules/scheduleID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /systems/{systemID}/power-limit-schedules-intervals:
+    get:
+      operationId: listSystemPowerLimitScheduleIntervals
+      summary: List applied power limits intervals
+      description: 'Returns a list of scheduled power limit intervals.
+
+
+        Intervals in the past are fixed and will never change.
+
+        Intervals in the future can change if the underlying schedule is changed.'
+      tags:
+      - Power Limit Schedule
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        description: 'Requested time interval, formatted in ISO8601.
+
+
+          In this format the start and end point of the interval are formatted according
+
+          to RFC3339 and separated by a slash "/".
+
+          '
+        in: query
+        required: true
+        allowReserved: true
+        example: 2021-12-24T18:21:00Z/2021-12-25T18:21:00Z
+        schema:
+          type: string
+          format: datetime
+      responses:
+        '200':
+          description: Applied power limits intervals.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: 'Ascending ordered list of intervals in which a scheduled power limit was applied.
+
+                  '
+                type: object
+                required:
+                - from
+                - to
+                - intervals
+                properties:
+                  from:
+                    description: 'From when the first interval of this object applied (inclusive).
+
+                      Equal to requested `interval` start, if there are no intervals.
+
+                      '
+                    type: string
+                    format: date-time
+                  to:
+                    description: 'Until when the last interval of this object applied (exclusive).
+
+                      Equal to requested `interval` start, if there are no intervals.
+
+                      '
+                    type: string
+                    format: date-time
+                  intervals:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - from
+                      - to
+                      - maxPower
+                      properties:
+                        from:
+                          description: From when the interval applied (inclusive).
+                          type: string
+                          format: date-time
+                        to:
+                          description: Until when the interval applied (exclusive).
+                          type: string
+                          format: date-time
+                        maxPower:
+                          description: Max import power in Watt applied during the interval.
+                          type: integer
+                          minimum: 0
+                          format: int64
+                x-readme-ref-name: PowerLimitIntervals
+        '400':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/power-limit-schedules-intervals"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/power-limit-schedules-intervals \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/power-limit-schedules-intervals\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/power-limit-schedules-intervals', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules-intervals\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/power-limit-schedules-intervals\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/power-limit-schedules-intervals")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/power-limit-schedules-intervals");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

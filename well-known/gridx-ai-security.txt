@@ -1,0 +1,17 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Contact: mailto:security@gridx.de
+Contact: mailto:security@gridx.ai
+Expires: 2028-01-27T00:00:00.000Z
+Encryption: https://gridx.ai/.well-known/pgp-key.txt
+Preferred-Languages: en, de
+Canonical: https://gridx.ai/.well-known/security.txt
+Policy: https://security.gridx.ai/?itemUid=e7fc67f3-bf2e-41ea-9c2e-858120482222
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQQt0QszlQUdt5QeayyLl/BmN96oTwUCaXnbWwAKCRCLl/BmN96o
+T9KaAP9h5iPCwQtVOuqjQQyQNggPYagqWjqoOSgxAUGLrfiE9AD/b4lI9/R3Qztx
+lfkDFQ7uW/MK/FIgsw6GtuoqEQCT6Qc=
+=wxlp
+-----END PGP SIGNATURE-----

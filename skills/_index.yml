@@ -1,0 +1,56 @@
+name: gridX agent skills
+type: AgentSkillIndex
+generated: '2026-10-09'
+method: generated
+source: openapi/gridx-ai-openapi.yml
+note: No provider-published skills or AGENTS.md found; skills generated from the OpenAPI contract.
+skills:
+- name: gridx-ai-monitor-system-energy
+  path: skills/gridx-ai-monitor-system-energy.md
+  description: Find a gridX system and read its live and historical energy measurements plus per-asset data.
+  operations:
+  - listSystems
+  - getSystem
+  - getSystemLiveMeasurements
+  - getSystemHistoricalMeasurements
+  - listSystemAsset
+  - getAssetMeasurements
+- name: gridx-ai-configure-dynamic-tariff
+  path: skills/gridx-ai-configure-dynamic-tariff.md
+  description: Set a system tariff and time-of-use optimisation settings, then inspect the resulting prices and
+    decisions.
+  operations:
+  - getSystemTariff
+  - setSystemTariff
+  - listSystemTariffPrices
+  - getSystemTimeOfUseReadiness
+  - setSystemTimeOfUseSettings
+  - getSystemTimeOfUseDecisions
+- name: gridx-ai-manage-ev-charging
+  path: skills/gridx-ai-manage-ev-charging.md
+  description: Manage EV profiles and charging schedules for a gridX system.
+  operations:
+  - listSystemEVProfiles
+  - createSystemEVProfile
+  - updateSystemEVProfile
+  - listSystemEVChargingSchedules
+  - createSystemEVChargingSchedule
+- name: gridx-ai-limit-grid-power
+  path: skills/gridx-ai-limit-grid-power.md
+  description: Set or clear import/export power limits on a system gateway (e.g. peak shaving or grid-operator curtailment).
+  operations:
+  - getSystemGatewayImportPowerLimit
+  - setSystemGatewayImportPowerLimit
+  - deleteSystemGatewayImportPowerLimit
+  - getSystemGatewayExportPowerLimit
+  - setSystemGatewayExportPowerLimit
+  - deleteSystemGatewayExportPowerLimit
+- name: gridx-ai-subscribe-webhooks
+  path: skills/gridx-ai-subscribe-webhooks.md
+  description: Create, test and maintain account webhook subscriptions.
+  operations:
+  - listWebhookSubscriptions
+  - createWebhookSubscription
+  - pingWebhookSubscription
+  - rotateWebhookSubscriptionSecret
+  - deleteWebhookSubscription

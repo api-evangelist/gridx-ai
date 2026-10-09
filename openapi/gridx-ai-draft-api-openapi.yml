@@ -1,0 +1,188 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Draft API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged draft across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Draft
+  description: API that is being evaluated, may change on short notice.
+  x-displayName: draft
+paths:
+  /emobility/assets:
+    post:
+      operationId: findAssetInAccount
+      summary: Helper to find a gridX asset (appliance) in an account
+      description: 'Find an asset within gridX''s inventory.
+
+        The account to look-up is specified by the callers authentication token.
+
+        The asset may belong to any system in the given account.
+
+        For lookups by EVSEID, only assets with this unique EVSEID will be returned.
+
+        For lookups by serial number, all assets that partially match the provided serial number will be returned.
+
+        The lookup will stop with the first system where one asset has been found that matches the serial number.'
+      x-badges:
+      - label: draft
+        color: red
+      tags:
+      - Draft
+      requestBody:
+        description: 'A request to find an asset in gridX''s inventory.
+
+          '
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                asset:
+                  description: 'There are different identifiers, we can use to uniquely identify an asset.
+
+                    For EV charging stations with multiple connectors, each individual connector is a dedicated asset.
+
+                    '
+                  oneOf:
+                  - description: 'Find an asset by serial number and, if the charging station has multiple EVSE, connector number.
+
+                      The first connector carries number 1.
+
+                      '
+                    type: object
+                    properties:
+                      serialNumber:
+                        type: string
+                        example: sn-123456789
+                        minLength: 5
+                      connectorNumber:
+                        type: integer
+                        minimum: 1
+                        example: 3
+                    required:
+                    - serialNumber
+                    x-readme-ref-name: AssetBySerialNumber
+                  x-readme-ref-name: AssetIdentification
+            examples:
+              BySerialNumber:
+                description: 'Looks up by partial serial numbers and optionally by connector ID.
+
+                  See the schema description for specifics on connector enumeration.
+
+                  '
+                value:
+                  asset:
+                    serialNumber: GRIDX9999
+                    connectorNumber: 2
+      responses:
+        '200':
+          description: Response body encoding one asset.
+          content:
+            application/json:
+              schema:
+                description: 'Representation of an asset with both system and asset IDs.
+
+                  '
+                type: object
+                properties:
+                  systemID:
+                    type: string
+                    format: uuid
+                    example: 0de982e5-f74f-49a8-a76c-929110a47f80
+                  assetID:
+                    type: string
+                    format: uuid
+                    example: 6d8ea8d2-a7df-4417-8347-5f5082bbb6bc
+                  serialNumber:
+                    type: string
+                    example: sn-123456789
+                  evseID:
+                    type: string
+                    example: DE*XXX*E0123456789
+                required:
+                - systemID
+                - assetID
+                - serialNumber
+                x-readme-ref-name: FullAssetIdenfication
+              example:
+                systemID: 0de982e5-f74f-49a8-a76c-929110a47f80
+                assetID: e66bff66-d637-45bf-abfb-e245d2dd28fb
+                serialNumber: sn-123456789_2
+                evseID: I*HAVE*AN*EVSEID
+        '400':
+          description: Bad request.
+        '403':
+          description: Bad credentials.
+        '404':
+          description: No assets found matching the asset identification in the request.
+        '500':
+          description: Internal Server Error.
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/emobility/assets\"\n\npayload = { \"asset\": {\n        \"serialNumber\": \"GRIDX9999\",\n        \"connectorNumber\": 2\n    } }\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/emobility/assets \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"asset\": {\n    \"serialNumber\": \"GRIDX9999\",\n    \"connectorNumber\": 2\n  }\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/emobility/assets\"\n\n\tpayload := strings.NewReader(\"{\\\"asset\\\":{\\\"serialNumber\\\":\\\"GRIDX9999\\\",\\\"connectorNumber\\\":2}}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({asset: {serialNumber: 'GRIDX9999', connectorNumber: 2}})\n};\n\nfetch('https://api.gridx.de/emobility/assets', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"asset\\\":{\\\"serialNumber\\\":\\\"GRIDX9999\\\",\\\"connectorNumber\\\":2}}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/emobility/assets\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"asset\\\":{\\\"serialNumber\\\":\\\"GRIDX9999\\\",\\\"connectorNumber\\\":2}}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/emobility/assets\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\"asset\": [\n    \"serialNumber\": \"GRIDX9999\",\n    \"connectorNumber\": 2\n  ]] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/emobility/assets\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/emobility/assets");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"asset\":{\"serialNumber\":\"GRIDX9999\",\"connectorNumber\":2}}", false);
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

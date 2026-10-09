@@ -1,0 +1,235 @@
+# harvested from https://github.com/grid-x/api/blob/53b0e020cbab3807cb17a77d611023900d964628/style/spectral.yaml on 2026-10-09 — a Spectral ruleset published in the provider's own GitHub repository (grid-x/api); found by GitHub code search, fetched verbatim
+x-method: harvested
+x-stamped: 2026-10-09
+x-source-url: https://github.com/grid-x/api/blob/53b0e020cbab3807cb17a77d611023900d964628/style/spectral.yaml
+formats: ["oas3"]
+
+extends:
+  - spectral:oas
+
+rules:
+  info-contact: off # ignore
+  operation-operationId: off # ignore
+  operation-tag-defined: off # readme.io handles this implicitly
+  # TODO(kdevo): ref-siblings are supported in OAS 3.1, turn off for forward-support. Remove exclusion after we upgraded to 3.1.
+  no-$ref-siblings: off
+  oas3-valid-media-example: off
+
+  # Besides checking, that the scheme referenced in an operation's security requirement is defined on the OpenAPI spec's
+  # components/securitySchemes, this rule also assumes that each security requirement's value is a list of OAuth2 scopes
+  # and tries to verify these against the referenced security scheme's flows.*.scopes.
+  #
+  # Because of that, we unfortunately have to disable this rule on the public, shared ruleset. We will add a custom
+  # linting rule to our internal API bundling process to still verify that no security scheme is referenced, that isn't
+  # actually defined. Because we have to implement a custom lookup spectral function in JS for that, we can't use it on
+  # this public rule set, as this would break shareability via HTTPS.
+  #
+  oas3-operation-security-defined: off
+
+# General
+  minimum-openapi-version-3:
+    description: Minimum openapi version must be 3.0.
+    message: "OpenAPI version must be 3.0 or higher"
+    severity: error
+    given: "$.openapi"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^3."
+
+  ensure-info-x-api-id:
+    description: Ensures that all OpenAPIs have an information object API ID extension which is unique for machine-readable API identification.
+    message: The info object should have an API ID extension.
+    given: "$.info"
+    severity: error
+    recommended: true
+    then:
+      field: x-api-id
+      function: truthy
+
+# PATH
+  ensure-do-not-use-api-for-base-path:
+    description: Ensures that paths do not use /api as part of the base path.
+    message: You should not use /api as part of your base path.
+    severity: warn
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^/api"
+
+  ensure-normalized-paths-in-kebab-case:
+    description: All paths must be normalized path without empty path segments and in kebab-case.
+    severity: error
+    recommended: true
+    message: "{{property}} is not kebab-case: {{error}}"
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: "^\/([a-z0-9]+(-[a-z0-9]+)*)?(\/[a-z0-9]+(-[a-z0-9]+)*|\/{.+})*$" 
+
+# Operations
+  ensure-endpoint-summary:
+    description: Endpoints must have a summary.
+    given: $.paths[*][*]
+    severity: warn
+    recommended: true
+    message: "{{property}} has no summary: {{error}}"
+    then:
+      field: summary
+      function: truthy
+
+  ensure-query-parameters-in-camel-case:
+    description: All query parameters must be in camelCase.
+    severity: error
+    recommended: true
+    given: $..*.parameters[[?(@.in=='query')]]
+    message: "{{property}} is not camelCase: {{error}}"
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+
+  ensure-param-description:
+    description: Parameters must have a description.
+    given: $..*.parameters[*]
+    severity: error
+    recommended: true
+    message: "{{property}} has no description: {{error}}"
+    then:
+      field: description
+      function: truthy
+
+  ensure-param-examples:
+    description: Parameters must have examples.
+    given: $.parameters[?(@.type != "object" || @.type != "array")]
+    severity: error
+    recommended: true
+    message: "{{property}} has no example: {{error}}"
+    then:
+      function: xor
+      functionOptions:
+        properties:
+          - examples
+          - example
+
+  ensure-limit-number-of-sub-resources:
+    description: Ensures that there are not too many sub-resources. Our API should follow the seperation of concerns (SoC) principle. 
+    message: There should be no more than four levels of sub-resources. Endpoints must not have too many responsibilties (SRP), please seperate your endpoints.
+    severity: warn
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^/[^/]*((/{[^}]*})*/[^/]*(/{[^}]*})*){0,4}/?$"
+
+# Request/Response
+  ensure-response-description-punctuation:
+    description: Response description must end with a dot.
+    given: $.components.schemas[*]
+    severity: warn
+    message: "{{error}}"
+    then:
+      field: description
+      function: pattern
+      functionOptions:
+        match: "/^(.*)[. ]$/m"
+
+  ensure-components-camel-case-alphanumeric:
+    description: All YAML/JSON components MUST follow fields-camelCase and be ASCII alphanumeric characters or `_`.
+    severity: error
+    recommended: true
+    message: "{{property}} MUST follow camelCase and be ASCII alphanumeric characters or `_`."
+    given: $.components[*]~
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+
+  ensure-properties-camel-case-alphanumeric:
+    description: All JSON Schema properties MUST follow fields-camelCase and be ASCII alphanumeric characters or `_`.
+    severity: error
+    recommended: true
+    message: "{{property}} MUST follow camelCase and be ASCII alphanumeric characters or `_`"
+    given: $.definitions..properties[*]~
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+
+  ensure-request-GET-and-DELETE-no-body:
+    description: "GET and DELETE requests MUST NOT accept parameters in 'body'"
+    severity: error
+    given: $.paths.*[get,delete].parameters..in
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "/^body$/"
+
+  ensure-no-request-body-on-get-and-delete:
+    description: Ensures that GET and DELETE  methods do not have request bodies.
+    message: Your GET and DELETE methods should not have request bodies.
+    given: "$.paths.*[get,delete]"
+    recommended: true
+    severity: warn
+    then:
+      field: requestBody
+      function: falsy
+
+  ensure-created-at-format:
+    description: Ensures that CreatedAt fields have format date-time and is read-only.
+    severity: hint
+    message: "{{description}}: {{error}}"
+    given: $..properties.[?(@property=='createdAt')]
+    then:
+      - field: type
+        function: pattern
+        functionOptions:
+          match: "/^string$/"
+      - field: readOnly
+        function: truthy
+      - field: format
+        function: pattern
+        functionOptions:
+          match: "/^date-time$/"
+
+  ensure-updatedAt-format:
+    description: Ensures that updatedAt fields have format date-time.
+    severity: hint
+    message: "{{description}}: {{error}}"
+    given: $..properties.[?(@property=='updatedAt')]
+    then:
+      - field: type
+        function: pattern
+        functionOptions:
+          match: "/^string$/"
+      - field: readOnly
+        function: truthy
+      - field: format
+        function: pattern
+        functionOptions:
+          match: "/^date-time$/"
+
+  ensure-date-time-fields-ends-with-at:
+    description: Ensures that fields with format date-time should end with At.
+    message: "Field name '{{property}}' with format date-time should end with At"
+    severity: error
+    given: $.components.schemas..properties[?(@.type === 'string' && @.format === 'date-time')]
+    then:
+      function: pattern
+      functionOptions:
+        match: "/At$/"
+
+  recommend-capitalized-enums:
+    description: Recommends capitalized enum values.
+    message: "{{description}}: {{error}}"
+    severity: hint
+    given: "$.components.schemas[*].properties[*].enum"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "/^[A-Z]+[0-9]*[A-Z0-9]*$/"
+    
+
+# TODO: add rule to check header auth is present and 100% standard (so we can merge them)

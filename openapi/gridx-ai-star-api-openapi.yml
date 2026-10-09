@@ -1,0 +1,848 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Star API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Star across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Star
+  x-displayName: Star
+paths:
+  /user/stars/accounts:
+    get:
+      operationId: listStarredAccounts
+      summary: List all starred Accounts
+      description: Lists all starred accounts for the authenticated user.
+      tags:
+      - Star
+      security:
+      - HeaderAuth:
+        - ListAccounts
+      responses:
+        '200':
+          description: Starred accounts of the currently authenticated user.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  description: 'Represents a starred account which holds an additional starredAt timestamp.
+
+                    '
+                  allOf:
+                  - title: Account
+                    description: 'An account describes an organizational unit to manage access to systems for one or multiple users.
+
+                      '
+                    type: object
+                    readOnly: true
+                    properties:
+                      name:
+                        type: string
+                        example: John Doe
+                        description: Name of the account, can be chosen freely but should be kept terse and descriptive.
+                        minLength: 1
+                        maxLength: 256
+                      email:
+                        type: string
+                        format: email
+                        example: john@doe.com
+                        description: The email field of the account can optionally be chosen e.g. for contact purposes (in order to reach the responsible person for the account).
+                        maxLength: 256
+                      solution:
+                        type: string
+                        description: "Represents the supported solutions within the account:\n- HOME if the account contains household-like systems. \n- CHARGE if the account is used solely for charging station fleet management.\n- GENERAL if unsure what the account should contain or if it's a mix of multiple solutions.\n- SMART_DISTRICT if the account is used solely for smart district management.\nIf not set, the parent account's solution will be assumed.\n"
+                        enum:
+                        - HOME
+                        - CHARGE
+                        - GENERAL
+                        - SMART_DISTRICT
+                        - MICROGRID
+                        - HOME_VIRTUAL_METERING
+                        - COMMERCIAL
+                        - CUSTOM_P2P
+                        x-readme-ref-name: AccountSolution
+                      id:
+                        type: string
+                        format: uuid
+                        example: 49a4f165-8233-426b-a1a4-e569665a25dd
+                        description: Uniquely identifies the account.
+                      parentID:
+                        type: string
+                        format: uuid
+                        example: 19a4f165-8233-426b-a1a4-e569665a25dd
+                        description: Parent of the account for a tree-like account structure. Only the root account does not have a parent ID.
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: Specifies when the account was created.
+                        readOnly: true
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        description: Specifies when the account was updated.
+                        readOnly: true
+                      systemsCount:
+                        type: integer
+                        description: SystemCount is the number of systems assigned to this account
+                        example: 1
+                      kind:
+                        type: string
+                        readOnly: true
+                        enum:
+                        - b2b
+                        - end-user
+                        description: If b2b, the account is a regular account. If end-user, the account is a customer account which contains just one user.
+                        x-readme-ref-name: AccountKind
+                      mainAddress:
+                        title: Address
+                        description: Represents a physical address of a customer.
+                        allOf:
+                        - type: object
+                          properties:
+                            city:
+                              description: The city of the location.
+                              type: string
+                              example: Aachen
+                            country:
+                              description: The country of the location.
+                              type: string
+                              example: Germany
+                            addressLine1:
+                              description: "First line of the location's address, typically containing the \nmain information such as the street name and house number.\n"
+                              type: string
+                              example: Oppenhoffallee 143
+                            addressLine2:
+                              description: "Second line of the location's address, typically containing additional \ninformation such as apartment numbers, suite numbers, or other details \nthat can help in identifying the exact location of the address.\n"
+                              type: string
+                            addressLine3:
+                              description: "Third line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                              type: string
+                            addressLine4:
+                              description: "Fourth line of the location's address, typically containing any other \ndetails that can help in identifying the exact location of the address.\n"
+                              type: string
+                            timeZone:
+                              description: The TZ Identifier of the location's timezone.
+                              type: string
+                              example: Europe/Berlin
+                              readOnly: true
+                          x-readme-ref-name: AbstractLocation
+                        - type: object
+                          properties:
+                            postalcode:
+                              description: The postal code of the location.
+                              type: string
+                              example: '52062'
+                            region:
+                              description: The region of the address.
+                              type: string
+                            telephone:
+                              description: The telephone number of the customer.
+                              type: string
+                        x-readme-ref-name: Address
+                      customization:
+                        description: Customization can be used to store arbitrary data.
+                      productBundles:
+                        type: array
+                        readOnly: true
+                        description: 'Product bundles active on this account. Only present for B2B accounts.
+
+                          CONNECT is always included. Absent for end-user accounts.
+
+                          '
+                        items:
+                          type: string
+                          description: 'Represents an active product bundle on a B2B account.
+
+                            - CONNECT is always active and present on every B2B account.
+
+                            - CONTROL, OPTIMIZE, and FLEX can additionally be active.
+
+                            Non-B2B accounts expose no product bundles.
+
+                            '
+                          enum:
+                          - CONNECT
+                          - CONTROL
+                          - OPTIMIZE
+                          - FLEX
+                          x-readme-ref-name: ProductBundle
+                    required:
+                    - id
+                    - createdAt
+                    - updatedAt
+                    x-readme-ref-name: Account
+                  - type: object
+                    properties:
+                      starredAt:
+                        description: Time when the account was starred in UTC (RFC 3339 format).
+                        type: string
+                        format: date-time
+                        example: '2020-11-10T13:13:00Z'
+                        readOnly: true
+                    required:
+                    - starredAt
+                  x-readme-ref-name: StarredAccount
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/accounts"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user/stars/accounts \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/accounts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user/stars/accounts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/accounts")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/accounts");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/stars/accounts/{accountID}:
+    put:
+      operationId: starAccount
+      summary: Star an Account
+      description: Marks an account as favorite by starring it.
+      tags:
+      - Star
+      parameters:
+      - name: accountID
+        in: path
+        description: Identifier of the account to be starred.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      security:
+      - HeaderAuth:
+        - StarAccount
+      responses:
+        '204':
+          description: Account starred successfully.
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: Account not found.
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/accounts/accountID"
+
+
+          response = requests.put(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/user/stars/accounts/accountID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/accounts/accountID\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'PUT'};\n\nfetch('https://api.gridx.de/user/stars/accounts/accountID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts/accountID\")\n  .put(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts/accountID\")\n  .put(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/accounts/accountID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "PUT"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/accounts/accountID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: unstarAccount
+      summary: Unstar an Account
+      description: Removes a given account from favorites by unstarring it.
+      tags:
+      - Star
+      parameters:
+      - name: accountID
+        in: path
+        description: Identifier of the account to be starred.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      security:
+      - HeaderAuth:
+        - UnstarAccount
+      responses:
+        '204':
+          description: Account unstarred successfully.
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/accounts/accountID"
+
+
+          response = requests.delete(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/user/stars/accounts/accountID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/accounts/accountID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE'};\n\nfetch('https://api.gridx.de/user/stars/accounts/accountID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts/accountID\")\n  .delete(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/accounts/accountID\")\n  .delete(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/accounts/accountID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/accounts/accountID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/stars/systems:
+    get:
+      operationId: listStarredSystems
+      summary: List all starred Systems
+      description: List starred systems of the authenticated user.
+      tags:
+      - Star
+      responses:
+        '200':
+          description: Starred systems of the authenticated user.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  description: 'Represents a starred system which holds minimal system and gateway information and a
+
+                    starredAt timestamp.
+
+                    '
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                      description: Unique identifier of a system.
+                      example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      maxLength: 200
+                      description: Name of the System.
+                      example: gridX Headquarter
+                    starredAt:
+                      description: Date when the system was starred in RFC3339 format.
+                      type: string
+                      format: date-time
+                      example: '2020-11-10T13:13:00Z'
+                      readOnly: true
+                    gateways:
+                      description: The gateways connected to the system.
+                      type: array
+                      readOnly: true
+                      items:
+                        description: 'Represents minimal gateway information used for the starred system feature.
+
+                          '
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 6dd0a658-5828-4d30-bc65-a03c6d6e425f
+                            description: Unique identifier of a gateway.
+                            readOnly: true
+                          connectionStatus:
+                            title: Connection Status
+                            type: object
+                            readOnly: true
+                            properties:
+                              status:
+                                type: string
+                                description: "Indicates the connection status. Is one of:\n  * `AVAILABLE`: Gateway has sent data in the last 5 minutes\n  * `TEMPORARILY_UNAVAILABLE`: Gateway has not sent data in the last 5 minutes\n  * `UNAVAILABLE`: Gateway has not sent data in the last 24 hours\n  * `UNKNOWN`: Gateway was never online and never sent data or the connection status can't be determined."
+                                enum:
+                                - AVAILABLE
+                                - TEMPORARILY_UNAVAILABLE
+                                - UNAVAILABLE
+                                - UNKNOWN
+                              contactedAt:
+                                type: string
+                                format: date-time
+                                deprecated: true
+                                description: 'When the gateway/appliance has last contacted the gridX cloud.
+
+
+                                  In case the gateway was never online and never sent data, this field is null.
+
+
+                                  Deprecated: Gateway heartbeats will be removed in future versions and this will be only estimated. Use `statusChangedAt` instead.
+
+                                  '
+                              statusChangedAt:
+                                type: string
+                                format: date-time
+                                description: 'When the gateway status last changed. In case the gateway was never online this field is null.
+
+                                  '
+                            required:
+                            - status
+                            x-readme-ref-name: ConnectionStatus
+                          type:
+                            type: string
+                            description: 'Type of the gateway.
+
+
+                              **Deprecated** - Non-physical gateways will no longer be supported from 01.03.2024. This field will consequently be removed.
+
+                              '
+                            deprecated: true
+                            enum:
+                            - VIRTUAL
+                            - PHYSICAL
+                            - OTHER
+                            x-readme-ref-name: GatewayType
+                          serialnumber:
+                            description: Serial number of the gateway.
+                            type: string
+                            example: C083-200-000-000-199-P-X
+                            readOnly: true
+                        required:
+                        - id
+                        - type
+                        - connectionStatus
+                        x-readme-ref-name: StarredSystemGateway
+                  required:
+                  - id
+                  - name
+                  - starredAt
+                  x-readme-ref-name: StarredSystem
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      security:
+      - HeaderAuth:
+        - UserRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/systems"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/user/stars/systems \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/systems\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/user/stars/systems', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/systems")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/systems");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /user/stars/systems/{systemID}:
+    put:
+      operationId: starSystem
+      summary: Star a System
+      description: Marks a system as favorite by starring it.
+      tags:
+      - Star
+      parameters:
+      - name: systemID
+        in: path
+        description: Identifier of the system to be starred.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Successfully starred system.
+        '403':
+          description: Forbidden (missing authorization)
+        '404':
+          description: System not found.
+        '500':
+          description: Internal Server Error
+      security:
+      - HeaderAuth:
+        - UserWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/systems/systemID"
+
+
+          response = requests.put(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/user/stars/systems/systemID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/systems/systemID\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'PUT'};\n\nfetch('https://api.gridx.de/user/stars/systems/systemID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems/systemID\")\n  .put(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems/systemID\")\n  .put(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/systems/systemID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "PUT"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/systems/systemID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: unstarSystem
+      summary: Unstar a System
+      description: Removes a system from favorites by unstarring it.
+      tags:
+      - Star
+      parameters:
+      - name: systemID
+        in: path
+        description: Identifier of the system to be unstarred.
+        required: true
+        example: 218e8795-2442-42d7-901b-1588373e527f
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Successfully unstarred system.
+        '403':
+          description: Forbidden (missing authorization)
+        '500':
+          description: Internal Server Error
+      security:
+      - HeaderAuth:
+        - UserWrite
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/user/stars/systems/systemID"
+
+
+          response = requests.delete(url)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/user/stars/systems/systemID"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/user/stars/systems/systemID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE'};\n\nfetch('https://api.gridx.de/user/stars/systems/systemID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems/systemID\")\n  .delete(null)\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/user/stars/systems/systemID\")\n  .delete(null)\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/user/stars/systems/systemID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/user/stars/systems/systemID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

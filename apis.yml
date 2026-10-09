@@ -1,23 +1,547 @@
 aid: gridx-ai
+
 name: gridX
-description: 'gridX is a company surfaced via the API Evangelist harvest backlog (source: spectral-ruleset-github)
-  and added to the network as a stub for full-pipeline profiling.'
+
+description: 'gridX (gridX GmbH, Aachen, Germany) provides XENON, a white-label connectivity and flexibility
+  platform for distributed energy resources. It covers home energy management systems (HEMS) and EV charging
+  infrastructure: connecting PV, batteries, heat pumps and AC/DC chargers via the gridBox gateway or cloud
+  connectivity, controlling and optimizing energy flows with dynamic tariffs, peak shaving and dynamic load
+  management, and aggregating asset flexibility for energy-market trading. The gridX API exposes live and
+  historic system and asset data and webhooks, documented in its developer community.'
+
 url: https://raw.githubusercontent.com/api-evangelist/gridx-ai/refs/heads/main/apis.yml
+
 x-type: company
+
 x-source: harvest:spectral-ruleset-github
-x-tier: stub
-x-tier-reason: harvest
+
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-10-09 (modular-v1; was harvest)
+
 specificationVersion: '0.20'
+
 created: '2026-10-09'
+
 modified: '2026-10-09'
+
 tags:
 - Company
-apis: []
+- Energy
+- Energy Management
+- EV Charging
+- Distributed Energy Resources
+- Flexibility
+- IoT
+- Webhooks
+
+image: https://cdn.prod.website-files.com/65b3e159d25a6097b6ca5812/6a350d3fca34a7520d4ed3a5_OG%20Image%20Front%20Page.png
+
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+
 common:
+- type: SecurityTxt
+  url: well-known/gridx-ai-status-security.txt
+- type: AgenticAccess
+  url: agentic-access/gridx-ai-agentic-access.yml
+- type: Spectral
+  url: rules/gridx-ai-rules.yml
+- type: Spectral
+  url: rules/gridx-ai-api-spectral-rules.yml
+- type: JSONLD
+  url: json-ld/gridx-ai-context.jsonld
+- type: Vocabulary
+  url: vocabulary/gridx-ai-vocabulary.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Webhooks
+  url: asyncapi/gridx-ai-webhooks.yml
+- type: DataModel
+  url: data-model/gridx-ai-data-model.yml
+- type: ChangeLog
+  url: changelog/gridx-ai-changelog.yml
+- type: Conventions
+  url: conventions/gridx-ai-conventions.yml
+- type: Security
+  url: https://security.gridx.ai/?itemUid=e7fc67f3-bf2e-41ea-9c2e-858120482222
+- type: Deprecation
+  url: https://community.developer.gridx.de/t/update-api-stability-levels/585
+- type: StatusPage
+  url: https://status.gridx.de/
+- type: Lifecycle
+  url: lifecycle/gridx-ai-lifecycle.yml
+- type: ErrorCatalog
+  url: errors/gridx-ai-problem-types.yml
+- type: Conformance
+  url: conformance/gridx-ai-conformance.yml
+- type: Overlay
+  url: overlays/gridx-ai-gridx-api-overlay.yaml
+- type: LLMsTxt
+  url: llms/gridx-ai-llms.txt
+- type: SecurityTxt
+  url: well-known/gridx-ai-support-security.txt
+- type: SecurityTxt
+  url: well-known/gridx-ai-security.txt
+- type: WellKnown
+  url: well-known/gridx-ai-well-known.yml
+- type: Hosts
+  url: hosts/gridx-ai-hosts.yml
+- type: Vendors
+  url: vendors/gridx-ai-vendors.yml
+- type: Authentication
+  url: authentication/gridx-ai-authentication.yml
+- type: VulnerabilityDisclosure
+  url: security/gridx-ai-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/gridx-ai-domain-security.yml
 - type: Website
   url: https://www.gridx.ai/
+- type: DeveloperPortal
+  url: https://community.developer.gridx.de/
+- type: Documentation
+  url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- type: GettingStarted
+  url: https://community.developer.gridx.de/c/getting-started/16
+- type: ChangeLog
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324
+- type: Forum
+  url: https://community.developer.gridx.de/
+- type: Support
+  url: https://support.gridx.ai/en/
+- type: Blog
+  url: https://www.gridx.ai/blog
+- type: Newsroom
+  url: https://www.gridx.ai/press
+- type: GitHubOrganization
+  url: https://github.com/grid-x
+- type: TermsOfService
+  url: https://www.gridx.ai/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.gridx.ai/privacy-notice
+- type: Careers
+  url: https://www.gridx.ai/careers
+- type: Contact
+  url: https://www.gridx.ai/contact/demo
+- type: About
+  url: https://www.gridx.ai/about
+- type: SpectralRules
+  url: https://github.com/grid-x/api/blob/53b0e020cbab3807cb17a77d611023900d964628/style/spectral.yaml
+
+apis:
+- aid: gridx-ai:gridx-ai-account-api
+  name: gridX Account API
+  description: The Account API from gridX — 7 operation(s) for account.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-account-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-appliance-api
+  name: gridX Appliance API
+  description: The Appliance API from gridX — 5 operation(s) for appliance.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Appliance
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-appliance-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-asset-api
+  name: gridX Asset API
+  description: The Asset API from gridX — 2 operation(s) for asset.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Asset
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-asset-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-cluster-api
+  name: gridX Cluster API
+  description: The Cluster API from gridX — 1 operation(s) for cluster.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Cluster
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-cluster-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-customer-api
+  name: gridX Customer API
+  description: The Customer API from gridX — 3 operation(s) for customer.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Customer
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-customer-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-draft-api
+  name: gridX Draft API
+  description: API that is being evaluated, may change on short notice.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - draft
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-draft-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-emobility-time-of-use-api
+  name: gridX Emobility Time Of Use API
+  description: Manages the Time of Use implementation for eMobility.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - emobility-time-of-use
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-emobility-time-of-use-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-ev-charging-schedule-api
+  name: gridX EV Charging Schedule API
+  description: The EV Charging Schedule API from gridX — 1 operation(s) for ev charging schedule.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - EV Charging Schedule
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-ev-charging-schedule-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-ev-configuration-api
+  name: gridX EV Configuration API
+  description: The EV Configuration API from gridX — 1 operation(s) for ev configuration.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - EV Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-ev-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-ev-profile-api
+  name: gridX EV Profile API
+  description: The EV Profile API from gridX — 2 operation(s) for ev profile.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - EV Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-ev-profile-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-evcs-user-prioritization-api
+  name: gridX Evcs User Prioritization API
+  description: Manages temporary priority per EV supply equipment / charging station.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - evcs-user-prioritization
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-evcs-user-prioritization-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-export-power-limit-api
+  name: gridX Export Power Limit API
+  description: The Export Power Limit API from gridX — 1 operation(s) for export power limit.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Export Power Limit
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-export-power-limit-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-gateway-api
+  name: gridX Gateway API
+  description: The Gateway API from gridX — 4 operation(s) for gateway.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Gateway
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-gateway-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-health-checks-api
+  name: gridX Health Checks API
+  description: The Health Checks API from gridX — 1 operation(s) for health checks.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Health Checks
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-health-checks-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-import-power-limit-api
+  name: gridX Import Power Limit API
+  description: The Import Power Limit API from gridX — 2 operation(s) for import power limit.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Import Power Limit
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-import-power-limit-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-intent-api
+  name: gridX Intent API
+  description: The Intent API from gridX — 2 operation(s) for intent.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Intent
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-intent-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-job-api
+  name: gridX Job API
+  description: The Job API from gridX — 3 operation(s) for job.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Job
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-job-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-kpis-api
+  name: gridX KPIs API
+  description: The KPIs API from gridX — 1 operation(s) for kpis.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - KPIs
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-kpis-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-market-prices-api
+  name: gridX Market Prices API
+  description: The Market Prices API from gridX — 1 operation(s) for market prices.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Market Prices
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-market-prices-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-measurements-api
+  name: gridX Measurements API
+  description: The Measurements API from gridX — 1 operation(s) for measurements.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Measurements
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-measurements-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-power-limit-schedule-api
+  name: gridX Power Limit Schedule API
+  description: The Power Limit Schedule API from gridX — 3 operation(s) for power limit schedule.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Power Limit Schedule
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-power-limit-schedule-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-product-functionality-api
+  name: gridX Product Functionality API
+  description: The Product Functionality API from gridX — 2 operation(s) for product functionality.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Product Functionality
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-product-functionality-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-product-option-api
+  name: gridX Product Option API
+  description: The Product Option API from gridX — 1 operation(s) for product option.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Product Option
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-product-option-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-scan-api
+  name: gridX Scan API
+  description: The Scan API from gridX — 1 operation(s) for scan.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Scan
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-scan-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-scan-configuration-api
+  name: gridX Scan Configuration API
+  description: The Scan Configuration API from gridX — 1 operation(s) for scan configuration.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Scan Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-scan-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-star-api
+  name: gridX Star API
+  description: The Star API from gridX — 4 operation(s) for star.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Star
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-star-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-system-api
+  name: gridX System API
+  description: The System API from gridX — 6 operation(s) for system.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - System
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-system-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-tag-api
+  name: gridX Tag API
+  description: The Tag API from gridX — 2 operation(s) for tag.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-tag-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-tariffv2-api
+  name: gridX Tariff V2 API
+  description: The TariffV2 API from gridX — 3 operation(s) for tariffv2.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - TariffV2
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-tariffv2-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-timeofuse-api
+  name: gridX Time Of Use API
+  description: The TimeOfUse API from gridX — 9 operation(s) for timeofuse.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - TimeOfUse
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-timeofuse-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-token-api
+  name: gridX Token API
+  description: The Token API from gridX — 5 operation(s) for token.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Token
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-token-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-user-api
+  name: gridX User API
+  description: The User API from gridX — 4 operation(s) for user.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - User
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-user-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-users-api
+  name: gridX Users API
+  description: The Users API from gridX — 1 operation(s) for users.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-users-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+- aid: gridx-ai:gridx-ai-webhook-api
+  name: gridX Webhook API
+  description: The Webhook API from gridX — 4 operation(s) for webhook.
+  humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
+  baseURL: https://api.gridx.de
+  tags:
+  - Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/gridx-ai-webhook-api-openapi.yml
+  - type: Documentation
+    url: https://community.developer.gridx.de/t/gridx-api-documentation/213
+x-enrichment:
+  date: '2026-10-09'
+  status: enriched
+  artifacts_added: 36
+  pass: modular-v1
+  engine: identity=anthropic,contract=anthropic,surfaces=anthropic,docs=anthropic,regulatory=anthropic

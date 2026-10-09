@@ -1,0 +1,501 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai KPIs API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged KPIs across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: KPIs
+  x-displayName: KPIs
+paths:
+  /systems/{systemID}/costs-kpi:
+    get:
+      summary: Get historical costs KPIs
+      description: 'Retrieves a set of Key Performance Indicators for a specific system over a custom time interval and in a specified currency.
+
+        If no currency is provided, the system currency defined via `/systems/{systemID}/tariff` is used.'
+      operationId: getCostsKpiForSystem
+      tags:
+      - KPIs
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          format: datetime
+          example: 2018-04-01T15:00:00Z/2018-04-25T00:00:00Z
+        description: 'A time interval [start_timestamp, end_timestamp] encoded as a unique string start_timestamp/end_timestamp.
+
+
+          Each timestamp should be specified in the RFC3339 format.
+
+
+          The maximum time interval that can be requested is 48 hours.
+
+
+          IMPORTANT: it has to be fully URL encoded (also known as Percent-encoding), including the `/`.'
+      - name: currency
+        in: query
+        description: 'The currency for cost and price values, specified as an ISO 4217 code.
+
+          All values are converted to this currency, unless they are already in the desired currency.'
+        schema:
+          type: string
+          example: EUR
+          maxLength: 3
+          minLength: 3
+          description: The currency for cost and price values, specified as an ISO 4217 code.
+          x-readme-ref-name: Currency
+      responses:
+        '200':
+          description: Successfully retrieved the KPIs for the specified interval.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Represents the response containing a list of cost KPI periods and their aggregation.
+                properties:
+                  periods:
+                    type: array
+                    description: A list containing the cost KPIs for each period in the requested interval.
+                    items:
+                      type: object
+                      description: Represents the cost KPIs for a single time period.
+                      required:
+                      - from
+                      - to
+                      - currency
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          description: The start timestamp of the period in ISO 8601 format.
+                          example: '2018-04-01T15:00:00Z'
+                        to:
+                          type: string
+                          format: date-time
+                          description: The end timestamp of the period in ISO 8601 format.
+                          example: '2018-04-25T00:00:00Z'
+                        currency:
+                          type: string
+                          example: EUR
+                          maxLength: 3
+                          minLength: 3
+                          description: The currency for cost and price values, specified as an ISO 4217 code.
+                          x-readme-ref-name: Currency
+                        costGridSupplyActual:
+                          type: number
+                          format: double
+                          description: Actual cost of energy supplied from the grid.
+                        earningsGridFeedinActual:
+                          type: number
+                          format: double
+                          description: Actual earnings from feeding energy into the grid.
+                        totalCostActual:
+                          type: number
+                          format: double
+                          description: Total actual cost.
+                        avoidedCostGridSupplyActual:
+                          type: number
+                          format: double
+                          description: Actual avoided costs due to local energy production and storage.
+                        averagePriceActual:
+                          type: number
+                          format: double
+                          description: Actual average price of energy per kWh during the period.
+                        costGridSupplyBaseCase:
+                          type: number
+                          format: double
+                          description: A base-case scenario cost for grid supply.
+                        earningsGridFeedinBaseCase:
+                          type: number
+                          format: double
+                          description: A base-case scenario for grid feed-in earnings.
+                        totalCostBaseCase:
+                          type: number
+                          format: double
+                          description: Total cost in the base-case scenario.
+                        avoidedCostGridSupplyBaseCase:
+                          type: number
+                          format: double
+                          description: Avoided costs in the base-case scenario.
+                        averagePriceBaseCase:
+                          type: number
+                          format: double
+                          description: Average price of energy per kWh in the base-case scenario.
+                        totalConsumptionBaseCase:
+                          type: number
+                          format: double
+                          description: Total energy consumption in kWh used to calculate the different average price values in the base-case scenario.
+                        totalConsumptionActual:
+                          type: number
+                          format: double
+                          description: Actual total energy consumption in kWh used to calculate the different average price values. This also accounts for the difference in stored energy in the battery.
+                        stepsEvaluated:
+                          type: integer
+                          format: int32
+                          description: The number of discrete evaluation steps within the period.
+                      x-readme-ref-name: GetCostsKPI
+                  total:
+                    allOf:
+                    - type: object
+                      description: Represents the cost KPIs for a single time period.
+                      required:
+                      - from
+                      - to
+                      - currency
+                      properties:
+                        from:
+                          type: string
+                          format: date-time
+                          description: The start timestamp of the period in ISO 8601 format.
+                          example: '2018-04-01T15:00:00Z'
+                        to:
+                          type: string
+                          format: date-time
+                          description: The end timestamp of the period in ISO 8601 format.
+                          example: '2018-04-25T00:00:00Z'
+                        currency:
+                          type: string
+                          example: EUR
+                          maxLength: 3
+                          minLength: 3
+                          description: The currency for cost and price values, specified as an ISO 4217 code.
+                          x-readme-ref-name: Currency
+                        costGridSupplyActual:
+                          type: number
+                          format: double
+                          description: Actual cost of energy supplied from the grid.
+                        earningsGridFeedinActual:
+                          type: number
+                          format: double
+                          description: Actual earnings from feeding energy into the grid.
+                        totalCostActual:
+                          type: number
+                          format: double
+                          description: Total actual cost.
+                        avoidedCostGridSupplyActual:
+                          type: number
+                          format: double
+                          description: Actual avoided costs due to local energy production and storage.
+                        averagePriceActual:
+                          type: number
+                          format: double
+                          description: Actual average price of energy per kWh during the period.
+                        costGridSupplyBaseCase:
+                          type: number
+                          format: double
+                          description: A base-case scenario cost for grid supply.
+                        earningsGridFeedinBaseCase:
+                          type: number
+                          format: double
+                          description: A base-case scenario for grid feed-in earnings.
+                        totalCostBaseCase:
+                          type: number
+                          format: double
+                          description: Total cost in the base-case scenario.
+                        avoidedCostGridSupplyBaseCase:
+                          type: number
+                          format: double
+                          description: Avoided costs in the base-case scenario.
+                        averagePriceBaseCase:
+                          type: number
+                          format: double
+                          description: Average price of energy per kWh in the base-case scenario.
+                        totalConsumptionBaseCase:
+                          type: number
+                          format: double
+                          description: Total energy consumption in kWh used to calculate the different average price values in the base-case scenario.
+                        totalConsumptionActual:
+                          type: number
+                          format: double
+                          description: Actual total energy consumption in kWh used to calculate the different average price values. This also accounts for the difference in stored energy in the battery.
+                        stepsEvaluated:
+                          type: integer
+                          format: int32
+                          description: The number of discrete evaluation steps within the period.
+                      x-readme-ref-name: GetCostsKPI
+                    description: An aggregation of all cost KPIs over the entire requested interval.
+                  numberOfPeriods:
+                    type: integer
+                    description: The number of KPI periods returned in the `periods` array.
+                    example: 30
+                  expectedNumberOfPeriods:
+                    type: integer
+                    description: The number of KPI periods that were expected based on the requested time interval (one per day).
+                    example: 30
+                x-readme-ref-name: GetCostsKPIResponse
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '404':
+          description: System not found
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+        '502':
+          description: There has been an error from an upstream server.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: BadGatewayError
+                  description: Indicates that there has been an error from an upstream server.
+                  example:
+                    message: Bad Gateway
+                x-readme-ref-name: BadGateway
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/costs-kpi"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/costs-kpi \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/costs-kpi\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/systems/systemID/costs-kpi', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/costs-kpi\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/costs-kpi\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/costs-kpi")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/costs-kpi");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

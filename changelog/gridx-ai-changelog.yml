@@ -1,0 +1,91 @@
+generated: '2026-10-09'
+method: searched
+source: https://community.developer.gridx.de/t/gridx-api-changelog/324
+scheme: Dated forum posts in a single Discourse topic, generated from OpenAPI diffs (oasdiff-style wording)
+  and tagged with the spec commit sha; the API version string stays 2.0.0.
+current_version: 2.0.0
+entry_count_total: 128
+note: breaking is true where the entry removes response properties, changes required permissions, or where
+  the provider changelog itself states "a breaking change was detected" (2026-10-01). Deprecations are
+  recorded as non-breaking.
+related:
+- https://community.developer.gridx.de/t/cloud-connector-api-changelog/360
+- https://community.developer.gridx.de/t/webhook-receiver-api-changelog/378
+entries:
+- version: 2.0.0+836bed43
+  date: '2026-10-08'
+  breaking: false
+  highlights:
+  - Components removed the schema AbstractCluster removed the schema AbstractClusterStrict removed the
+    schema AbstractVirtualGridExpansion removed the schema Cluster removed the schema ClusterAppliance
+    removed the schema ClusterSet removed the schema ClusterSetStrict removed the schema VirtualGridExpans…
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/139
+- version: 2.0.0+b4f13181
+  date: '2026-10-01'
+  breaking: false
+  highlights:
+  - GET /systems/{systemID}/power-limit-schedules endpoint added POST /systems/{systemID}/power-limit-schedules
+    endpoint added GET /systems/{systemID}/power-limit-schedules-intervals endpoint added
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/138
+- version: 2.0.0+5eadcf18
+  date: '2026-10-01'
+  breaking: true
+  highlights:
+  - PUT /systems/{systemID}/gateways/{gatewayID}/export-power-limit removed the success response with
+    the status 201 added the success response with the status 200 PUT /systems/{systemID}/gateways/{gatewayID}/import-power-limit
+    removed the success response with the status 201 added the success response …
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/137
+- version: 2.0.0+6a1ceae3
+  date: '2026-09-30'
+  breaking: false
+  highlights:
+  - GET /account added the optional property productBundles to the response with the 200 status the response
+    required property createdAt became read-only for the status 200 the response required property updatedAt
+    became read-only for the status 200 PATCH /account added the optional property productBund…
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/136
+- version: 2.0.0+f36580b7
+  date: '2026-09-21'
+  breaking: true
+  highlights:
+  - GET /systems/{systemID}/assets the security scope AssetRead was added to the endpoint’s security scheme
+    HeaderAuth the security scope AppliancesRead was removed from the endpoint’s security scheme HeaderAuth
+    DELETE /systems/{systemID}/assets/{assetID} the security scope AssetWrite was added to the e…
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/135
+- version: 2.0.0+ea07ece6
+  date: '2026-09-10'
+  breaking: false
+  highlights:
+  - GET /systems/{systemID}/timeofuse/settings the response property systemKind became optional for the
+    status 200 PATCH /systems/{systemID}/timeofuse/settings the response property systemKind became optional
+    for the status 200 request property allOf[#/components/schemas/TimeOfUseSettings]/systemKind de…
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/134
+- version: 2.0.0+e91c7445
+  date: '2026-09-07'
+  breaking: false
+  highlights:
+  - POST /gateways/{gatewayID}/jobs endpoint added POST /gateways/{gatewayID}/jobs/{jobType} endpoint
+    deprecated
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/133
+- version: 2.0.0+eef1fcb5
+  date: '2026-09-02'
+  breaking: false
+  highlights:
+  - GET /gateways added the new optional query request parameter order added the new optional query request
+    parameter sort GET /gateways/{gatewayID}/firmware added the success response with the status 204 GET
+    /gateways/{gatewayID}/jobs added the new optional query request parameter order added the new o…
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/132
+- version: 2.0.0+0ea56284
+  date: '2026-08-11'
+  breaking: false
+  highlights:
+  - GET /systems/{systemID}/evcharging-schedules endpoint deprecated POST /systems/{systemID}/evcharging-schedules
+    endpoint deprecated
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/131
+- version: 2.0.0+6e228db2
+  date: '2026-08-03'
+  breaking: true
+  highlights:
+  - 'GET /gateways/{gatewayID}/appliances removed the optional property items/oneOf[subschema #1: Inverter]/pv/azimuth
+    from the response with the 200 status removed the optional property items/oneOf[subschema #1: Inverter]/pv/nominalPower
+    from the response with the 200 status removed the optional propert…'
+  url: https://community.developer.gridx.de/t/gridx-api-changelog/324/130

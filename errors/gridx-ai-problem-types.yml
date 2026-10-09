@@ -1,0 +1,77 @@
+generated: '2026-10-09'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/gridx-ai-openapi.yml
+format: custom
+envelope:
+  media_type: application/vnd.gridx.v2+json
+  schema: null
+coverage:
+  operations: 157
+  statuses_declared: 9
+problems:
+- status: 400
+  title: Bad Request
+  description: Malformed request.
+  operations: 70
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 401
+  title: Unauthorized
+  description: Unauthorized.
+  operations: 2
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 403
+  title: Forbidden
+  description: Forbidden.
+  operations: 116
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 404
+  title: Not Found
+  description: Requested entity not found.
+  operations: 109
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 409
+  title: Conflict
+  description: Resource already exists
+  operations: 5
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 422
+  title: Unprocessable Content
+  description: Validation failed.
+  operations: 61
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 500
+  title: Internal Server Error
+  description: There has been an internal error on our side. We're looking into it.
+  operations: 144
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: 502
+  title: Bad Gateway
+  description: There has been an error from an upstream server.
+  operations: 18
+  media_types:
+  - application/vnd.gridx.v2+json
+  schema: null
+- status: default
+  title: null
+  description: An unexpected error occurred.
+  operations: 13
+  media_types:
+  - application/json
+  - application/vnd.gridx.v2+json
+  schema: null

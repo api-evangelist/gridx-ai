@@ -1,0 +1,3511 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Webhook API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Webhook across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Webhook
+  x-displayName: Webhook
+paths:
+  /accounts/{accountID}/webhooks:
+    get:
+      operationId: listWebhookSubscriptions
+      summary: List all Webhook Subscriptions
+      x-badges:
+      - label: beta
+        color: orange
+      description: Lists all webhook subscriptions for the account.
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksRead
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      responses:
+        '200':
+          description: Returns the list of webhook subscriptions.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Returns a list of webhook subscriptions.
+                required:
+                - webhookSubscriptions
+                properties:
+                  webhookSubscriptions:
+                    type: array
+                    items:
+                      allOf:
+                      - required:
+                        - id
+                        - accountID
+                        - createdAt
+                        - createdBy
+                        - active
+                        - eventTypes
+                        - targetURL
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            readOnly: true
+                          accountID:
+                            type: string
+                            format: uuid
+                            readOnly: true
+                          createdAt:
+                            type: string
+                            format: date-time
+                            readOnly: true
+                          createdBy:
+                            type: string
+                            format: uuid
+                            readOnly: true
+                      - type: object
+                        properties:
+                          active:
+                            type: boolean
+                            description: If not active, a webhook subscription doesn't react to events in the account.
+                            externalDocs:
+                              description: Webhook receiver guide
+                              url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                          eventTypes:
+                            type: array
+                            items:
+                              type: string
+                              description: Subscribable event type.
+                              enum:
+                              - appliance/create
+                              - appliance/delete
+                              - appliance/offline
+                              - appliance/online
+                              - appliance/update
+                              - ev/charge-failed
+                              - ev/charge-started
+                              - ev/charge-stopped
+                              - ev/control
+                              - ev/create
+                              - ev/delete
+                              - ev/infeasible-charging-goals
+                              - ev/measurement
+                              - ev/plugged
+                              - ev/unplugged
+                              - ev/update
+                              - gateway/create
+                              - gateway/offline
+                              - gateway/online
+                              - grid-signal-processor/limitation-of-power-consumption/set
+                              - grid-signal-processor/limitation-of-power-consumption/unset
+                              - inverter/status
+                              - system/action
+                              x-readme-ref-name: WebhookSubscriptionEventType
+                            minItems: 1
+                            uniqueItems: true
+                            description: The list of event types to subscribe to.
+                            example:
+                            - appliance/online
+                            - appliance/offline
+                            externalDocs:
+                              description: Webhook receiver guide
+                              url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                          targetURL:
+                            type: string
+                            format: uri
+                            description: Matching events will be sent to this URL via HTTP POST requests.
+                            example: https://example.com/hooks/xenon
+                            externalDocs:
+                              description: Webhook receiver guide
+                              url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                        x-readme-ref-name: WebhookSubscriptionBase
+                      - description: Returns a webhook subscription.
+                      x-readme-ref-name: WebhookSubscriptionResponse
+                x-readme-ref-name: WebhookSubscriptionListResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/webhooks"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/webhooks \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/webhooks")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    post:
+      operationId: createWebhookSubscription
+      summary: Create a Webhook Subscription
+      x-badges:
+      - label: beta
+        color: orange
+      description: 'Creates a new webhook subscription for the account.
+
+
+        The new webhook subscription''s HMAC secret will be returned only in this operation''s response. It can''t be
+
+        retrieved again from the API.'
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      requestBody:
+        description: Input parameters for creating a new webhook subscription in the account.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  active:
+                    type: boolean
+                    description: If not active, a webhook subscription doesn't react to events in the account.
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                  eventTypes:
+                    type: array
+                    items:
+                      type: string
+                      description: Subscribable event type.
+                      enum:
+                      - appliance/create
+                      - appliance/delete
+                      - appliance/offline
+                      - appliance/online
+                      - appliance/update
+                      - ev/charge-failed
+                      - ev/charge-started
+                      - ev/charge-stopped
+                      - ev/control
+                      - ev/create
+                      - ev/delete
+                      - ev/infeasible-charging-goals
+                      - ev/measurement
+                      - ev/plugged
+                      - ev/unplugged
+                      - ev/update
+                      - gateway/create
+                      - gateway/offline
+                      - gateway/online
+                      - grid-signal-processor/limitation-of-power-consumption/set
+                      - grid-signal-processor/limitation-of-power-consumption/unset
+                      - inverter/status
+                      - system/action
+                      x-readme-ref-name: WebhookSubscriptionEventType
+                    minItems: 1
+                    uniqueItems: true
+                    description: The list of event types to subscribe to.
+                    example:
+                    - appliance/online
+                    - appliance/offline
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                  targetURL:
+                    type: string
+                    format: uri
+                    description: Matching events will be sent to this URL via HTTP POST requests.
+                    example: https://example.com/hooks/xenon
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                x-readme-ref-name: WebhookSubscriptionBase
+              - description: Request body for creating a new webhook subscription.
+                required:
+                - active
+                - eventTypes
+                - targetURL
+                properties:
+                  secret:
+                    type: string
+                    minLength: 44
+                    example: whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6
+                    externalDocs:
+                      description: See our documentation on request integrity verification.
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#verify-request-integrity
+                    description: "The HMAC SHA-512 secret key. \n\nIf not provided, an HMAC secret will be generated by us.\n\nIt's recommended to use a key that's at least as long as the output of the SHA-512 hashing function. \nThis means, it should be at least 64 bytes long, which is 44 characters with base64 encoding or 64 \ncharacters with hex encoding. Any UTF-8 string will be accepted, so a prefix like `whsec_` can be \nprepended if desired."
+              x-readme-ref-name: WebhookSubscriptionCreationRequest
+      responses:
+        '201':
+          description: Returns the new webhook subscription and its HMAC secret.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - allOf:
+                  - required:
+                    - id
+                    - accountID
+                    - createdAt
+                    - createdBy
+                    - active
+                    - eventTypes
+                    - targetURL
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        readOnly: true
+                      accountID:
+                        type: string
+                        format: uuid
+                        readOnly: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                        readOnly: true
+                      createdBy:
+                        type: string
+                        format: uuid
+                        readOnly: true
+                  - type: object
+                    properties:
+                      active:
+                        type: boolean
+                        description: If not active, a webhook subscription doesn't react to events in the account.
+                        externalDocs:
+                          description: Webhook receiver guide
+                          url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                      eventTypes:
+                        type: array
+                        items:
+                          type: string
+                          description: Subscribable event type.
+                          enum:
+                          - appliance/create
+                          - appliance/delete
+                          - appliance/offline
+                          - appliance/online
+                          - appliance/update
+                          - ev/charge-failed
+                          - ev/charge-started
+                          - ev/charge-stopped
+                          - ev/control
+                          - ev/create
+                          - ev/delete
+                          - ev/infeasible-charging-goals
+                          - ev/measurement
+                          - ev/plugged
+                          - ev/unplugged
+                          - ev/update
+                          - gateway/create
+                          - gateway/offline
+                          - gateway/online
+                          - grid-signal-processor/limitation-of-power-consumption/set
+                          - grid-signal-processor/limitation-of-power-consumption/unset
+                          - inverter/status
+                          - system/action
+                          x-readme-ref-name: WebhookSubscriptionEventType
+                        minItems: 1
+                        uniqueItems: true
+                        description: The list of event types to subscribe to.
+                        example:
+                        - appliance/online
+                        - appliance/offline
+                        externalDocs:
+                          description: Webhook receiver guide
+                          url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                      targetURL:
+                        type: string
+                        format: uri
+                        description: Matching events will be sent to this URL via HTTP POST requests.
+                        example: https://example.com/hooks/xenon
+                        externalDocs:
+                          description: Webhook receiver guide
+                          url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                    x-readme-ref-name: WebhookSubscriptionBase
+                  - description: Returns a webhook subscription.
+                  x-readme-ref-name: WebhookSubscriptionResponse
+                - type: object
+                  description: Returns a new webhook subscription secret.
+                  required:
+                  - secret
+                  properties:
+                    secret:
+                      type: string
+                      pattern: ^whsec_[0-9a-f]{128,}$
+                      readOnly: true
+                      example: whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6
+                      externalDocs:
+                        description: See our documentation on request integrity verification.
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#verify-request-integrity
+                  x-readme-ref-name: WebhookSubscriptionSecretResponse
+                - description: Returns a new webhook subscription with its HMAC secret.
+                x-readme-ref-name: WebhookSubscriptionCreationResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      callbacks:
+        WebhookEvent:
+          '{$request.body#/targetURL}':
+            post:
+              operationId: sendWebhookEvent
+              summary: Send a Webhook Event
+              description: Forward an event from the XENON account to the webhook subscription's target URL.
+              externalDocs:
+                description: Webhook receiver guide
+                url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md
+              parameters:
+              - name: X-Signature
+                in: header
+                required: true
+                description: HMAC-SHA-512 digest(s) for request integrity verification.
+                schema:
+                  type: string
+                  pattern: ^sha512=[0-9a-fA-F]{128}(?:,\s?sha512=[0-9a-fA-F]{128})*$
+                  description: "Can contain one or more digests, separated by a comma and a space (`, `). Each signature is prefixed with \n`sha512=`."
+                  example: sha512=8e974e6f477383a8b27785a9c24098c1f96420377a06a6c0b396e67e37604d55b0a32d163f8202518e388d1d86d649d214c770d1820641042456578051613045
+              requestBody:
+                description: Forwards an event to a webhook subscription's target URL.
+                required: true
+                content:
+                  application.json:
+                    schema:
+                      oneOf:
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - appliance/create
+                              - appliance/delete
+                              - appliance/offline
+                              - appliance/online
+                              - appliance/update
+                            data:
+                              type: object
+                              description: Payload for `appliance/*` events.
+                              required:
+                              - applianceID
+                              - gatewayID
+                              properties:
+                                applianceID:
+                                  description: ID of the appliance that caused this event.
+                                  example: fc0a6ac7-64ce-4276-a7cd-bace946af433
+                                  format: uuid
+                                  type: string
+                                gatewayID:
+                                  description: The ID of the gateway that connects to the appliance.
+                                  example: 25ccab17-cd40-4db1-a320-a986d1c15fb1
+                                  format: uuid
+                                  type: string
+                                model:
+                                  description: Model description of the appliance.
+                                  example: ExampleModel
+                                  type: string
+                                manufacturer:
+                                  description: Manufacturer of the appliance.
+                                  example: ExampleManufacturer
+                                  type: string
+                                type:
+                                  description: General type of the appliance.
+                                  enum:
+                                  - UNKNOWN
+                                  - INVERTER
+                                  - METER
+                                  - EVSTATION
+                                  - HEAT_PUMP
+                                  - HEATER
+                                  - CONTAINER
+                                  example: METER
+                                  type: string
+                                kind:
+                                  description: "Kind of the appliance is used to provide further details on the appliance configuration and mode of \noperation. \n\nThe kind property is only available for appliances with type `INVERTER` or `METER`. \n\nFor inverters, only `UNKNOWN`, `PV`, `BATTERY`, `HYBRID` and `PV_EXTERNAL` are valid values. They describe \nthe kind of connected appliance(s) and define the role of the inverter in the system. \n\nFor meters, kind specifies the appliance the meter is attached to. It resembles the location the meter is \ninstalled in."
+                                  enum:
+                                  - UNKNOWN
+                                  - PV
+                                  - BATTERY
+                                  - HYBRID
+                                  - PV_EXTERNAL
+                                  - GRID
+                                  - HEAT_PUMP
+                                  - FUEL_CELL
+                                  - HEAT_PUMP_EXTERNAL
+                                  - EVSTATION
+                                  - BTTP
+                                  - HEATING
+                                  - MISC
+                                  - CLUSTER
+                                  - WIND_TURBINE
+                                  example: BATTERY
+                                  type: string
+                                name:
+                                  description: The name of the appliance as defined by the customer.
+                                  example: ExampleMeter
+                                  type: string
+                                serialNumber:
+                                  description: Serial number of the appliance as returned by the appliance.
+                                  example: '9312355'
+                                  type: string
+                                firmware:
+                                  description: Firmware version of the appliance.
+                                  type: string
+                                parent:
+                                  description: ID of the parent appliance, if any.
+                                  type: string
+                                gatewayType:
+                                  description: Type of the gateway the appliance is connected to.
+                                  example: GRIDBOX
+                                  type: string
+                                systemID:
+                                  description: The ID of the system that the gateway and appliance run in.
+                                  example: c9db369e-7cf8-4ad1-ade5-46f61a5125c2
+                                  format: uuid
+                                  type: string
+                                systemName:
+                                  description: Name of the system as defined by the customer.
+                                  example: ExampleSystem
+                                  type: string
+                              x-readme-ref-name: ApplianceEventData
+                        x-readme-ref-name: ApplianceEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/measurement
+                            data:
+                              type: object
+                              description: Measurement event (issued by the EV).
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - chargePower
+                              - chargeState
+                              - plugState
+                              - isControllable
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                stateOfCharge:
+                                  type: number
+                                  format: double
+                                  description: 'StateOfCharge specifies the vehicles battery level in as a value between
+
+                                    0.0% and 100.0%.'
+                                chargePower:
+                                  type: integer
+                                  format: int64
+                                  description: 'ChargePower specifies the power with which the vehicle is currently
+
+                                    charging in mW Positive values mean charging, negative values mean
+
+                                    discharging (V2G, V2H).'
+                                range:
+                                  type: integer
+                                  format: uint32
+                                  description: Range of the vehicle in meters
+                                chargeLimit:
+                                  type: number
+                                  format: double
+                                  description: 'ChargeLimit is the limit configured by the vehicle owner at which state of
+
+                                    charge the vehicle should stop charging. Represented as a percentage
+
+                                    between 0% and 100%.'
+                                capacity:
+                                  type: integer
+                                  format: uint32
+                                  description: Capacity specifies the capacity of the vehicles battery in Wh.
+                                chargeState:
+                                  type: string
+                                  description: 'When plugged, indicates whether the vehicle is charging or not.
+
+                                    When not plugged, this field returns "" (empty).'
+                                  enum:
+                                  - INITIALIZING
+                                  - CHARGING
+                                  - COMPLETE
+                                  - STOPPED
+                                  - FAULT
+                                  - NO_POWER
+                                  - DISCHARGING
+                                  - ''
+                                plugState:
+                                  type: string
+                                  description: PlugState defines whether the vehicle is currently plugged in.
+                                  enum:
+                                  - PLUGGED
+                                  - UNPLUGGED
+                                  - UNKNOWN
+                                  example: PLUGGED
+                                isControllable:
+                                  type: boolean
+                                  description: 'IsControllable defines if the vehicle''s charging can currently be
+
+                                    controlled by us. Reasons for not being controllable could be
+
+                                    that the vehicle is not at home or that it lacks the capability
+
+                                    to receive control commands, either because they are not supported
+
+                                    by the cloud provider for the EV model, or because an user action is required'
+                              x-readme-ref-name: EVMeasurementEventData
+                        x-readme-ref-name: EVMeasurementEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/plugged
+                            data:
+                              type: object
+                              description: Plug State change event (issued by the EV).
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - state
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                state:
+                                  type: string
+                                  enum:
+                                  - PLUGGED
+                                  description: State defines whether the vehicle is currently plugged in
+                              x-readme-ref-name: EVPluggedEventData
+                        description: Event fired when an EV plugs to a charger.
+                        x-readme-ref-name: EVPluggedEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/unplugged
+                            data:
+                              type: object
+                              description: Plug State change event (issued by the EV).
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - state
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                state:
+                                  type: string
+                                  enum:
+                                  - UNPLUGGED
+                                  description: State defines whether the vehicle is currently unplugged
+                              x-readme-ref-name: EVUnpluggedEventData
+                        description: Event fired when an EV unplugs from a charger.
+                        x-readme-ref-name: EVUnpluggedEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/charge-started
+                            data:
+                              type: object
+                              description: Charge State change event (issued by the EV).
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - chargePower
+                              - state
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                stateOfCharge:
+                                  type: number
+                                  format: double
+                                  description: 'StateOfCharge specifies the vehicles battery level as a value between 0.0%
+
+                                    and 100.0%.'
+                                chargePower:
+                                  type: integer
+                                  format: int64
+                                  description: 'ChargePower specifies the power with which the vehicle is currently
+
+                                    charging in mW. Positive values mean charging, negative values mean
+
+                                    discharging (V2G, V2H).'
+                                range:
+                                  type: integer
+                                  format: uint32
+                                  description: Range of the vehicle in meters
+                                state:
+                                  type: string
+                                  enum:
+                                  - CHARGING
+                                  description: Indicates that the vehicle is charging
+                              x-readme-ref-name: EVChargingStartEventData
+                        description: Event fired when an EV starts charging.
+                        x-readme-ref-name: EVChargeStartedEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/charge-stopped
+                            data:
+                              type: object
+                              description: Charge State change event (issued by the EV).
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - chargePower
+                              - state
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                stateOfCharge:
+                                  type: number
+                                  format: double
+                                  description: 'StateOfCharge specifies the vehicles battery level as a value between 0.0%
+
+                                    and 100.0%.'
+                                chargePower:
+                                  type: integer
+                                  format: int64
+                                  description: 'ChargePower specifies the power with which the vehicle is currently
+
+                                    charging in mW. Positive values mean charging, negative values mean
+
+                                    discharging (V2G, V2H).'
+                                range:
+                                  type: integer
+                                  format: uint32
+                                  description: Range of the vehicle in meters
+                                state:
+                                  type: string
+                                  enum:
+                                  - STOPPED
+                                  description: Indicates that the vehicle is not charging
+                              x-readme-ref-name: EVChargingStopEventData
+                        description: Event fired when an EV stops charging.
+                        x-readme-ref-name: EVChargeStoppedEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/charge-failed
+                            data:
+                              type: object
+                              description: Generic EVEvent with fail reason.
+                              required:
+                              - issuedAt
+                              - atHome
+                              - type
+                              - systemID
+                              - assetID
+                              - gatewayID
+                              - createdAt
+                              - completedAt
+                              - kind
+                              - failureReason
+                              properties:
+                                issuedAt:
+                                  type: string
+                                  format: date-time
+                                  description: When the event was issued by the EV (It might take some time for the event reach us).
+                                atHome:
+                                  type: boolean
+                                  description: 'atHome specifies if the vehicle is currently at the users home location
+
+                                    and is used to make decisions on whether to control charging behaviour'
+                                type:
+                                  type: string
+                                  description: The type of the asset issuing the event.
+                                  example: EV
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the system in which the EV is connected to.
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the id of the asset.
+                                gatewayID:
+                                  type: string
+                                  format: uuid
+                                  description: This field defines the ID of gateway where the EV is linked to.
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  description: Time when the command was sent
+                                completedAt:
+                                  type: string
+                                  format: date-time
+                                  description: Time when the error was reported
+                                kind:
+                                  type: string
+                                  enum:
+                                  - START
+                                  - STOP
+                                  description: The charging command to perform
+                                failureReason:
+                                  type: object
+                                  properties:
+                                    type:
+                                      type: string
+                                      enum:
+                                      - NO_RESPONSE
+                                      - FAILED_PRECONDITION
+                                      - CONFLICT
+                                      - NOT_FOUND
+                                      - REQUESTED_CANCELLATION
+                                      description: 'A machine-readable high level error category.
+
+
+                                        NO_RESPONSE: The chargeable device did not react to our charge commands within the command''s timeout window.
+
+                                        FAILED_PRECONDITION: The chargeable device did not meet all required preconditions for this command to be executed during the command''s timeout window.
+
+                                        CONFLICT: A newer command for this chargeable has been created. This command is now abandoned.
+
+                                        NOT_FOUND: The chargeable was deleted while the command was PENDING
+
+                                        REQUESTED_CANCELLATION: This command was cancelled by request of the controlling owner.'
+                                    detail:
+                                      type: string
+                                      description: A human-readable explanation of why the charging command was unsuccessful.
+                                  required:
+                                  - type
+                                  - detail
+                                  description: Reason why a given command has failed.
+                              x-readme-ref-name: EVChargeSessionFailedEventData
+                        description: Event fired when an EV fails to accept a start or a stop command.
+                        x-readme-ref-name: EVChargeSessionFailedEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ev/infeasible-charging-goals
+                            data:
+                              type: object
+                              description: Payload for `ev/infeasible-charging-goals` events.
+                              required:
+                              - systemID
+                              - assetID
+                              - minRequestedSoC
+                              - currentSoC
+                              - departureAt
+                              - energyNeededWh
+                              - deliverableEnergyWh
+                              - chargingPowerW
+                              properties:
+                                systemID:
+                                  type: string
+                                  format: uuid
+                                  description: The ID of the system in which the EV is connected.
+                                  example: 5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                                assetID:
+                                  type: string
+                                  format: uuid
+                                  description: The ID of the EV asset.
+                                  example: fc0a6ac7-64ce-4276-a7cd-bace946af433
+                                minRequestedSoC:
+                                  type: number
+                                  format: double
+                                  description: The minimum state of charge (%) the user wants to reach by departure.
+                                  example: 80
+                                currentSoC:
+                                  type: number
+                                  format: double
+                                  description: The current state of charge (%) of the vehicle battery.
+                                  example: 42
+                                departureAt:
+                                  type: string
+                                  format: date-time
+                                  description: The departure time configured by the user (RFC3339).
+                                  example: '2026-06-22T07:30:00Z'
+                                maxStateOfCharge:
+                                  type:
+                                  - number
+                                  - 'null'
+                                  format: double
+                                  description: 'The maximum state of charge (%) allowed by the driver constraint, if set.
+
+                                    The effective target SoC is min(minRequestedSoC, maxStateOfCharge).'
+                                  example: 90
+                                energyNeededWh:
+                                  type: number
+                                  format: double
+                                  description: Energy in Wh required to reach the target state of charge from the current state of charge.
+                                  example: 9200
+                                deliverableEnergyWh:
+                                  type: number
+                                  format: double
+                                  description: 'Energy in Wh that can realistically be delivered before departure,
+
+                                    calculated as chargingPowerW × hoursUntilDeparture.'
+                                  example: 5400
+                                chargingPowerW:
+                                  type: number
+                                  format: double
+                                  description: The charging power in W used for the feasibility calculation.
+                                  example: 3600
+                                atHome:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: Whether the vehicle is currently at the user's home location. Null if unknown.
+                                  example: true
+                              x-readme-ref-name: EVInfeasibleChargingGoalsEventData
+                        description: 'Event fired when the configured EV charging goals cannot be met before the departure time.
+
+                          Emitted each time a user updates their EV parameters and the feasibility check determines
+
+                          that the target state of charge is not reachable given the available charging power and
+
+                          time remaining until departure.'
+                        x-readme-ref-name: EVInfeasibleChargingGoalsEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - gateway/create
+                              - gateway/offline
+                              - gateway/online
+                            data:
+                              type: object
+                              title: Gateway event
+                              description: Payload for `gateway/*` events.
+                              required:
+                              - gatewayID
+                              - systemID
+                              properties:
+                                gatewayID:
+                                  description: The ID of the gateway this event is triggered for.
+                                  example: 680d63aa-6e1d-4447-af7c-35c5eb6ca810
+                                  format: uuid
+                                  type: string
+                                gatewayName:
+                                  description: The name of the gateway corresponding to the gatewayID.
+                                  example: My gridBox
+                                  type: string
+                                gatewaySerialnumber:
+                                  description: The serialnumber of the gateway corresponding to the gatewayID.
+                                  example: D403-007-000-000-001-B-X
+                                  type: string
+                                gatewayDeviceID:
+                                  description: Internal device ID of the gateway.
+                                  type: string
+                                systemID:
+                                  description: The ID of the system this event is triggered for.
+                                  example: af87d7b3-316f-4d26-868c-4ae351095bdc
+                                  format: uuid
+                                  type: string
+                                systemName:
+                                  description: The name of the system corresponding to the systemID.
+                                  example: ExampleSystem
+                                  type: string
+                                userID:
+                                  description: The ID of the user that owns the system.
+                                  example: a115d9e3-6e78-4ddf-8676-a98c28ad8249
+                                  format: uuid
+                                  type: string
+                                userName:
+                                  description: Name of the user belonging to the userID.
+                                  example: Max Mustermann
+                                  type: string
+                                userMail:
+                                  description: E-Mail address of the user belonging to the userID.
+                                  example: max.mustermann@muster.de
+                                  type: string
+                              x-readme-ref-name: GatewayEventData
+                        x-readme-ref-name: GatewayEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - grid-signal-processor/limitation-of-power-consumption/set
+                              - grid-signal-processor/limitation-of-power-consumption/unset
+                            data:
+                              type: object
+                              title: Grid signal processor limitation of power consumption event
+                              description: Payload for `grid-signal-processor/limitation-of-power-consumption/*` events.
+                              properties:
+                                newLPC:
+                                  type: number
+                                  format: float
+                                  description: "Represents the new limitation of power consumption in milliwatt. It can be omitted in case there was a limit \nand now there is not."
+                                receivedAt:
+                                  type: string
+                                  format: date-time
+                                  description: Timestamp at which the gridbox received the control signal.
+                                validUntil:
+                                  type: string
+                                  format: date-time
+                                  description: Timestamp until which the control signal is valid.
+                              x-readme-ref-name: GSP14aSignalEventData
+                        x-readme-ref-name: GSP14aSignalEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - type: object
+                          properties:
+                            type:
+                              type: string
+                              enum:
+                              - inverter/status
+                            data:
+                              allOf:
+                              - type: object
+                                description: Payload for `appliance/*` events.
+                                required:
+                                - applianceID
+                                - gatewayID
+                                properties:
+                                  applianceID:
+                                    description: ID of the appliance that caused this event.
+                                    example: fc0a6ac7-64ce-4276-a7cd-bace946af433
+                                    format: uuid
+                                    type: string
+                                  gatewayID:
+                                    description: The ID of the gateway that connects to the appliance.
+                                    example: 25ccab17-cd40-4db1-a320-a986d1c15fb1
+                                    format: uuid
+                                    type: string
+                                  model:
+                                    description: Model description of the appliance.
+                                    example: ExampleModel
+                                    type: string
+                                  manufacturer:
+                                    description: Manufacturer of the appliance.
+                                    example: ExampleManufacturer
+                                    type: string
+                                  type:
+                                    description: General type of the appliance.
+                                    enum:
+                                    - UNKNOWN
+                                    - INVERTER
+                                    - METER
+                                    - EVSTATION
+                                    - HEAT_PUMP
+                                    - HEATER
+                                    - CONTAINER
+                                    example: METER
+                                    type: string
+                                  kind:
+                                    description: "Kind of the appliance is used to provide further details on the appliance configuration and mode of \noperation. \n\nThe kind property is only available for appliances with type `INVERTER` or `METER`. \n\nFor inverters, only `UNKNOWN`, `PV`, `BATTERY`, `HYBRID` and `PV_EXTERNAL` are valid values. They describe \nthe kind of connected appliance(s) and define the role of the inverter in the system. \n\nFor meters, kind specifies the appliance the meter is attached to. It resembles the location the meter is \ninstalled in."
+                                    enum:
+                                    - UNKNOWN
+                                    - PV
+                                    - BATTERY
+                                    - HYBRID
+                                    - PV_EXTERNAL
+                                    - GRID
+                                    - HEAT_PUMP
+                                    - FUEL_CELL
+                                    - HEAT_PUMP_EXTERNAL
+                                    - EVSTATION
+                                    - BTTP
+                                    - HEATING
+                                    - MISC
+                                    - CLUSTER
+                                    - WIND_TURBINE
+                                    example: BATTERY
+                                    type: string
+                                  name:
+                                    description: The name of the appliance as defined by the customer.
+                                    example: ExampleMeter
+                                    type: string
+                                  serialNumber:
+                                    description: Serial number of the appliance as returned by the appliance.
+                                    example: '9312355'
+                                    type: string
+                                  firmware:
+                                    description: Firmware version of the appliance.
+                                    type: string
+                                  parent:
+                                    description: ID of the parent appliance, if any.
+                                    type: string
+                                  gatewayType:
+                                    description: Type of the gateway the appliance is connected to.
+                                    example: GRIDBOX
+                                    type: string
+                                  systemID:
+                                    description: The ID of the system that the gateway and appliance run in.
+                                    example: c9db369e-7cf8-4ad1-ade5-46f61a5125c2
+                                    format: uuid
+                                    type: string
+                                  systemName:
+                                    description: Name of the system as defined by the customer.
+                                    example: ExampleSystem
+                                    type: string
+                                x-readme-ref-name: ApplianceEventData
+                              - type: object
+                                title: Inverter status event
+                                description: "Payload for `inverter/*` events. \n\nThe event describes the change of an inverter from one status to a new one. The old status is referred to as the \nlastStatus."
+                                required:
+                                - lastStatus
+                                - status
+                                properties:
+                                  status:
+                                    description: Current (new) status of the inverter.
+                                    enum:
+                                    - UNKNOWN
+                                    - OK
+                                    - WARNING
+                                    - ERROR
+                                    example: OK
+                                    type: string
+                                  lastStatus:
+                                    description: Last status of the inverter.
+                                    enum:
+                                    - UNKNOWN
+                                    - OK
+                                    - WARNING
+                                    - ERROR
+                                    example: ERROR
+                                    type: string
+                                  errCode:
+                                    description: "Current (new) error code as returned by the appliance. The value depends on the appliance manufacturer, \nmodel and firmware. Please refer to the manufacturers specification."
+                                    type: string
+                                  lastErrCode:
+                                    description: "Last error code as returned by the appliance. The value depends on the appliance manufacturer, model and \nfirmware. Please refer to the manufacturers specification.\n"
+                                    example: F71A
+                                    type: string
+                              x-readme-ref-name: InverterEventData
+                        x-readme-ref-name: InverterEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - ping
+                            data:
+                              type: object
+                              description: Payload for `ping` events.
+                              properties:
+                                message:
+                                  type: string
+                              x-readme-ref-name: PingEventData
+                        x-readme-ref-name: PingEvent
+                      - allOf:
+                        - type: object
+                          description: 'Representation of an event in a gridX account. Follows the [CloudEvents v1.0.1 specification](
+
+                            https://github.com/cloudevents/spec/blob/v1.0.1/spec.md).'
+                          required:
+                          - id
+                          - source
+                          - specVersion
+                          - time
+                          - type
+                          - data
+                          properties:
+                            id:
+                              format: uuid
+                              type: string
+                              description: The unique ID of the event instance.
+                            time:
+                              description: Time when the event has occurred in RFC3339 format.
+                              format: date-time
+                              type: string
+                            dataContentType:
+                              default: application/json
+                              description: 'Content-Type indicating how to parse the `data` attribute.
+
+                                Only ''application/json'' is supported for now. If omitted, it is guaranteed to be `application/json`.'
+                              enum:
+                              - application/json
+                              example: application/json
+                              type: string
+                            specVersion:
+                              description: 'The adhered CloudEvents specification version, currently "1.0".
+
+                                Only consists of major and minor version parts, to allow patching in a backward-compatible fashion.'
+                              example: '1.0'
+                              type: string
+                            source:
+                              description: 'The source of the event is usually a resource identifier path that can be used to identify the object which
+
+                                triggered the event.'
+                              example: /systems/5eda17ec-4dc9-46d5-b3b8-c396f75a760f
+                              type: string
+                            correlationId:
+                              description: Correlation ID to identify the request triggering the event.
+                              format: uuid
+                              type: string
+                            type:
+                              description: The type of the event.
+                              type: string
+                            data:
+                              description: Contains the actual event payload. Deserialize depending on the `type` property.
+                              type: object
+                          x-readme-ref-name: WebhookEventBase
+                        - properties:
+                            type:
+                              type: string
+                              enum:
+                              - system/action
+                            data:
+                              type: object
+                              required:
+                              - id
+                              - capabilities
+                              - type
+                              - manufacturer
+                              - domain
+                              - introducedAt
+                              - resolution
+                              - gatewayID
+                              - assetID
+                              - systemID
+                              - status
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  description: ID of the action.
+                                capabilities:
+                                  type: array
+                                  items:
+                                    type: string
+                                    enum:
+                                    - chargeState
+                                    - information
+                                    - startCharging
+                                    - stopCharging
+                                    - location
+                                  description: Capability that can be unblocked by the user taking this action
+                                  example:
+                                  - chargeState
+                                  - location
+                                type:
+                                  type: string
+                                  enum:
+                                  - EV
+                                  description: Type of asset.
+                                manufacturer:
+                                  type: string
+                                  description: Manufacturer of the asset.
+                                  example: Audi
+                                domain:
+                                  type: string
+                                  enum:
+                                  - Account
+                                  - Device
+                                  description: Describes whether the user action relates to the device itself or the vendor user account used to access the device.
+                                introducedAt:
+                                  type: string
+                                  format: date-time
+                                  description: ISO8601 UTC timestamp of when the user action was introduced.
+                                resolution:
+                                  type: object
+                                  required:
+                                  - description
+                                  - title
+                                  - access
+                                  - agent
+                                  properties:
+                                    description:
+                                      type: string
+                                      description: A localized description of how to solve. Formatted as Markdown.
+                                      example: To gain access to your vehicle's telemetry data, it's necessary to accept Audi's terms and conditions. Follow these steps to proceed:<br><br>1. Open the **myAudi app** on your phone<br>2. Follow the prompts to accept Audi's terms and conditions
+                                    title:
+                                      type: string
+                                      description: A localized title for the user action.
+                                      example: Accept the Audi terms and conditions
+                                    access:
+                                      type: string
+                                      enum:
+                                      - Remote
+                                      - Physical
+                                      description: Where the action needs to be taken. i.e. remotely using the vendor's app or directly in the vehicle.
+                                    agent:
+                                      type: string
+                                      enum:
+                                      - User
+                                      - ThirdParty
+                                      description: 'Who can resolve the action. i.e. a user can resolve themselves,
+
+                                        or a licensed service retailer is needed.'
+                                    action:
+                                      type: string
+                                      enum:
+                                      - Link
+                                      - LinkAdditionalAsset
+                                      description: Action to be taken by the user to resolve the intervention.
+                                  x-readme-ref-name: UserActionResolution
+                                gatewayID:
+                                  type: string
+                                  description: The ID of the gateway that connects to the appliance.
+                                assetID:
+                                  type: string
+                                  description: ID of the appliance that caused this event.
+                                systemID:
+                                  type: string
+                                  description: The ID of the system that the gateway and appliance run in.
+                                status:
+                                  type: string
+                                  enum:
+                                  - OPEN
+                                  - SOLVED
+                                  description: 'Whether the user action is still open or has been solved.
+
+                                    OPEN: means that this user action is still open
+
+                                    SOLVED: means that the user has solved the issue.'
+                              x-readme-ref-name: UserActionEventPayload
+                        x-readme-ref-name: SystemActionEvent
+                      discriminator:
+                        propertyName: type
+                        mapping:
+                          appliance/create: '#/components/schemas/ApplianceEvent'
+                          appliance/delete: '#/components/schemas/ApplianceEvent'
+                          appliance/offline: '#/components/schemas/ApplianceEvent'
+                          appliance/online: '#/components/schemas/ApplianceEvent'
+                          appliance/update: '#/components/schemas/ApplianceEvent'
+                          ev/charge-failed: '#/components/schemas/EVChargeSessionFailedEvent'
+                          ev/charge-started: '#/components/schemas/EVChargeStartedEvent'
+                          ev/charge-stopped: '#/components/schemas/EVChargeStoppedEvent'
+                          ev/measurement: '#/components/schemas/EVMeasurementEvent'
+                          ev/plugged: '#/components/schemas/EVPluggedEvent'
+                          ev/unplugged: '#/components/schemas/EVUnpluggedEvent'
+                          ev/infeasible-charging-goals: '#/components/schemas/EVInfeasibleChargingGoalsEvent'
+                          gateway/create: '#/components/schemas/GatewayEvent'
+                          gateway/offline: '#/components/schemas/GatewayEvent'
+                          gateway/online: '#/components/schemas/GatewayEvent'
+                          grid-signal-processor/limitation-of-power-consumption/set: '#/components/schemas/GSP14aSignalEvent'
+                          grid-signal-processor/limitation-of-power-consumption/unset: '#/components/schemas/GSP14aSignalEvent'
+                          inverter/status: '#/components/schemas/InverterEvent'
+                          ping: '#/components/schemas/PingEvent'
+                          system/action: '#/components/schemas/SystemActionEvent'
+                      x-readme-ref-name: WebhookEventRequest
+              responses:
+                '200':
+                  description: The webhook event has been processed successfully.
+                '201':
+                  description: The webhook event has been processed successfully.
+                '202':
+                  description: The webhook event has been processed successfully.
+                '204':
+                  description: The webhook event has been processed successfully.
+                '401':
+                  description: HMAC digest verification failed for the request.
+                '408':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                '410':
+                  description: The webhook receiver has been decommissioned and its webhook subscription should be deleted.
+                '429':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                '500':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                '502':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                '503':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                '504':
+                  description: The request failed with a transient error and will be retried five times with exponential backoff.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+                default:
+                  description: The request failed with a permanent error and won't be retried.
+                  content:
+                    application/json:
+                      schema:
+                        type:
+                        - object
+                        - 'null'
+                        additionalProperties: true
+                        description: Optional arbitrary JSON data.
+                        x-readme-ref-name: ArbitraryErrorResponse
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/webhooks\"\n\npayload = {\n    \"active\": True,\n    \"eventTypes\": [\"appliance/online\", \"appliance/offline\"],\n    \"targetURL\": \"https://example.com/hooks/xenon\",\n    \"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/accounts/accountID/webhooks \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"active\": true,\n  \"eventTypes\": [\n    \"appliance/online\",\n    \"appliance/offline\"\n  ],\n  \"targetURL\": \"https://example.com/hooks/xenon\",\n  \"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks\"\n\n\tpayload := strings.NewReader(\"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\",\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    active: true,\n    eventTypes: ['appliance/online', 'appliance/offline'],\n    targetURL: 'https://example.com/hooks/xenon',\n    secret: 'whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6'\n  })\n};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\",\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\",\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks\")\n  .post(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"active\": true,\n  \"eventTypes\": [\"appliance/online\", \"appliance/offline\"],\n  \"targetURL\": \"https://example.com/hooks/xenon\",\n  \"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/webhooks\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"POST\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"active\":true,\"eventTypes\":[\"appliance/online\",\"appliance/offline\"],\"targetURL\":\"https://example.com/hooks/xenon\",\"secret\":\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"}", false);
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/webhooks/{webhookID}:
+    get:
+      operationId: getWebhookSubscription
+      summary: Retrieve a Webhook Subscription
+      x-badges:
+      - label: beta
+        color: orange
+      description: Retrieve a webhook subscription by ID.
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksRead
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Returns the webhook subscription.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - required:
+                  - id
+                  - accountID
+                  - createdAt
+                  - createdBy
+                  - active
+                  - eventTypes
+                  - targetURL
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    accountID:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    createdBy:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                - type: object
+                  properties:
+                    active:
+                      type: boolean
+                      description: If not active, a webhook subscription doesn't react to events in the account.
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                    eventTypes:
+                      type: array
+                      items:
+                        type: string
+                        description: Subscribable event type.
+                        enum:
+                        - appliance/create
+                        - appliance/delete
+                        - appliance/offline
+                        - appliance/online
+                        - appliance/update
+                        - ev/charge-failed
+                        - ev/charge-started
+                        - ev/charge-stopped
+                        - ev/control
+                        - ev/create
+                        - ev/delete
+                        - ev/infeasible-charging-goals
+                        - ev/measurement
+                        - ev/plugged
+                        - ev/unplugged
+                        - ev/update
+                        - gateway/create
+                        - gateway/offline
+                        - gateway/online
+                        - grid-signal-processor/limitation-of-power-consumption/set
+                        - grid-signal-processor/limitation-of-power-consumption/unset
+                        - inverter/status
+                        - system/action
+                        x-readme-ref-name: WebhookSubscriptionEventType
+                      minItems: 1
+                      uniqueItems: true
+                      description: The list of event types to subscribe to.
+                      example:
+                      - appliance/online
+                      - appliance/offline
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                    targetURL:
+                      type: string
+                      format: uri
+                      description: Matching events will be sent to this URL via HTTP POST requests.
+                      example: https://example.com/hooks/xenon
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                  x-readme-ref-name: WebhookSubscriptionBase
+                - description: Returns a webhook subscription.
+                x-readme-ref-name: WebhookSubscriptionResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/webhooks/webhookID"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .get()\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/webhooks/webhookID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    delete:
+      operationId: deleteWebhookSubscription
+      summary: Delete a Webhook Subscription
+      x-badges:
+      - label: beta
+        color: orange
+      description: Delete a webhook subscription by ID.
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: The webhook subscription has been deleted successfully.
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/webhooks/webhookID"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.delete(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request DELETE \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID\"\n\n\treq, _ := http.NewRequest(\"DELETE\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'DELETE', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .delete(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/webhooks/webhookID")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "DELETE"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.DeleteAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      operationId: updateWebhookSubscription
+      summary: Update a Webhook Subscription
+      x-badges:
+      - label: beta
+        color: orange
+      description: Update a webhook subscription by ID.
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Input parameters for updating an existing webhook subscription in the account.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  active:
+                    type: boolean
+                    description: If not active, a webhook subscription doesn't react to events in the account.
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                  eventTypes:
+                    type: array
+                    items:
+                      type: string
+                      description: Subscribable event type.
+                      enum:
+                      - appliance/create
+                      - appliance/delete
+                      - appliance/offline
+                      - appliance/online
+                      - appliance/update
+                      - ev/charge-failed
+                      - ev/charge-started
+                      - ev/charge-stopped
+                      - ev/control
+                      - ev/create
+                      - ev/delete
+                      - ev/infeasible-charging-goals
+                      - ev/measurement
+                      - ev/plugged
+                      - ev/unplugged
+                      - ev/update
+                      - gateway/create
+                      - gateway/offline
+                      - gateway/online
+                      - grid-signal-processor/limitation-of-power-consumption/set
+                      - grid-signal-processor/limitation-of-power-consumption/unset
+                      - inverter/status
+                      - system/action
+                      x-readme-ref-name: WebhookSubscriptionEventType
+                    minItems: 1
+                    uniqueItems: true
+                    description: The list of event types to subscribe to.
+                    example:
+                    - appliance/online
+                    - appliance/offline
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                  targetURL:
+                    type: string
+                    format: uri
+                    description: Matching events will be sent to this URL via HTTP POST requests.
+                    example: https://example.com/hooks/xenon
+                    externalDocs:
+                      description: Webhook receiver guide
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                x-readme-ref-name: WebhookSubscriptionBase
+              - description: Request body for updating an existing webhook subscription.
+                required:
+                - active
+                - eventTypes
+                - targetURL
+              x-readme-ref-name: WebhookSubscriptionUpdateRequest
+      responses:
+        '200':
+          description: Returns the webhook subscription.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - required:
+                  - id
+                  - accountID
+                  - createdAt
+                  - createdBy
+                  - active
+                  - eventTypes
+                  - targetURL
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    accountID:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    createdAt:
+                      type: string
+                      format: date-time
+                      readOnly: true
+                    createdBy:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                - type: object
+                  properties:
+                    active:
+                      type: boolean
+                      description: If not active, a webhook subscription doesn't react to events in the account.
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#consecutive-failures
+                    eventTypes:
+                      type: array
+                      items:
+                        type: string
+                        description: Subscribable event type.
+                        enum:
+                        - appliance/create
+                        - appliance/delete
+                        - appliance/offline
+                        - appliance/online
+                        - appliance/update
+                        - ev/charge-failed
+                        - ev/charge-started
+                        - ev/charge-stopped
+                        - ev/control
+                        - ev/create
+                        - ev/delete
+                        - ev/infeasible-charging-goals
+                        - ev/measurement
+                        - ev/plugged
+                        - ev/unplugged
+                        - ev/update
+                        - gateway/create
+                        - gateway/offline
+                        - gateway/online
+                        - grid-signal-processor/limitation-of-power-consumption/set
+                        - grid-signal-processor/limitation-of-power-consumption/unset
+                        - inverter/status
+                        - system/action
+                        x-readme-ref-name: WebhookSubscriptionEventType
+                      minItems: 1
+                      uniqueItems: true
+                      description: The list of event types to subscribe to.
+                      example:
+                      - appliance/online
+                      - appliance/offline
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#supported-event-types
+                    targetURL:
+                      type: string
+                      format: uri
+                      description: Matching events will be sent to this URL via HTTP POST requests.
+                      example: https://example.com/hooks/xenon
+                      externalDocs:
+                        description: Webhook receiver guide
+                        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#handling-webhook-event-requests
+                  x-readme-ref-name: WebhookSubscriptionBase
+                - description: Returns a webhook subscription.
+                x-readme-ref-name: WebhookSubscriptionResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/webhooks/webhookID\"\n\npayload = {\n    \"active\": True,\n    \"eventTypes\": [\"appliance/online\", \"appliance/offline\"],\n    \"targetURL\": \"https://example.com/hooks/xenon\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"active\": true,\n  \"eventTypes\": [\n    \"appliance/online\",\n    \"appliance/offline\"\n  ],\n  \"targetURL\": \"https://example.com/hooks/xenon\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID\"\n\n\tpayload := strings.NewReader(\"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\"}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    active: true,\n    eventTypes: ['appliance/online', 'appliance/offline'],\n    targetURL: 'https://example.com/hooks/xenon'\n  })\n};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"active\\\":true,\\\"eventTypes\\\":[\\\"appliance/online\\\",\\\"appliance/offline\\\"],\\\"targetURL\\\":\\\"https://example.com/hooks/xenon\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\n  \"active\": true,\n  \"eventTypes\": [\"appliance/online\", \"appliance/offline\"],\n  \"targetURL\": \"https://example.com/hooks/xenon\"\n] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/webhooks/webhookID\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"active\":true,\"eventTypes\":[\"appliance/online\",\"appliance/offline\"],\"targetURL\":\"https://example.com/hooks/xenon\"}", false);
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/webhooks/{webhookID}/ping:
+    post:
+      operationId: pingWebhookSubscription
+      summary: Ping a Webhook Subscription
+      x-badges:
+      - label: beta
+        color: orange
+      description: 'Send a special `ping` event to the referenced webhook subscription''s target URL. This event type serves only
+
+        for testing purposes.'
+      externalDocs:
+        description: Webhook receiver guide
+        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#sending-a-ping-event
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: The `ping` event has been sent to the webhook subscription's target URL.
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.post(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'POST', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping\")\n  .post(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping\")\n  .post(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "POST"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID/ping");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+  /accounts/{accountID}/webhooks/{webhookID}/secret:
+    post:
+      operationId: rotateWebhookSubscriptionSecret
+      summary: Rotate a Webhook Subscription Secret
+      x-badges:
+      - label: beta
+        color: orange
+      description: 'Generates a new HMAC secret for the webhook subscription and marks the previous one for expiration in three
+
+        days.
+
+
+        The new webhook subscription''s HMAC secret will be returned only in this operation''s response. It can''t be
+
+        retrieved again from the API.'
+      externalDocs:
+        description: Webhook receiver guide
+        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#secret-rotation
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '201':
+          description: Returns the new webhook subscription secret.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Returns a new webhook subscription secret.
+                required:
+                - secret
+                properties:
+                  secret:
+                    type: string
+                    pattern: ^whsec_[0-9a-f]{128,}$
+                    readOnly: true
+                    example: whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6
+                    externalDocs:
+                      description: See our documentation on request integrity verification.
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#verify-request-integrity
+                x-readme-ref-name: WebhookSubscriptionSecretResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret"
+
+
+          headers = {"accept": "application/json"}
+
+
+          response = requests.post(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request POST \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret \\\n     --header 'accept: application/json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'POST', headers: {accept: 'application/json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\")\n  .post(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\")\n  .post(null)\n  .addHeader(\"accept\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "POST"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          var response = await client.PostAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    put:
+      operationId: updateWebhookSubscriptionSecret
+      summary: Sets a Webhook Subscription Secret
+      x-badges:
+      - label: beta
+        color: orange
+      description: 'Sets a new HMAC secret for the webhook subscription and marks the previous one for expiration in three
+
+        days.
+
+
+        The new webhook subscription''s HMAC secret will be returned only in this operation''s response. It can''t be
+
+        retrieved again from the API.'
+      externalDocs:
+        description: Webhook receiver guide
+        url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#secret-rotation
+      tags:
+      - Webhook
+      security:
+      - HeaderAuth:
+        - WebhooksWrite
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: webhookID
+        description: Path parameter for referencing a webhook subscription by ID.
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Input parameters for setting a new HMAC SHA-512 secret for a webhook subscription.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for setting a new HMAC SHA512 secret for a webhook subscription.
+              required:
+              - secret
+              properties:
+                secret:
+                  type: string
+                  minLength: 44
+                  example: whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6
+                  externalDocs:
+                    description: See our documentation on request integrity verification.
+                    url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#verify-request-integrity
+                  description: "The HMAC SHA-512 secret key.\n\nIt's recommended to use a key that's at least as long as the output of the SHA-512 hashing function. This \nmeans, it should be at least 64 bytes long, which is 44 characters with base64 encoding or 64 characters \nwith hex encoding. Any UTF-8 string will be accepted, so a prefix like `whsec_` can be prepended if desired."
+              x-readme-ref-name: WebhookSubscriptionSecretUpdateRequest
+      responses:
+        '200':
+          description: Returns the new webhook subscription secret.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Returns a new webhook subscription secret.
+                required:
+                - secret
+                properties:
+                  secret:
+                    type: string
+                    pattern: ^whsec_[0-9a-f]{128,}$
+                    readOnly: true
+                    example: whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6
+                    externalDocs:
+                      description: See our documentation on request integrity verification.
+                      url: https://github.com/grid-x/example-webhook-receiver/blob/main/README.md#verify-request-integrity
+                x-readme-ref-name: WebhookSubscriptionSecretResponse
+        default:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - type: object
+                  description: "Error schema, that supports both:\n  - [gridX Exception schema](https://raw.githubusercontent.com/grid-x/api/refs/heads/main/partials/schemas/Exception.yaml)\n  - [Problem Details schema (RFC 9457)](https://datatracker.ietf.org/doc/html/rfc9457)"
+                  required:
+                  - status
+                  - title
+                  properties:
+                    type:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    title:
+                      type: string
+                    detail:
+                      type: string
+                    instance:
+                      type: string
+                x-readme-ref-name: Error
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: "import requests\n\nurl = \"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\"\n\npayload = { \"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\" }\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+      - lang: shell
+        label: Shell
+        source: "curl --request PUT \\\n     --url https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"\n}\n'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\"\n\n\tpayload := strings.NewReader(\"{\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    secret: 'whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6'\n  })\n};\n\nfetch('https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nMediaType mediaType = MediaType.parse(\"application/json\");\nRequestBody body = RequestBody.create(mediaType, \"{\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\");\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval mediaType = MediaType.parse(\"application/json\")\nval body = RequestBody.create(mediaType, \"{\\\"secret\\\":\\\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\\\"}\")\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\")\n  .put(body)\n  .addHeader(\"accept\", \"application/json\")\n  .addHeader(\"content-type\", \"application/json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: "import Foundation\n\nlet parameters = [\"secret\": \"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"] as [String : Any?]\n\nlet postData = try JSONSerialization.data(withJSONObject: parameters, options: [])\n\nlet url = URL(string: \"https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret\")!\nvar request = URLRequest(url: url)\nrequest.httpMethod = \"PUT\"\nrequest.timeoutInterval = 10\nrequest.allHTTPHeaderFields = [\n  \"accept\": \"application/json\",\n  \"content-type\": \"application/json\"\n]\nrequest.httpBody = postData\n\nlet (data, _) = try await URLSession.shared.data(for: request)\nprint(String(decoding: data, as: UTF8.self))"
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/webhooks/webhookID/secret");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/json");
+
+          request.AddJsonBody("{\"secret\":\"whsec_89d31d45a90e309f4e24b7a1e0503f56b5c9d92e59e78216d61f369f64985223c72b4c53d8e96f10a8d7c4912b5e60f78c9d0a6e8f4c5a3d8b5e60d7c4912b5e6\"}", false);
+
+          var response = await client.PutAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

@@ -1,0 +1,2000 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Measurements API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Measurements across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Measurements
+  x-displayName: Measurements
+paths:
+  /systems/{systemID}/assets/{assetID}/measurements:
+    get:
+      x-badges:
+      - label: beta
+        color: orange
+      operationId: getAssetMeasurements
+      summary: List Asset Measurements
+      description: 'Lists measurements of an asset over a period of time.
+
+
+        The `start` and `end` parameters must define a range no longer than 24 hours.
+
+
+        Measurements can be either sampled or aggregated.
+
+        - A sampled measurement represents the asset at any specific point in time.
+
+        - An aggregated measurement represents the asset over an interval of time.
+
+
+        For aggregated measurements, the exact aggregation method for each specific field is shown in its description:
+
+
+        - **Time-Weighted average**: average value weighted by time
+
+        - **Min**: minimum value observed
+
+        - **Max**: maximum value observed
+
+        - **Last**: the last value observed
+
+
+        The asset''s measurements are collected and then downsampled on the gridbox.
+
+        The actual interval used is reflected in the measurements time metadata.
+
+
+        Currently, we only aggregate measurements for HEMS sites.
+
+
+        To retrieve measurements of hybrid inverters, use the asset IDs
+
+        of the children (battery or PV) assets.
+
+
+        Listing measurements is only supported for the following assets:
+
+        * `Battery`
+
+        * `Inverter`
+
+        * `Heater`
+
+        * `Meter`
+
+        * `Heat Pump`
+
+        * `EV Charging Station`'
+      tags:
+      - Measurements
+      parameters:
+      - name: systemID
+        description: 'Unique identifier used to access a system.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: aa3e5a93-bb38-4b15-b7f2-af40daf3a1dc
+      - name: assetID
+        description: 'Unique identifier used to access an asset.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: bb2681ab-9526-49ca-bc52-a5f4ec366958
+      - name: start
+        description: 'Start time of the interval for the query in RFC3339.
+
+          Measurements with timestamps after this value are included in the response.
+
+          '
+        in: query
+        required: true
+        example: '2025-08-05T18:00:00Z'
+        schema:
+          type: string
+          format: date-time
+      - name: end
+        description: 'End time of the interval for the query in RFC3339.
+
+          Measurements with timestamps that match exactly this value are included in the response.
+
+          '
+        in: query
+        required: true
+        example: '2025-08-05T19:00:00Z'
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Returned asset measurements.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                description: Measurements of an asset.
+                type: object
+                oneOf:
+                - title: AssetBatteryMeasurements
+                  description: Measurements of a battery asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - BATTERY
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: BatteryMeasurement
+                        description: A measurement produced by a battery (inverter).
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            capacity:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: 'Capacity in Wh.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            nominalCapacity:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: 'Nominal capacity in Wh.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            stateOfCharge:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: 'Value in range 0-100, state of charge in percent.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            chargePower:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: 'Charge power of the battery in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            dischargePower:
+                              type: number
+                              format: double
+                              minimum: 0
+                              description: 'Discharge power of the battery in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            activePower:
+                              type: number
+                              format: double
+                              description: "The active power of the battery in mW.\n  - negative values represent battery charging\n  - positive values represent battery discharging\n\nAggregation type: Time-Weighted average\n"
+                        x-readme-ref-name: measurements.BatteryMeasurement
+                      description: List of battery measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetBatteryMeasurements
+                - title: AssetHeaterMeasurements
+                  description: Measurements of a heater asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - HEATER
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: HeaterMeasurement
+                        description: A measurement produced by a heater.
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            power:
+                              type: number
+                              format: double
+                              description: 'Power measured by the heater in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL1:
+                              type: number
+                              format: double
+                              description: 'Power measured by the heater on the first phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL2:
+                              type: number
+                              format: double
+                              description: 'Power measured by the heater on the second phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL3:
+                              type: number
+                              format: double
+                              description: 'Power measured by the heater on the third phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            temperature:
+                              type: number
+                              format: double
+                              description: 'The room or water temperature measured by the heater in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            minTemperature:
+                              type: number
+                              format: double
+                              description: 'The minimum room or water temperature measured by the heater in °C.
+
+
+                                Aggregation type: Min
+
+                                '
+                            maxTemperature:
+                              type: number
+                              format: double
+                              description: 'The maximum room or water temperature measured by the heater in °C.
+
+
+                                Aggregation type: Max
+
+                                '
+                            status:
+                              type: string
+                              enum:
+                              - UNKNOWN
+                              - 'OFF'
+                              - START_UP
+                              - ACTIVE
+                              - KILL_MODE
+                              - ERROR
+                              - UNSUPPORTED
+                              description: 'The operational status of the heater.
+
+
+                                Aggregation type: Last
+
+                                '
+                        x-readme-ref-name: measurements.HeaterMeasurement
+                      description: List of heater measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetHeaterMeasurements
+                - title: AssetInverterMeasurements
+                  description: Measurements of an inverter asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - INVERTER
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: InverterMeasurement
+                        description: A measurement produced by an inverter.
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            gridFrequency:
+                              type: number
+                              format: double
+                              description: 'The locally measured grid frequency in centi Hz (10^-2 Hz).
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            acCurrent:
+                              type: number
+                              format: double
+                              description: 'The AC current in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ACCurrent:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L1 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ACCurrent:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L2 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ACCurrent:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L3 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ACVoltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L1 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ACVoltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L2 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ACVoltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L3 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            acActivePower:
+                              type: number
+                              format: double
+                              description: 'The AC active power in mW.
+
+                                For battery inverters: negative values = charging, positive = discharging.
+
+                                For PV inverters: positive values = production.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            acReactivePower:
+                              type: number
+                              format: double
+                              description: 'The AC reactive power in VAr.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            acApparentPower:
+                              type: number
+                              format: double
+                              description: 'The AC apparent power in VA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            dcCurrent:
+                              type: number
+                              format: double
+                              description: 'The DC current in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            dcVoltage:
+                              type: number
+                              format: double
+                              description: 'The DC voltage in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            dcPower:
+                              type: number
+                              format: double
+                              description: 'The DC power in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                        x-readme-ref-name: measurements.InverterMeasurement
+                      description: List of inverter measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetInverterMeasurements
+                - title: AssetMeterMeasurements
+                  description: Measurements of a meter asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - METER
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: MeterMeasurement
+                        description: A measurement produced by a meter.
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            l1ActivePower:
+                              type: number
+                              format: double
+                              description: 'The active power on phase L1 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ActiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy imported in the meter on phase L1 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1ActiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy exported from the meter on phase L1 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1ReactivePower:
+                              type: number
+                              format: double
+                              description: 'The reactive power on phase L1 in VAr.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ReactiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported reactive energy on phase L1 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1ReactiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported reactive energy on phase L1 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1ApparentPower:
+                              type: number
+                              format: double
+                              description: 'The apparent power on phase L1 in VA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ApparentEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported apparent energy on phase L1 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1ApparentEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported apparent energy on phase L1 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l1Current:
+                              type: number
+                              format: double
+                              description: 'The current on phase L1 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1Voltage:
+                              type: number
+                              format: double
+                              description: 'The voltage on phase L1 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1ImportPowerLimit:
+                              type: number
+                              format: double
+                              description: 'The maximum imported power on phase L1 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ActivePower:
+                              type: number
+                              format: double
+                              description: 'The active power on phase L2 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ActiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy imported in the meter on phase L2 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2ActiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy exported from the meter on phase L2 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2ReactivePower:
+                              type: number
+                              format: double
+                              description: 'The reactive power on phase L2 in VArs..
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ReactiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported reactive energy on phase L2 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2ReactiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported reactive energy on phase L2 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2ApparentPower:
+                              type: number
+                              format: double
+                              description: 'The apparent power on phase L2 in VA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ApparentEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported apparent energy on phase L2 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2ApparentEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported apparent energy on phase L2 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l2Current:
+                              type: number
+                              format: double
+                              description: 'The current on phase L2 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2Voltage:
+                              type: number
+                              format: double
+                              description: 'The voltage on phase L2 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2ImportPowerLimit:
+                              type: number
+                              format: double
+                              description: 'The maximum imported power on phase L2 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ActivePower:
+                              type: number
+                              format: double
+                              description: 'The active power on phase L3 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ActiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy imported in the meter on phase L3 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3ActiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The cumulative active energy exported from the meter on phase L3 in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3ReactivePower:
+                              type: number
+                              format: double
+                              description: 'The reactive power on phase L3 in VAr.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ReactiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported reactive energy on phase L3 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3ReactiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported reactive energy on phase L3 in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3ApparentPower:
+                              type: number
+                              format: double
+                              description: 'The apparent power on phase L3 in VA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ApparentEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The imported apparent energy on phase L3 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3ApparentEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The exported apparent energy on phase L3 in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            l3Current:
+                              type: number
+                              format: double
+                              description: 'The current on phase L3 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3Voltage:
+                              type: number
+                              format: double
+                              description: 'The voltage on phase L3 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3ImportPowerLimit:
+                              type: number
+                              format: double
+                              description: "The maximum imported power on phase L3 in mW.\n\nAggregation type: Time-Weighted average\n        l3ImportPowerLimit:\n"
+                            sumActivePower:
+                              type: number
+                              format: double
+                              description: 'The total active power (sum of all phases) in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            sumActiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The total imported active energy in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumActiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The total exported active energy in Ws.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumApparentPower:
+                              type: number
+                              format: double
+                              description: 'The total apparent power in VA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            sumApparentEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The total imported apparent energy in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumApparentEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The total exported apparent energy in VAs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumReactivePower:
+                              type: number
+                              format: double
+                              description: 'The total reactive power across all phases in VAr.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            sumReactiveEnergyReadingImport:
+                              type: number
+                              format: double
+                              description: 'The total imported reactive energy in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumReactiveEnergyReadingExport:
+                              type: number
+                              format: double
+                              description: 'The total exported reactive energy in VArs.
+
+
+                                Aggregation type: Max
+
+                                '
+                            sumImportPowerLimit:
+                              type: number
+                              format: double
+                              description: 'The maximum total imported power in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            sumPowerFactor:
+                              type: number
+                              format: double
+                              description: 'The power factor in degrees.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                        x-readme-ref-name: measurements.MeterMeasurement
+                      description: List of meter measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetMeterMeasurements
+                - title: AssetHeatPumpMeasurements
+                  description: Measurements of a heat pump asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - HEAT_PUMP
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: HeatPumpMeasurement
+                        description: A measurement produced by a heat pump.
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            power:
+                              type: number
+                              format: double
+                              description: 'The total power measured by the heat pump in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL1:
+                              type: number
+                              format: double
+                              description: 'The power measured by the heat pump on the first phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL2:
+                              type: number
+                              format: double
+                              description: 'The power measured by the heat pump on the second phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerL3:
+                              type: number
+                              format: double
+                              description: 'The power measured by the heat pump on the third phase in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            maxPower:
+                              type: number
+                              format: double
+                              description: 'The maximum power measured by the heat pump in mW.
+
+
+                                Aggregation type: Last
+
+                                '
+                            minPower:
+                              type: number
+                              format: double
+                              description: 'The minimum power measured by the heat pump in mW.
+
+
+                                Aggregation type: Last
+
+                                '
+                            averageTemperature:
+                              type: number
+                              format: double
+                              description: 'The average temperature of the appliance in °C.
+
+                                This could be air or water temperature.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            controlledTemperature:
+                              type: number
+                              format: double
+                              description: 'The temperature resulting from the appliance control in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            baseLineTemperature:
+                              type: number
+                              format: double
+                              description: 'The baseline temperature before the appliance control in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            heatSourceTemperature:
+                              type: number
+                              format: double
+                              description: 'The temperature of the heat source supply in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            outdoorTemperature:
+                              type: number
+                              format: double
+                              description: 'The outdoor temperature in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            sgReadyState:
+                              type: string
+                              enum:
+                              - UNKNOWN
+                              - 'OFF'
+                              - AUTO
+                              - RECOMMEND_ON
+                              - 'ON'
+                              description: 'The SG Ready state of the heat pump.
+
+
+                                Aggregation type: Last
+
+                                '
+                            operationStatus:
+                              type: string
+                              enum:
+                              - UNKNOWN
+                              - HEATING
+                              - DRINKING_HOT_WATER
+                              - POOL_HEATING
+                              - EVU_LOCK
+                              - DEFROST
+                              - 'OFF'
+                              - EXTERNAL_SOURCE
+                              - COOLING
+                              description: 'The operational status of the heat pump.
+
+
+                                Aggregation type: Last
+
+                                '
+                        x-readme-ref-name: measurements.HeatPumpMeasurement
+                      description: List of heat pump measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetHeatPumpMeasurements
+                - title: AssetEVChargingStationMeasurements
+                  description: Measurements of an EV charging station asset.
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - EV_CHARGING_STATION
+                      description: The type of asset.
+                    measurements:
+                      type: array
+                      items:
+                        title: EVChargingStationMeasurement
+                        description: A measurement produced by an EV charging station.
+                        allOf:
+                        - description: Measurement metadata of an asset.
+                          type: object
+                          oneOf:
+                          - title: AggregatedTimeMetadata
+                            description: A time interval for an aggregated measurement.
+                            type: object
+                            properties:
+                              measuredFrom:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation started.
+                              measuredTo:
+                                type: string
+                                format: date-time
+                                description: Time when the aggregation ended.
+                            required:
+                            - measuredFrom
+                            - measuredTo
+                            x-readme-ref-name: AggregatedTimeMetadata
+                          - title: SampledTimeMetadata
+                            description: A single timestamp for a measurement.
+                            type: object
+                            properties:
+                              measuredAt:
+                                type: string
+                                format: date-time
+                                description: Time when the data was measured.
+                            required:
+                            - measuredAt
+                            x-readme-ref-name: SampledTimeMetadata
+                          x-readme-ref-name: TimeMetadata
+                        - type: object
+                          properties:
+                            l1Voltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L1 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2Voltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L2 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3Voltage:
+                              type: number
+                              format: double
+                              description: 'The AC voltage on phase L3 in mV.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1Current:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L1 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2Current:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L2 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3Current:
+                              type: number
+                              format: double
+                              description: 'The AC current on phase L3 in mA.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            realPower:
+                              type: number
+                              format: double
+                              description: 'The real power in mW.
+
+                                - Positive values mean charging.
+
+                                - Negative values mean discharging.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            powerFactor:
+                              type: number
+                              format: double
+                              description: 'The power factor in 0.1% (cos phi).
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l1RealPower:
+                              type: number
+                              format: double
+                              description: 'The real power on phase L1 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l2RealPower:
+                              type: number
+                              format: double
+                              description: 'The real power on phase L2 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            l3RealPower:
+                              type: number
+                              format: double
+                              description: 'The real power on phase L3 in mW.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            temperature:
+                              type: number
+                              format: double
+                              description: 'The temperature inside the charging station in °C.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            capacity:
+                              type: number
+                              format: double
+                              description: 'The total capacity of the EV battery in Wh.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            stateOfCharge:
+                              type: number
+                              format: double
+                              description: 'The current state of charge of the EV battery in %, a number from 0.0 to 100.0.
+
+
+                                Aggregation type: Time-Weighted average
+
+                                '
+                            maxCharge:
+                              type: number
+                              format: double
+                              description: 'The maximum allowed charge power in mW.
+
+
+                                Aggregation type: Max
+
+                                '
+                            minCharge:
+                              type: number
+                              format: double
+                              description: 'The minimum allowed charge power in mW.
+
+                                Below this power the EV won''t charge.
+
+
+                                Aggregation type: Min
+
+                                '
+                            maxDischarge:
+                              type: number
+                              format: double
+                              description: 'The maximum allowed discharge power in mW.
+
+
+                                Aggregation type: Max
+
+                                '
+                            stationState:
+                              type: string
+                              enum:
+                              - UNKNOWN
+                              - NOT_READY
+                              - READY
+                              - CHARGING
+                              - ERROR
+                              - AUTHORIZATION_REJECTED
+                              - CHARGING_INTERRUPTED
+                              - ZERO_POWER_LOCK
+                              - CHARGING_IN_PHASE_SWITCH
+                              description: 'The operational state of the charging station.
+
+
+                                Aggregation type: Last
+
+                                '
+                            plugState:
+                              type: string
+                              enum:
+                              - UNPLUGGED
+                              - PLUGGED_ON_STATION
+                              - PLUGGED_ON_STATION_AND_PLUGGED_ON_VEHICLE
+                              description: 'Describes whether an EV is plugged into the charging station.
+
+
+                                Aggregation type: Last
+
+                                '
+                        x-readme-ref-name: measurements.EVChargingStationMeasurement
+                      description: List of EV charging station measurements.
+                  required:
+                  - type
+                  - measurements
+                  x-readme-ref-name: AssetEVChargingStationMeasurements
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    BATTERY: '#/components/schemas/AssetBatteryMeasurements'
+                    HEATER: '#/components/schemas/AssetHeaterMeasurements'
+                    INVERTER: '#/components/schemas/AssetInverterMeasurements'
+                    METER: '#/components/schemas/AssetMeterMeasurements'
+                    HEAT_PUMP: '#/components/schemas/AssetHeatPumpMeasurements'
+                    EV_CHARGING_STATION: '#/components/schemas/AssetEVChargingStationMeasurements'
+                x-readme-ref-name: AssetMeasurements
+              examples:
+                SampledBatteryMeasurement:
+                  description: A sampled battery measurement.
+                  value:
+                    type: BATTERY
+                    measurements:
+                    - measuredAt: '2025-09-10T13:29:50Z'
+                      capacity: 6400
+                      presentCharge: 30
+                      presentDischarge: 0
+                      stateOfCharge: 99
+                AggregatedBatteryMeasurement:
+                  description: An aggregated battery measurement.
+                  value:
+                    type: BATTERY
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      capacity: 6400
+                      presentCharge: 30
+                      presentDischarge: 0
+                      stateOfCharge: 99
+                SampledHeaterMeasurement:
+                  description: A sampled heater measurement.
+                  value:
+                    type: HEATER
+                    measurements:
+                    - measuredAt: '2025-09-05T18:02:00Z'
+                      power: 10000
+                      powerL1: 5000
+                      powerL2: 0
+                      powerL3: 0
+                      status: ACTIVE
+                      temperature: 29
+                      minTemperature: 15
+                      maxTemperature: 75
+                AggregatedHeaterMeasurement:
+                  description: An aggregated heater measurement.
+                  value:
+                    type: HEATER
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      power: 10000
+                      powerL1: 5000
+                      powerL2: 0
+                      powerL3: 0
+                      status: ACTIVE
+                      temperature: 29
+                      minTemperature: 15
+                      maxTemperature: 75
+                SampledInverterMeasurement:
+                  description: A sampled inverter measurement.
+                  value:
+                    type: INVERTER
+                    measurements:
+                    - measuredAt: '2025-09-10T13:29:50Z'
+                      acActivePower: 3000000
+                      dcPower: 3100000
+                      gridFrequency: 5000
+                      l1ACVoltage: 230000
+                      l2ACVoltage: 230000
+                      l3ACVoltage: 230000
+                AggregatedInverterMeasurement:
+                  description: An aggregated inverter measurement.
+                  value:
+                    type: INVERTER
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      acActivePower: 3000000
+                      dcPower: 3100000
+                      gridFrequency: 5000
+                      l1ACVoltage: 230000
+                      l2ACVoltage: 230000
+                      l3ACVoltage: 230000
+                SampledMeterMeasurement:
+                  description: A sampled meter measurement.
+                  value:
+                    type: METER
+                    measurements:
+                    - measuredAt: '2025-09-10T13:29:50Z'
+                      l1ActivePower: 1150000
+                      l1ActiveEnergyReadingImport: 50000000
+                      l1ActiveEnergyReadingExport: 10000000
+                      l1ReactivePower: 200000
+                      l1ReactiveEnergyReadingImport: 8000000
+                      l1ReactiveEnergyReadingExport: 2000000
+                      l1ApparentPower: 1167000
+                      l1ApparentEnergyReadingImport: 51000000
+                      l1ApparentEnergyReadingExport: 10500000
+                      l1Current: 5000
+                      l1Voltage: 230000
+                      l1ImportPowerLimit: 5000000
+                      l2ActivePower: 1610000
+                      l2ActiveEnergyReadingImport: 48000000
+                      l2ActiveEnergyReadingExport: 12000000
+                      l2ReactivePower: 280000
+                      l2ReactiveEnergyReadingImport: 7500000
+                      l2ReactiveEnergyReadingExport: 2500000
+                      l2ApparentPower: 1634000
+                      l2ApparentEnergyReadingImport: 48500000
+                      l2ApparentEnergyReadingExport: 12400000
+                      l2Current: 7000
+                      l2Voltage: 230000
+                      l2ImportPowerLimit: 5000000
+                      l3ActivePower: 1840000
+                      l3ActiveEnergyReadingImport: 52000000
+                      l3ActiveEnergyReadingExport: 9000000
+                      l3ReactivePower: 320000
+                      l3ReactiveEnergyReadingImport: 8500000
+                      l3ReactiveEnergyReadingExport: 1800000
+                      l3ApparentPower: 1867000
+                      l3ApparentEnergyReadingImport: 52700000
+                      l3ApparentEnergyReadingExport: 9200000
+                      l3Current: 8000
+                      l3Voltage: 230000
+                      l3ImportPowerLimit: 5000000
+                      sumActivePower: 4600000
+                      sumActiveEnergyReadingImport: 150000000
+                      sumActiveEnergyReadingExport: 31000000
+                      sumApparentPower: 4668000
+                      sumApparentEnergyReadingImport: 152200000
+                      sumApparentEnergyReadingExport: 32100000
+                      sumReactivePower: 800000
+                      sumReactiveEnergyReadingImport: 24000000
+                      sumReactiveEnergyReadingExport: 6300000
+                      sumImportPowerLimit: 15000000
+                      sumPowerFactor: 95.5
+                AggregatedMeterMeasurement:
+                  description: An aggregated meter measurement.
+                  value:
+                    type: METER
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      l1ActivePower: 1150000
+                      l1ActiveEnergyReadingImport: 50000000
+                      l1ActiveEnergyReadingExport: 10000000
+                      l1ReactivePower: 200000
+                      l1ReactiveEnergyReadingImport: 8000000
+                      l1ReactiveEnergyReadingExport: 2000000
+                      l1ApparentPower: 1167000
+                      l1ApparentEnergyReadingImport: 51000000
+                      l1ApparentEnergyReadingExport: 10500000
+                      l1Current: 5000
+                      l1Voltage: 230000
+                      l1ImportPowerLimit: 5000000
+                      l2ActivePower: 1610000
+                      l2ActiveEnergyReadingImport: 48000000
+                      l2ActiveEnergyReadingExport: 12000000
+                      l2ReactivePower: 280000
+                      l2ReactiveEnergyReadingImport: 7500000
+                      l2ReactiveEnergyReadingExport: 2500000
+                      l2ApparentPower: 1634000
+                      l2ApparentEnergyReadingImport: 48500000
+                      l2ApparentEnergyReadingExport: 12400000
+                      l2Current: 7000
+                      l2Voltage: 230000
+                      l2ImportPowerLimit: 5000000
+                      l3ActivePower: 1840000
+                      l3ActiveEnergyReadingImport: 52000000
+                      l3ActiveEnergyReadingExport: 9000000
+                      l3ReactivePower: 320000
+                      l3ReactiveEnergyReadingImport: 8500000
+                      l3ReactiveEnergyReadingExport: 1800000
+                      l3ApparentPower: 1867000
+                      l3ApparentEnergyReadingImport: 52700000
+                      l3ApparentEnergyReadingExport: 9200000
+                      l3Current: 8000
+                      l3Voltage: 230000
+                      l3ImportPowerLimit: 5000000
+                      sumActivePower: 4600000
+                      sumActiveEnergyReadingImport: 150000000
+                      sumActiveEnergyReadingExport: 31000000
+                      sumApparentPower: 4668000
+                      sumApparentEnergyReadingImport: 152200000
+                      sumApparentEnergyReadingExport: 32100000
+                      sumReactivePower: 800000
+                      sumReactiveEnergyReadingImport: 24000000
+                      sumReactiveEnergyReadingExport: 6300000
+                      sumImportPowerLimit: 15000000
+                      sumPowerFactor: 95.5
+                SampledHeatPumpMeasurement:
+                  description: A sampled heat pump measurement.
+                  value:
+                    type: HEAT_PUMP
+                    measurements:
+                    - measuredAt: '2025-09-10T13:29:50Z'
+                      power: 3500000
+                      powerL1: 1200000
+                      powerL2: 1150000
+                      powerL3: 1150000
+                      maxPower: 4000000
+                      minPower: 1000000
+                      averageTemperature: 22.5
+                      controlledTemperature: 45
+                      baseLineTemperature: 20
+                      heatSourceTemperature: 15
+                      outdoorTemperature: 8
+                      sgReadyState: AUTO
+                      operationStatus: HEATING
+                AggregatedHeatPumpMeasurement:
+                  description: An aggregated heat pump measurement.
+                  value:
+                    type: HEAT_PUMP
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      power: 3500000
+                      powerL1: 1200000
+                      powerL2: 1150000
+                      powerL3: 1150000
+                      maxPower: 4000000
+                      minPower: 1000000
+                      averageTemperature: 22.5
+                      controlledTemperature: 45
+                      baseLineTemperature: 20
+                      heatSourceTemperature: 15
+                      outdoorTemperature: 8
+                      sgReadyState: AUTO
+                      operationStatus: HEATING
+                SampledEVChargingStationMeasurement:
+                  description: A sampled EV charging station measurement.
+                  value:
+                    type: EV_CHARGING_STATION
+                    measurements:
+                    - measuredAt: '2025-09-10T13:29:50Z'
+                      l1Voltage: 230000
+                      l2Voltage: 230000
+                      l3Voltage: 230000
+                      l1Current: 16000
+                      l2Current: 16000
+                      l3Current: 16000
+                      realPower: 11000000
+                      powerFactor: 950
+                      l1RealPower: 3680000
+                      l2RealPower: 3680000
+                      l3RealPower: 3640000
+                      temperature: 25
+                      capacity: 60000
+                      stateOfCharge: 45.5
+                      maxCharge: 11000000
+                      minCharge: 1380000
+                      maxDischarge: 11000000
+                      stationState: CHARGING
+                      plugState: PLUGGED_ON_STATION_AND_PLUGGED_ON_VEHICLE
+                AggregatedEVChargingStationMeasurement:
+                  description: An aggregated EV charging station measurement.
+                  value:
+                    type: EV_CHARGING_STATION
+                    measurements:
+                    - measuredFrom: '2025-09-05T18:02:00Z'
+                      measuredTo: '2025-09-05T18:02:30Z'
+                      l1Voltage: 230000
+                      l2Voltage: 230000
+                      l3Voltage: 230000
+                      l1Current: 16000
+                      l2Current: 16000
+                      l3Current: 16000
+                      realPower: 11000000
+                      powerFactor: 950
+                      l1RealPower: 3680000
+                      l2RealPower: 3680000
+                      l3RealPower: 3640000
+                      temperature: 25
+                      capacity: 60000
+                      stateOfCharge: 45.5
+                      maxCharge: 11000000
+                      minCharge: 1380000
+                      maxDischarge: 11000000
+                      stationState: CHARGING
+                      plugState: PLUGGED_ON_STATION_AND_PLUGGED_ON_VEHICLE
+        '400':
+          description: Malformed request.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Bad Request
+                  description: 'Bad Request indicates that the request body is not a valid JSON or
+
+                    it contains a invalid json type.
+
+                    '
+                  example:
+                    message: Problems parsing JSON
+                x-readme-ref-name: BadRequestException
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '422':
+          description: Validation failed.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Validation
+                  description: 'Validation indicates that the request body contains fields which
+
+                    does not pass the validation.
+
+                    '
+                  type: object
+                  required:
+                  - message
+                  - details
+                  example:
+                    message: Validation failed
+                    details:
+                    - email is not valid
+                x-readme-ref-name: InvalidException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      security:
+      - HeaderAuth:
+        - AppliancesMeasurementsRead
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/systems/systemID/assets/assetID/measurements"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/systems/systemID/assets/assetID/measurements \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/systems/systemID/assets/assetID/measurements\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/systems/systemID/assets/assetID/measurements', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/assets/assetID/measurements\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/systems/systemID/assets/assetID/measurements\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/systems/systemID/assets/assetID/measurements")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/systems/systemID/assets/assetID/measurements");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml

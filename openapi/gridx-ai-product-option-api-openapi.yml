@@ -1,0 +1,418 @@
+openapi: 3.2.0
+info:
+  title: Gridx Ai Product Option API
+  version: 2.0.0
+  contact:
+    name: gridX
+    url: https://www.gridx.ai/module/api
+    email: developer-community@gridx.de
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
+  x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
+  x-audience: public-external
+  description: 'Operations tagged Product Option across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.gridx.de
+  description: Production
+tags:
+- name: Product Option
+  x-displayName: Product Option
+paths:
+  /accounts/{accountID}/product-options:
+    get:
+      summary: List Product Options
+      operationId: listAccountProductOptions
+      description: 'Lists all product options created by the given account and its children.
+
+
+        Product options returned by this endpoint are not necessarily assignable to all systems assigned to the given account.'
+      tags:
+      - Product Option
+      security:
+      - HeaderAuth: []
+      parameters:
+      - name: accountID
+        description: 'Unique identifier used to access an account.
+
+          '
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 17874c1b-d073-4b06-bf01-a1497fbe1142
+      - name: optionIDs
+        description: 'IDs of the product options to filter by.
+
+          '
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+          example:
+          - 7e82929c-f87e-11ed-b67e-0242ac120002
+          - 56ba9149-c98a-41bf-9007-7fa0ae0d75cc
+      - name: isDefault
+        description: 'filter by only default or non-default product options.
+
+          '
+        in: query
+        schema:
+          type: boolean
+          example: false
+      responses:
+        '200':
+          description: List of product options.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                  - title: Product Option
+                    description: 'A product option describes a set of features whose access should be restricted from or granted to users of a system.
+
+
+                      Systems can be assigned a product option to manage their access to these features.
+
+
+                      This is the base type for the more concrete usages and not used directly within operations.
+
+                      '
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Name of the product option.
+                        example: Default Product Option
+                      description:
+                        type: string
+                        description: Describes the purpose of the product option.
+                    x-readme-ref-name: AbstractProductOption
+                  - properties:
+                      id:
+                        description: Unique identifier of the product option.
+                        type: string
+                        format: uuid
+                        example: d5166f02-8b56-4200-90bd-35d3d17391b4
+                      accountID:
+                        description: Unique identifier of the account that owns the product option.
+                        type: string
+                        format: uuid
+                        example: d73b6749-2c32-4bca-ab73-50d8e3744edf
+                      isDefault:
+                        type: boolean
+                        description: Indicates whether the product option should be assigned by default to all systems of the owning account.
+                      functionalities:
+                        description: The default functionalities that a product option restricts access to. Deprecated - Use `showFunctionalities` and `hideFunctionalities` instead.
+                        type: array
+                        readOnly: true
+                        deprecated: true
+                        items:
+                          type: object
+                          allOf:
+                          - description: 'A product functionality describes a feature.
+
+
+                              It is used to manage access to this feature via product options.
+
+
+                              This is the base type for the more concrete usages and not used directly within operations.
+
+                              '
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                maxLength: 256
+                                description: Name of the product functionality.
+                                example: EV Manager
+                              hide:
+                                type: boolean
+                                description: Indicates whether the product functionality should be hidden or shown.
+                              description:
+                                type: string
+                                description: Describes the purpose of the product functionality.
+                            x-readme-ref-name: AbstractProductFunctionality
+                          - properties:
+                              id:
+                                description: Unique identifier of the product functionality.
+                                type: string
+                                format: uuid
+                                example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                            required:
+                            - id
+                            - name
+                            - hide
+                          x-readme-ref-name: ProductFunctionality
+                      hideFunctionalities:
+                        readOnly: true
+                        description: The default functionalities that a product option restricts access to. Must be of type `hide=true`.
+                        type: array
+                        items:
+                          type: object
+                          allOf:
+                          - description: 'A product functionality describes a feature.
+
+
+                              It is used to manage access to this feature via product options.
+
+
+                              This is the base type for the more concrete usages and not used directly within operations.
+
+                              '
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                maxLength: 256
+                                description: Name of the product functionality.
+                                example: EV Manager
+                              hide:
+                                type: boolean
+                                description: Indicates whether the product functionality should be hidden or shown.
+                              description:
+                                type: string
+                                description: Describes the purpose of the product functionality.
+                            x-readme-ref-name: AbstractProductFunctionality
+                          - properties:
+                              id:
+                                description: Unique identifier of the product functionality.
+                                type: string
+                                format: uuid
+                                example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                            required:
+                            - id
+                            - name
+                            - hide
+                          x-readme-ref-name: ProductFunctionality
+                      showFunctionalities:
+                        readOnly: true
+                        description: The extra functionalities that a product option grants access to. Must be of type `hide=false`.
+                        type: array
+                        items:
+                          type: object
+                          allOf:
+                          - description: 'A product functionality describes a feature.
+
+
+                              It is used to manage access to this feature via product options.
+
+
+                              This is the base type for the more concrete usages and not used directly within operations.
+
+                              '
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                maxLength: 256
+                                description: Name of the product functionality.
+                                example: EV Manager
+                              hide:
+                                type: boolean
+                                description: Indicates whether the product functionality should be hidden or shown.
+                              description:
+                                type: string
+                                description: Describes the purpose of the product functionality.
+                            x-readme-ref-name: AbstractProductFunctionality
+                          - properties:
+                              id:
+                                description: Unique identifier of the product functionality.
+                                type: string
+                                format: uuid
+                                example: 4e3392ce-ed94-4946-8a11-665e0443723e
+                            required:
+                            - id
+                            - name
+                            - hide
+                          x-readme-ref-name: ProductFunctionality
+                    required:
+                    - id
+                    - accountID
+                    - name
+                    - isDefault
+                    - functionalities
+                    - hideFunctionalities
+                    - showFunctionalities
+                  x-readme-ref-name: ProductOption
+        '403':
+          description: Forbidden.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: UnauthorizedError - Forbidden Error
+                  description: Forbidden Error
+                  example:
+                    message: Bad credentials
+                x-readme-ref-name: ForbiddenException
+        '404':
+          description: Requested entity not found.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ClientError - Not Found
+                  description: Not Found indicates that the entity was not found.
+                  example:
+                    message: Not Found
+                x-readme-ref-name: NotFoundException
+        '500':
+          description: There has been an internal error on our side. We're looking into it.
+          content:
+            application/vnd.gridx.v2+json:
+              schema:
+                readOnly: true
+                allOf:
+                - title: General Exception
+                  description: Represents a general error structure returned by our REST API.
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message represents the message reported to the user.
+                    details:
+                      type: array
+                      description: 'Details represents detail information for the user to fix this
+
+                        problem
+
+                        '
+                      items:
+                        type: string
+                  required:
+                  - message
+                  x-readme-ref-name: GeneralException
+                - title: ServerSideError - Internal Server Error
+                  description: Internal Server Error
+                  example:
+                    message: Internal Server Error
+                x-readme-ref-name: InternalException
+      x-code-samples:
+      - lang: python
+        label: Python
+        source: 'import requests
+
+
+          url = "https://api.gridx.de/accounts/accountID/product-options"
+
+
+          headers = {"accept": "application/vnd.gridx.v2+json"}
+
+
+          response = requests.get(url, headers=headers)
+
+
+          print(response.text)'
+      - lang: shell
+        label: Shell
+        source: "curl --request GET \\\n     --url https://api.gridx.de/accounts/accountID/product-options \\\n     --header 'accept: application/vnd.gridx.v2+json'"
+      - lang: go
+        label: Go
+        source: "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.gridx.de/accounts/accountID/product-options\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/vnd.gridx.v2+json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+      - lang: javascript
+        label: Javascript
+        source: "const options = {method: 'GET', headers: {accept: 'application/vnd.gridx.v2+json'}};\n\nfetch('https://api.gridx.de/accounts/accountID/product-options', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+      - lang: java
+        label: Java
+        source: "OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/product-options\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build();\n\nResponse response = client.newCall(request).execute();"
+      - lang: java
+        label: Kotlin
+        source: "val client = OkHttpClient()\n\nval request = Request.Builder()\n  .url(\"https://api.gridx.de/accounts/accountID/product-options\")\n  .get()\n  .addHeader(\"accept\", \"application/vnd.gridx.v2+json\")\n  .build()\n\nval response = client.newCall(request).execute()"
+      - lang: javascript
+        label: Swift
+        source: 'import Foundation
+
+
+          let url = URL(string: "https://api.gridx.de/accounts/accountID/product-options")!
+
+          var request = URLRequest(url: url)
+
+          request.httpMethod = "GET"
+
+          request.timeoutInterval = 10
+
+          request.allHTTPHeaderFields = ["accept": "application/vnd.gridx.v2+json"]
+
+
+          let (data, _) = try await URLSession.shared.data(for: request)
+
+          print(String(decoding: data, as: UTF8.self))'
+      - lang: csharp
+        label: C#
+        source: 'using RestSharp;
+
+
+
+          var options = new RestClientOptions("https://api.gridx.de/accounts/accountID/product-options");
+
+          var client = new RestClient(options);
+
+          var request = new RestRequest("");
+
+          request.AddHeader("accept", "application/vnd.gridx.v2+json");
+
+          var response = await client.GetAsync(request);
+
+
+          Console.WriteLine("{0}", response.Content);
+
+          '
+    servers:
+    - url: https://api.gridx.de
+      description: Production
+components:
+  securitySchemes:
+    HeaderAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
+x-refined-from:
+- gridx-api.json
+- gridx-ai-openapi.yml
