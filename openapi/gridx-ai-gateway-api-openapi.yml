@@ -1,17 +1,17 @@
 openapi: 3.2.0
 info:
-  title: Gridx Ai Gateway API
+  title: gridX Gateway API
+  description: The gridX standard API makes it possible to build customised energy applications.
   version: 2.0.0
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
   contact:
     name: gridX
     url: https://www.gridx.ai/module/api
     email: developer-community@gridx.de
-  license:
-    name: All rights reserved.
-    url: https://www.gridx.ai/
   x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
   x-audience: public-external
-  description: 'Operations tagged Gateway across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.gridx.de
   description: Production
@@ -565,9 +565,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /gateways/{gatewayID}:
     get:
       operationId: getGateway
@@ -2945,9 +2942,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /gateways/{gatewayID}/firmware:
     get:
       operationId: getGatewayFirmware
@@ -3222,9 +3216,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /systems/{systemID}/gateways:
     post:
       operationId: createSystemGateway
@@ -3808,9 +3799,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
 components:
   securitySchemes:
     HeaderAuth:
@@ -3818,6 +3806,3 @@ components:
       name: Authorization
       in: header
       description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
-x-refined-from:
-- gridx-api.json
-- gridx-ai-openapi.yml

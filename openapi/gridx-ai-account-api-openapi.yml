@@ -1,17 +1,17 @@
 openapi: 3.2.0
 info:
-  title: Gridx Ai Account API
+  title: gridX Account API
+  description: The gridX standard API makes it possible to build customised energy applications.
   version: 2.0.0
+  license:
+    name: All rights reserved.
+    url: https://www.gridx.ai/
   contact:
     name: gridX
     url: https://www.gridx.ai/module/api
     email: developer-community@gridx.de
-  license:
-    name: All rights reserved.
-    url: https://www.gridx.ai/
   x-api-id: ba9d6a25-ae1a-4ac8-af7a-70b76db17021
   x-audience: public-external
-  description: 'Operations tagged Account across 2 of this provider''s published API definitions: gridx-api.json, gridx-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.gridx.de
   description: Production
@@ -820,9 +820,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts:
     get:
       operationId: listAccounts
@@ -1707,9 +1704,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts/{accountID}:
     get:
       operationId: getAccount
@@ -2739,9 +2733,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts/{accountID}/accounts:
     get:
       operationId: listChildAccounts
@@ -3187,9 +3178,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts/{accountID}/tree:
     get:
       deprecated: true
@@ -3403,9 +3391,6 @@ paths:
           '
       operationId: getAccountsByAccountIDTree
       x-operation-id-source: derived
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts/{accountID}/parents:
     get:
       summary: List all parent accounts
@@ -3615,9 +3600,6 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
   /accounts/{accountID}/bidding-zone:
     get:
       summary: Get bidding zone
@@ -4107,17 +4089,7 @@ paths:
           Console.WriteLine("{0}", response.Content);
 
           '
-    servers:
-    - url: https://api.gridx.de
-      description: Production
 components:
-  responses:
-    GetAccountTreeResponse:
-      description: Account tree returned.
-      content:
-        application/vnd.gridx.v2+json:
-          schema:
-            $ref: '#/components/schemas/AccountTreeNode'
   schemas:
     AccountTreeNode:
       description: Account tree node.
@@ -4211,12 +4183,16 @@ components:
       - updatedAt
       - kind
       x-readme-ref-name: AccountTreeNode
+  responses:
+    GetAccountTreeResponse:
+      description: Account tree returned.
+      content:
+        application/vnd.gridx.v2+json:
+          schema:
+            $ref: '#/components/schemas/AccountTreeNode'
   securitySchemes:
     HeaderAuth:
       type: apiKey
       name: Authorization
       in: header
       description: Enter either the JWT token with the prefix `Bearer ` or an API token with the prefix `Token `
-x-refined-from:
-- gridx-api.json
-- gridx-ai-openapi.yml
