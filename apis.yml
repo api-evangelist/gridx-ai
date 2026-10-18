@@ -32,6 +32,15 @@ tags:
 - Distributed Energy Resources
 - Flexibility
 - IoT
+- Webhook
+tags_raw:
+- Company
+- Energy
+- Energy Management
+- EV Charging
+- Distributed Energy Resources
+- Flexibility
+- IoT
 - Webhooks
 
 image: https://cdn.prod.website-files.com/65b3e159d25a6097b6ca5812/6a350d3fca34a7520d4ed3a5_OG%20Image%20Front%20Page.png
@@ -149,6 +158,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Appliances
+  tags_raw:
   - Appliance
   properties:
   - type: OpenAPI
@@ -185,6 +196,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Customers
+  tags_raw:
   - Customer
   properties:
   - type: OpenAPI
@@ -197,6 +210,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Draft
+  tags_raw:
   - draft
   properties:
   - type: OpenAPI
@@ -281,6 +296,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Gateways
+  tags_raw:
   - Gateway
   properties:
   - type: OpenAPI
@@ -317,6 +334,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Intents
+  tags_raw:
   - Intent
   properties:
   - type: OpenAPI
@@ -413,6 +432,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Scans
+  tags_raw:
   - Scan
   properties:
   - type: OpenAPI
@@ -485,6 +506,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Time-Of-Use
+  tags_raw:
   - TimeOfUse
   properties:
   - type: OpenAPI
@@ -497,6 +520,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - Tokens
+  tags_raw:
   - Token
   properties:
   - type: OpenAPI
@@ -521,6 +546,8 @@ apis:
   humanURL: https://community.developer.gridx.de/t/gridx-api-documentation/213
   baseURL: https://api.gridx.de
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
