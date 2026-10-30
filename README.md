@@ -64,5 +64,179 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-gridX is a company surfaced via the API Evangelist harvest backlog (source: spectral-ruleset-github) and added to the network as a stub for full-pipeline profiling.
-- https://www.gridx.ai/
+gridX (gridX GmbH, Aachen, Germany) provides XENON, a white-label connectivity and flexibility platform for distributed energy resources. It covers home energy management systems (HEMS) and EV charging infrastructure: connecting PV, batteries, heat pumps and AC/DC chargers via the gridBox gateway or cloud connectivity, controlling and optimizing energy flows with dynamic tariffs, peak shaving and dynamic load management, and aggregating asset flexibility for energy-market trading. The gridX API exposes live and historic system and asset data and webhooks, documented in its developer community.
+
+**Areas:** Company · Energy · Energy Management · EV Charging · Distributed Energy Resources · Flexibility · IoT · Webhook
+
+## gridX on APIs.io
+
+Everything profiled for gridX is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/gridx-ai/](https://apis.io/providers/gridx-ai/)** — or go straight to one of the APIs or properties below.
+
+### APIs (34)
+
+- [gridX Account API](https://apis.io/apis/gridx-ai/gridx-ai-account-api/) — The Account API from gridX — 7 operation(s) for account.
+- [gridX Appliance API](https://apis.io/apis/gridx-ai/gridx-ai-appliance-api/) — The Appliance API from gridX — 5 operation(s) for appliance.
+- [gridX Asset API](https://apis.io/apis/gridx-ai/gridx-ai-asset-api/) — The Asset API from gridX — 2 operation(s) for asset.
+- [gridX Cluster API](https://apis.io/apis/gridx-ai/gridx-ai-cluster-api/) — The Cluster API from gridX — 1 operation(s) for cluster.
+- [gridX Customer API](https://apis.io/apis/gridx-ai/gridx-ai-customer-api/) — The Customer API from gridX — 3 operation(s) for customer.
+- [gridX Draft API](https://apis.io/apis/gridx-ai/gridx-ai-draft-api/) — API that is being evaluated, may change on short notice.
+- [gridX Emobility Time Of Use API](https://apis.io/apis/gridx-ai/gridx-ai-emobility-time-of-use-api/) — Manages the Time of Use implementation for eMobility.
+- [gridX EV Charging Schedule API](https://apis.io/apis/gridx-ai/gridx-ai-ev-charging-schedule-api/) — The EV Charging Schedule API from gridX — 1 operation(s) for ev charging schedule.
+- [gridX EV Configuration API](https://apis.io/apis/gridx-ai/gridx-ai-ev-configuration-api/) — The EV Configuration API from gridX — 1 operation(s) for ev configuration.
+- [gridX EV Profile API](https://apis.io/apis/gridx-ai/gridx-ai-ev-profile-api/) — The EV Profile API from gridX — 2 operation(s) for ev profile.
+- [gridX Evcs User Prioritization API](https://apis.io/apis/gridx-ai/gridx-ai-evcs-user-prioritization-api/) — Manages temporary priority per EV supply equipment / charging station.
+- [gridX Export Power Limit API](https://apis.io/apis/gridx-ai/gridx-ai-export-power-limit-api/) — The Export Power Limit API from gridX — 1 operation(s) for export power limit.
+- [gridX Gateway API](https://apis.io/apis/gridx-ai/gridx-ai-gateway-api/) — The Gateway API from gridX — 4 operation(s) for gateway.
+- [gridX Health Checks API](https://apis.io/apis/gridx-ai/gridx-ai-health-checks-api/) — The Health Checks API from gridX — 1 operation(s) for health checks.
+- [gridX Import Power Limit API](https://apis.io/apis/gridx-ai/gridx-ai-import-power-limit-api/) — The Import Power Limit API from gridX — 2 operation(s) for import power limit.
+- [gridX Intent API](https://apis.io/apis/gridx-ai/gridx-ai-intent-api/) — The Intent API from gridX — 2 operation(s) for intent.
+- [gridX Job API](https://apis.io/apis/gridx-ai/gridx-ai-job-api/) — The Job API from gridX — 3 operation(s) for job.
+- [gridX KPIs API](https://apis.io/apis/gridx-ai/gridx-ai-kpis-api/) — The KPIs API from gridX — 1 operation(s) for kpis.
+- [gridX Market Prices API](https://apis.io/apis/gridx-ai/gridx-ai-market-prices-api/) — The Market Prices API from gridX — 1 operation(s) for market prices.
+- [gridX Measurements API](https://apis.io/apis/gridx-ai/gridx-ai-measurements-api/) — The Measurements API from gridX — 1 operation(s) for measurements.
+- [gridX Power Limit Schedule API](https://apis.io/apis/gridx-ai/gridx-ai-power-limit-schedule-api/) — The Power Limit Schedule API from gridX — 3 operation(s) for power limit schedule.
+- [gridX Product Functionality API](https://apis.io/apis/gridx-ai/gridx-ai-product-functionality-api/) — The Product Functionality API from gridX — 2 operation(s) for product functionality.
+- [gridX Product Option API](https://apis.io/apis/gridx-ai/gridx-ai-product-option-api/) — The Product Option API from gridX — 1 operation(s) for product option.
+- [gridX Scan API](https://apis.io/apis/gridx-ai/gridx-ai-scan-api/) — The Scan API from gridX — 1 operation(s) for scan.
+- [gridX Scan Configuration API](https://apis.io/apis/gridx-ai/gridx-ai-scan-configuration-api/) — The Scan Configuration API from gridX — 1 operation(s) for scan configuration.
+- [gridX Star API](https://apis.io/apis/gridx-ai/gridx-ai-star-api/) — The Star API from gridX — 4 operation(s) for star.
+- [gridX System API](https://apis.io/apis/gridx-ai/gridx-ai-system-api/) — The System API from gridX — 6 operation(s) for system.
+- [gridX Tag API](https://apis.io/apis/gridx-ai/gridx-ai-tag-api/) — The Tag API from gridX — 2 operation(s) for tag.
+- [gridX Tariff V2 API](https://apis.io/apis/gridx-ai/gridx-ai-tariffv2-api/) — The TariffV2 API from gridX — 3 operation(s) for tariffv2.
+- [gridX Time Of Use API](https://apis.io/apis/gridx-ai/gridx-ai-timeofuse-api/) — The TimeOfUse API from gridX — 9 operation(s) for timeofuse.
+- [gridX Token API](https://apis.io/apis/gridx-ai/gridx-ai-token-api/) — The Token API from gridX — 5 operation(s) for token.
+- [gridX User API](https://apis.io/apis/gridx-ai/gridx-ai-user-api/) — The User API from gridX — 4 operation(s) for user.
+- [gridX Users API](https://apis.io/apis/gridx-ai/gridx-ai-users-api/) — The Users API from gridX — 1 operation(s) for users.
+- [gridX Webhook API](https://apis.io/apis/gridx-ai/gridx-ai-webhook-api/) — The Webhook API from gridX — 4 operation(s) for webhook.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Gridx Ai Webhooks](https://apis.io/asyncapis/gridx-ai/gridx-ai-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [gridX MCP Server (candidate)](https://apis.io/servers/gridx-ai/gridx-mcp-server-candidate/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Gridx Ai Agentic Access](https://apis.io/agentic-access/gridx-ai/gridx-ai-agentic-access/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Gridx Ai Context](https://apis.io/jsonld/gridx-ai/gridx-ai-context/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Gridx Ai Gridx Api Overlay](https://apis.io/overlays/gridx-ai/gridx-ai-gridx-api-overlay/)
+
+#### Governance rules (2)
+
+Spectral rulesets for the provider's contracts.
+
+- [gridX — api rules](https://apis.io/rules/gridx-ai/gridx-ai-api-spectral-rules/)
+- [gridX API Rules](https://apis.io/rules/gridx-ai/gridx-ai-rules/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Gridx Ai Authentication](https://apis.io/security/gridx-ai/gridx-ai-authentication/)
+- [Gridx Ai Domain Security](https://apis.io/security/gridx-ai/gridx-ai-domain-security/)
+- [Gridx Ai Vulnerability Disclosure](https://apis.io/security/gridx-ai/gridx-ai-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Gridx Ai Plans Pricing](https://apis.io/plans/gridx-ai/gridx-ai-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Gridx Ai Rate Limits](https://apis.io/rate-limits/gridx-ai/gridx-ai-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.gridx.ai/)
+- [Documentation](https://community.developer.gridx.de/t/gridx-api-documentation/213)
+- [Getting started](https://community.developer.gridx.de/c/getting-started/16)
+- [Support](https://support.gridx.ai/en/)
+- [Changelog](https://community.developer.gridx.de/t/gridx-api-changelog/324)
+- [Blog](https://www.gridx.ai/blog)
+- [Security](https://security.gridx.ai/?itemUid=e7fc67f3-bf2e-41ea-9c2e-858120482222)
+- [Terms of service](https://www.gridx.ai/terms-of-use)
+- [Privacy policy](https://www.gridx.ai/privacy-notice)
+- [GitHub](https://github.com/grid-x)
+- [Status](https://status.gridx.de/)
+
+## API Evangelist rating
+
+**Kin Score 59.7** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 69.8 |
+| Contract governance | 62.9 |
+| Operational transparency | 63.2 |
+| Developer ergonomics | 51.8 |
+| Access clarity | 21.1 |
+
+**Agent readiness 36.2** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 25.4** — Energy & Utilities
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/gridx-ai/](https://apis.io/providers/gridx-ai/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for gridX: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/gridx-ai/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
